@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <rect width="320" height="80" rx="12" fill="#FAF5EC"/>
+  <rect x="18" y="18" width="44" height="44" rx="8" fill="#8A5A7A"/>
+  <text x="40" y="49" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#FAF5EC" text-anchor="middle">F</text>
+  <text x="76" y="47" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#4A2418" letter-spacing="2">FOSCL</text>
+  <text x="78" y="60" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="bold" fill="#8A5A7A" letter-spacing="1.5">RESEARCH WORKSPACE</text>
+</svg>
