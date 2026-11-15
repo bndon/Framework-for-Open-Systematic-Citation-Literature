@@ -1,0 +1,2370 @@
+/* ============================================================
+   Design tokens — Night (Dark - default)
+   ============================================================ */
+:root,
+:root[data-theme="night"],
+:root[data-theme="dark"] {
+  --bg: #1c2225;
+  --panel: #2b3337;
+  --panel-dark: #161c1e;
+  --text-main: #edf2f4;
+  --text-muted: #96a1a7;
+  --accent: #86b4a4;
+  --signal: #dfaf64;
+  --border: #2e373b;
+  --nav-active-bg: #273136;
+  --nav-active-border: #44545c;
+  --shelf-top: #654d31;
+  --shelf-mid: #523d26;
+  --shelf-bot: #42301c;
+  --shelf-shadow: rgba(0, 0, 0, 0.35);
+  --ribbon-bg: #131719;
+  --tree-guide: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Cream (Light) ── */
+:root[data-theme="cream"],
+:root[data-theme="light"] {
+  --bg: #f7f4ec;
+  --panel: #eee8db;
+  --panel-dark: #fbf8f1;
+  --text-main: #2b2724;
+  --text-muted: #787067;
+  --accent: #377663;
+  --signal: #b87b28;
+  --border: #dcd4c4;
+  --nav-active-bg: #e6dfd1;
+  --nav-active-border: #c4baa7;
+  --shelf-top: #c79e66;
+  --shelf-mid: #b38a52;
+  --shelf-bot: #9a723e;
+  --shelf-shadow: rgba(0, 0, 0, 0.12);
+  --ribbon-bg: #ebe5d6;
+  --tree-guide: rgba(0, 0, 0, 0.08);
+}
+
+/* ── Sepia ── */
+:root[data-theme="sepia"] {
+  --bg: #ede1c7;
+  --panel: #dfd2b5;
+  --panel-dark: #f4ebd6;
+  --text-main: #3a2c1b;
+  --text-muted: #7c6850;
+  --accent: #855527;
+  --signal: #a86c2e;
+  --border: #cec09f;
+  --nav-active-bg: #d7c7a5;
+  --nav-active-border: #b8a682;
+  --shelf-top: #9c6e3b;
+  --shelf-mid: #855c2f;
+  --shelf-bot: #6e4922;
+  --shelf-shadow: rgba(58, 44, 27, 0.22);
+  --ribbon-bg: #dbcdad;
+  --tree-guide: rgba(58, 44, 27, 0.12);
+}
+
+/* ── Dusk Mountain (Purple-Blue) ── */
+:root[data-theme="dusk"] {
+  --bg: #2c2d3a;
+  --panel: #35364a;
+  --panel-dark: #22232e;
+  --text-main: #e8e9f4;
+  --text-muted: #9394b0;
+  --accent: #a4abd9;
+  --signal: #c9a96e;
+  --border: #3d3e55;
+  --nav-active-bg: #3a3c52;
+  --nav-active-border: #53589A;
+  --shelf-top: #53589a;
+  --shelf-mid: #454880;
+  --shelf-bot: #363967;
+  --shelf-shadow: rgba(0, 0, 0, 0.4);
+  --ribbon-bg: #1e1f28;
+  --tree-guide: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Mint Wave (Mint-Teal) ── */
+:root[data-theme="mint"] {
+  --bg: #2a3238;
+  --panel: #2E3844;
+  --panel-dark: #21282e;
+  --text-main: #e4eeec;
+  --text-muted: #8fa8a2;
+  --accent: #a5dabe;
+  --signal: #d4a85a;
+  --border: #3a454d;
+  --nav-active-bg: #313d44;
+  --nav-active-border: #546f68;
+  --shelf-top: #3d6b62;
+  --shelf-mid: #325a52;
+  --shelf-bot: #274842;
+  --shelf-shadow: rgba(0, 0, 0, 0.38);
+  --ribbon-bg: #1c2429;
+  --tree-guide: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Citrus Classic (Red-Amber-Cream) ── */
+:root[data-theme="citrus"] {
+  --bg: #f5ede8;
+  --panel: #EAD8C4;
+  --panel-dark: #faf4f0;
+  --text-main: #2a1a16;
+  --text-muted: #7a5a52;
+  --accent: #b22a2a;
+  --signal: #F7C12D;
+  --border: #ddd0c8;
+  --nav-active-bg: #e8d8d0;
+  --nav-active-border: #c8b0a8;
+  --shelf-top: #b87a4a;
+  --shelf-mid: #a06838;
+  --shelf-bot: #8a5428;
+  --shelf-shadow: rgba(60, 20, 10, 0.18);
+  --ribbon-bg: #f0e6e0;
+  --tree-guide: rgba(0, 0, 0, 0.09);
+}
+
+/* ── Deep Navy (Dark Teal) ── */
+:root[data-theme="navy"] {
+  --bg: #122020;
+  --panel: #1a2e2e;
+  --panel-dark: #28323B;
+  --text-main: #d8ecea;
+  --text-muted: #6a9490;
+  --accent: #3a9e8e;
+  --signal: #FAE1D9;
+  --border: #1f3030;
+  --nav-active-bg: #1c2e2e;
+  --nav-active-border: #3a6060;
+  --shelf-top: #1e5050;
+  --shelf-mid: #184040;
+  --shelf-bot: #123333;
+  --shelf-shadow: rgba(0, 0, 0, 0.5);
+  --ribbon-bg: #0a1414;
+  --tree-guide: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Forest Noir (Citron-Teal-Black) ── */
+:root[data-theme="forest"] {
+  --bg: #092122;
+  --panel: #161e1c;
+  --panel-dark: #0a110f;
+  --text-main: #e8f2e0;
+  --text-muted: #7a9870;
+  --accent: #E2F3A9;
+  --signal: #FEF8F0;
+  --border: #1c2820;
+  --nav-active-bg: #182018;
+  --nav-active-border: #235354;
+  --shelf-top: #1e3828;
+  --shelf-mid: #182e20;
+  --shelf-bot: #102418;
+  --shelf-shadow: rgba(0, 0, 0, 0.6);
+  --ribbon-bg: #080e0c;
+  --tree-guide: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Stone Premium (Warm Gray) ── */
+:root[data-theme="stone"] {
+  --bg: #DDDAC4;
+  --panel: #dddad4;
+  --panel-dark: #f0ede8;
+  --text-main: #2a2824;
+  --text-muted: #6e6a62;
+  --accent: #EFB356;
+  --signal: #3a3832;
+  --border: #d0ccc4;
+  --nav-active-bg: #e0dcd4;
+  --nav-active-border: #bab6ae;
+  --shelf-top: #9a8870;
+  --shelf-mid: #887860;
+  --shelf-bot: #74644e;
+  --shelf-shadow: rgba(0, 0, 0, 0.14);
+  --ribbon-bg: #e8e4de;
+  --tree-guide: rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  min-height: 100vh;
+  color: var(--text-main);
+  background: var(--bg);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   App shell
+   ============================================================ */
+.app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ============================================================
+   Sidebar (Obsidian Style Overlay)
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  background: var(--panel-dark);
+  border-right: 1px solid var(--border);
+  user-select: none;
+  z-index: 200;
+  transform: translateX(-100%);
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: none;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+  box-shadow: 6px 0 28px rgba(0, 0, 0, 0.4);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 280ms;
+}
+
+.sidebar-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Activity Ribbon (Far Left) ── */
+.sidebar-ribbon {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 16px;
+  background: var(--ribbon-bg);
+  border-right: 1px solid var(--border);
+}
+
+.ribbon-top,
+.ribbon-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.ribbon-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.ribbon-btn:hover {
+  background: var(--panel);
+  color: var(--text-main);
+}
+
+.ribbon-btn.active {
+  background: var(--nav-active-bg);
+  color: var(--accent);
+  border-color: var(--nav-active-border);
+}
+
+.ribbon-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ── Explorer Pane ── */
+.sidebar-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--panel-dark);
+}
+
+.sidebar-pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-vault-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text-main);
+  letter-spacing: -0.2px;
+}
+
+.brand-icon-mini {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--accent);
+  color: var(--panel-dark);
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Georgia, serif;
+}
+
+.vault-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-pane-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-action-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 140ms;
+}
+
+.sidebar-action-btn:hover {
+  background: var(--panel);
+  color: var(--text-main);
+  border-color: var(--border);
+}
+
+/* ── Tree View (Obsidian Style) ── */
+.sidebar-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+}
+
+.tree-section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  color: var(--text-main);
+  font-size: 12.5px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background 120ms;
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  user-select: none;
+}
+
+.tree-node:hover {
+  background: var(--panel);
+}
+
+.tree-node.active {
+  background: var(--nav-active-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tree-caret {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  font-size: 9px;
+  line-height: 14px;
+  text-align: center;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+  flex-shrink: 0;
+}
+
+.tree-caret.expanded {
+  transform: rotate(90deg);
+}
+
+.folder-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+
+.tree-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-badge {
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--panel);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tree-children {
+  position: relative;
+  margin-left: 14px;
+  padding-left: 8px;
+  border-left: 1px solid var(--tree-guide);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tree-children[hidden] {
+  display: none !important;
+}
+
+.tree-leaf {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 120ms;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  user-select: none;
+}
+
+.tree-leaf:hover {
+  background: var(--panel);
+  color: var(--text-main);
+}
+
+.tree-leaf.active {
+  background: var(--nav-active-bg);
+  color: var(--accent);
+  font-weight: 550;
+}
+
+.tree-leaf-icon {
+  font-size: 11px;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* ── Explorer Pane Footer ── */
+.sidebar-pane-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.vault-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ============================================================
+   Main content area
+   ============================================================ */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Topbar
+   ============================================================ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 44px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--panel-dark);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.breadcrumb-separator {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+#current-section {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 150ms, border-color 150ms;
+}
+
+.icon-button:hover {
+  background: var(--panel);
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   Page Sections
+   ============================================================ */
+.page-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.page-section--split {
+  overflow: hidden;
+}
+
+.page-content {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 44px 44px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+}
+
+h1 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 500;
+  letter-spacing: -0.8px;
+}
+
+.page-description {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.primary-button,
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 150ms, color 150ms, opacity 150ms;
+  white-space: nowrap;
+}
+
+.primary-button {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: var(--panel-dark);
+}
+
+:root[data-theme="cream"] .primary-button,
+:root[data-theme="light"] .primary-button,
+:root[data-theme="sepia"] .primary-button,
+:root[data-theme="citrus"] .primary-button,
+:root[data-theme="stone"] .primary-button {
+  color: #fff;
+}
+
+.primary-button:hover {
+  opacity: 0.9;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--accent);
+}
+
+.secondary-button:hover {
+  background: var(--nav-active-bg);
+}
+
+/* ============================================================
+   Stylized Shelf Navigation (Obsidian-inspired Chips)
+   ============================================================ */
+.shelf-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 0 2px;
+  scrollbar-width: none;
+}
+.shelf-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.shelf-chip,
+.shelf-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-dark);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms cubic-bezier(0.2, 0, 0, 1);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.shelf-chip:hover,
+.shelf-tab-btn:hover {
+  background: var(--panel);
+  color: var(--text-main);
+  border-color: var(--accent);
+}
+
+.shelf-chip.active,
+.shelf-tab-btn.active {
+  background: var(--nav-active-bg);
+  border-color: var(--accent);
+  color: var(--text-main);
+  font-weight: 600;
+  box-shadow: 0 2px 8px var(--shelf-shadow);
+}
+
+.shelf-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+
+.shelf-chip-count {
+  font-size: 10px;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+  background: var(--panel);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.shelf-chip-add,
+.shelf-tab-add-btn {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
+.shelf-chip-add:hover,
+.shelf-tab-add-btn:hover {
+  opacity: 1;
+}
+
+.shelf-chip.drag-over,
+.shelf-tab-btn.drag-over {
+  background: var(--accent) !important;
+  color: var(--panel-dark) !important;
+  border-color: var(--accent) !important;
+  transform: scale(1.05);
+}
+
+:root[data-theme="cream"] .shelf-chip.drag-over,
+:root[data-theme="cream"] .shelf-tab-btn.drag-over,
+:root[data-theme="light"] .shelf-chip.drag-over,
+:root[data-theme="light"] .shelf-tab-btn.drag-over,
+:root[data-theme="sepia"] .shelf-chip.drag-over,
+:root[data-theme="sepia"] .shelf-tab-btn.drag-over,
+:root[data-theme="citrus"] .shelf-chip.drag-over,
+:root[data-theme="citrus"] .shelf-tab-btn.drag-over,
+:root[data-theme="stone"] .shelf-chip.drag-over,
+:root[data-theme="stone"] .shelf-tab-btn.drag-over {
+  color: #fff !important;
+}
+
+/* ============================================================
+   Search & Toolbar
+   ============================================================ */
+.library-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  gap: 16px;
+}
+
+.library-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex: 1;
+}
+
+.search-input {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--panel-dark);
+  color: var(--text-main);
+  padding: 6px 12px;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 150ms;
+  width: 220px;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.search-input--full {
+  width: 100%;
+}
+
+.view-label {
+  color: var(--text-muted);
+  font-size: 9px;
+  opacity: 0.7;
+}
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+.empty-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 30px;
+}
+
+.empty-state h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.empty-state p {
+  margin: 10px 0 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Book grid & cards
+   ============================================================ */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 20px;
+  padding-top: 24px;
+}
+
+.book-card {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--panel-dark);
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 150ms;
+}
+
+.book-card:hover {
+  border-color: var(--accent);
+}
+
+.book-card.is-dragging {
+  opacity: 0.45;
+  border-color: var(--accent);
+}
+
+.book-cover {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 4;
+  background: var(--panel);
+  color: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 34px;
+  user-select: none;
+  overflow: hidden;
+}
+
+.book-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.book-info {
+  padding: 10px 12px 12px;
+}
+
+.book-card h3 {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-main);
+}
+
+.book-card p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-progress {
+  margin-top: 6px !important;
+  color: var(--accent) !important;
+  font-weight: 500;
+}
+
+.book-shelf-badge {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--panel);
+  color: var(--text-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 150ms;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-shelf-badge:hover {
+  border-color: var(--accent);
+  color: var(--text-main);
+}
+
+/* ============================================================
+   Bookshelf View & Wooden Shelves (Inspired by Bookshelf UI)
+   ============================================================ */
+.bookshelf {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 10px 44px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.shelf-row {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.shelf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  padding: 0 12px;
+  z-index: 10;
+}
+
+.shelf-label-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 16px;
+  background: var(--panel-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  box-shadow: 0 4px 12px var(--shelf-shadow);
+  user-select: none;
+}
+
+:root[data-theme="light"] .shelf-label-tag {
+  background: #ffffff;
+  border-color: #e2ddd5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.shelf-count-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+}
+
+.shelf-books-container {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 16px 20px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  position: relative;
+  z-index: 5;
+  min-height: 230px;
+}
+
+.shelf-books-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.shelf-books-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* ── Book Spine ── */
+.book-spine {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 4px 8px;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset 2px 0 3px rgba(255, 255, 255, 0.1),
+              inset -2px 0 3px rgba(0, 0, 0, 0.35),
+              2px 0 6px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+  box-sizing: border-box;
+}
+
+/* Subtle top & bottom embossed banding on book spine */
+.book-spine::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 2px;
+  right: 2px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.book-spine::after {
+  content: "";
+  position: absolute;
+  bottom: 22px;
+  left: 2px;
+  right: 2px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* Book Spine color variations in theme palette (matches the petrol/deep blue-teal from reference image) */
+.spine-color-1 {
+  background: linear-gradient(90deg, #163f4e 0%, #1e5264 25%, #256277 75%, #184454 100%);
+  color: #f0f7f8;
+}
+.spine-color-2 {
+  background: linear-gradient(90deg, #133947 0%, #1c4b5c 25%, #225a6e 75%, #153c4b 100%);
+  color: #ebf5f7;
+}
+.spine-color-3 {
+  background: linear-gradient(90deg, #1b4b5c 0%, #245e73 25%, #2b6d85 75%, #1d5062 100%);
+  color: #f5fbfc;
+}
+.spine-color-4 {
+  background: linear-gradient(90deg, #194452 0%, #215668 25%, #29687d 75%, #1a4655 100%);
+  color: #eef8fa;
+}
+.spine-color-5 {
+  background: linear-gradient(90deg, #153b47 0%, #1d4e5f 25%, #235d72 75%, #17404e 100%);
+  color: #ecf6f8;
+}
+
+/* Light mode spine tint adaptations */
+:root[data-theme="light"] .spine-color-1 {
+  background: linear-gradient(90deg, #245668 0%, #2e697d 25%, #35768d 75%, #275a6c 100%);
+}
+:root[data-theme="light"] .spine-color-2 {
+  background: linear-gradient(90deg, #1f4f60 0%, #286074 25%, #317187 75%, #225365 100%);
+}
+:root[data-theme="light"] .spine-color-3 {
+  background: linear-gradient(90deg, #285d71 0%, #337188 25%, #3b809a 75%, #2b6276 100%);
+}
+:root[data-theme="light"] .spine-color-4 {
+  background: linear-gradient(90deg, #225466 0%, #2c667a 25%, #34768d 75%, #25586b 100%);
+}
+:root[data-theme="light"] .spine-color-5 {
+  background: linear-gradient(90deg, #1d4b5c 0%, #265d71 25%, #2f6f85 75%, #205062 100%);
+}
+
+/* ★ USER REQUIREMENT: When a mouse hover on top of a book, it should darken a little signaling some sort of "select this book" ★ */
+.book-spine:hover,
+.book-spine:focus-visible {
+  filter: brightness(0.68) contrast(1.15); /* DARKEN ON HOVER */
+  transform: translateY(-8px);
+  box-shadow: inset 2px 0 4px rgba(255, 255, 255, 0.15),
+              0 14px 22px rgba(0, 0, 0, 0.5);
+  z-index: 20;
+}
+
+.book-spine.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.95);
+}
+
+.spine-title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  font-weight: 550;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 145px;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+.spine-index {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.85;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  padding-bottom: 2px;
+}
+
+/* Floating Hover Tooltip */
+.spine-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--panel-dark);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 50;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+:root[data-theme="light"] .spine-tooltip {
+  background: #ffffff;
+  border-color: #d8d3cb;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.book-spine:hover .spine-tooltip,
+.book-spine:focus-visible .spine-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.spine-tooltip-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spine-tooltip-author {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.spine-tooltip-progress {
+  font-size: 10px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.spine-tooltip-shelf {
+  font-size: 10px;
+  color: var(--signal);
+  margin-top: 2px;
+}
+
+/* ── Wooden Shelf Plank ── */
+.shelf-plank {
+  position: relative;
+  width: 100%;
+  z-index: 4;
+}
+
+.shelf-plank-top {
+  height: 14px;
+  background: linear-gradient(180deg, var(--shelf-top) 0%, var(--shelf-mid) 100%);
+  border-radius: 3px 3px 0 0;
+  box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.22),
+              inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.shelf-plank-face {
+  height: 14px;
+  background: linear-gradient(180deg, var(--shelf-mid) 0%, var(--shelf-bot) 100%);
+  border-radius: 0 0 3px 3px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.45);
+  box-shadow: 0 10px 22px var(--shelf-shadow);
+  position: relative;
+}
+
+.book-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--panel-dark);
+  color: var(--text-muted);
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 150ms, color 150ms, border-color 150ms;
+  z-index: 2;
+}
+
+.book-card:hover .book-delete-btn,
+.book-card:focus-within .book-delete-btn {
+  opacity: 1;
+}
+
+.book-delete-btn:hover {
+  color: #e07070;
+  border-color: #e07070;
+}
+
+/* ============================================================
+   Notes Page
+   ============================================================ */
+.notes-page-header {
+  padding-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.notes-layout {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  margin: 0 44px 32px;
+  background: var(--panel-dark);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.notes-list-panel {
+  width: 270px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--panel-dark);
+}
+
+.folder-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+  background: var(--panel-dark);
+  flex-shrink: 0;
+}
+
+.folder-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.folder-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms;
+  white-space: nowrap;
+}
+
+.folder-tab-btn:hover {
+  background: var(--nav-active-bg);
+  color: var(--text-main);
+  border-color: var(--accent);
+}
+
+.folder-tab-btn.active {
+  background: var(--nav-active-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.folder-tab-add-btn {
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+.notes-search-box {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.notes-list-items {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.notes-list-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.note-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 14px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms;
+  width: 100%;
+}
+
+.note-list-item:hover {
+  background: var(--panel);
+}
+
+.note-list-item.active {
+  background: var(--nav-active-bg);
+  border-left: 3px solid var(--accent);
+}
+
+.note-item-title {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.note-item-book {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--accent);
+  opacity: 0.9;
+}
+
+.note-item-folder {
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--panel);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+.notes-editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+}
+
+.notes-editor-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.note-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-dark);
+  flex-shrink: 0;
+}
+
+.note-title-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 16px;
+  font-weight: 600;
+  outline: none;
+  font-family: inherit;
+}
+
+.note-title-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.note-book-select {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--text-main);
+  padding: 4px 8px;
+  font-size: 11px;
+  outline: none;
+  max-width: 180px;
+}
+
+.note-folder-select {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--text-main);
+  padding: 4px 8px;
+  font-size: 11px;
+  outline: none;
+  max-width: 140px;
+}
+
+.note-delete-btn {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.note-delete-btn:hover {
+  color: #e07070;
+  border-color: #e07070;
+}
+
+.note-body {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 20px;
+  resize: none;
+  outline: none;
+}
+
+.note-body::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-family: inherit;
+}
+
+.note-links-tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-dark);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.note-links-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.note-wikilink-btn {
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--accent);
+  padding: 2px 7px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.note-wikilink-btn:hover {
+  background: var(--nav-active-bg);
+}
+
+.note-wikilink--new {
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+/* ============================================================
+   Recent Page
+   ============================================================ */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.recent-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--panel-dark);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+
+.recent-item:hover {
+  border-color: var(--accent);
+  background: var(--panel);
+}
+
+.recent-cover {
+  width: 42px;
+  height: 56px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: var(--panel);
+  color: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 20px;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.recent-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.recent-item-title {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-item-author {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-item-when {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.recent-item-progress {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: var(--panel);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Reader Overlay
+   ============================================================ */
+.reader-view {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.reader-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-dark);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.reader-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.reader-back-btn,
+.reader-toc-btn,
+.reader-control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 150ms, border-color 150ms, color 150ms;
+  flex-shrink: 0;
+}
+
+.reader-back-btn:hover,
+.reader-toc-btn:hover,
+.reader-control-btn:hover {
+  background: var(--panel);
+  border-color: var(--accent);
+}
+
+.reader-control-btn.active {
+  background: var(--nav-active-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.reader-title {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+
+.reader-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.reader-body {
+  flex: 1;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background: var(--panel-dark);
+}
+
+.reader-frame-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  background: var(--panel-dark);
+}
+
+.reader-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  background: var(--bg);
+  z-index: 2;
+}
+
+#reader-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  display: block;
+}
+
+/* ── In-Reader Notes Drawer ── */
+.reader-notes-drawer {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--panel-dark);
+  z-index: 10;
+}
+
+.reader-notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.reader-notes-heading {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.reader-notes-close-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+
+.reader-notes-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-dark);
+  flex-shrink: 0;
+}
+
+.reader-note-select {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--panel);
+  color: var(--text-main);
+  padding: 4px 8px;
+  font-size: 11px;
+  outline: none;
+  text-overflow: ellipsis;
+}
+
+.reader-notes-add-btn,
+.reader-notes-export-btn,
+.reader-notes-del-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.reader-notes-del-btn:hover {
+  color: #e07070;
+  border-color: #e07070;
+}
+
+.reader-notes-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  gap: 10px;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.reader-note-title-input {
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  font-family: inherit;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.reader-note-title-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.reader-note-textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+.reader-note-textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-family: inherit;
+}
+
+/* ── Table of Contents Drawer ── */
+.reader-toc-drawer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 85%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--panel-dark);
+  z-index: 15;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.25);
+}
+
+.reader-toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  flex-shrink: 0;
+}
+
+.reader-toc-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.reader-toc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 16px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-main);
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.reader-toc-item:hover {
+  background: var(--panel);
+}
+
+.reader-toc-item.active {
+  background: var(--nav-active-bg);
+  border-left: 3px solid var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.reader-toc-item-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reader-toc-item-num {
+  font-size: 10px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ── Reader Footer ── */
+.reader-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 20px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-dark);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.reader-nav-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 150ms, border-color 150ms;
+  flex-shrink: 0;
+}
+
+.reader-nav-btn:hover:not(:disabled) {
+  background: var(--panel);
+  border-color: var(--accent);
+}
+
+.reader-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.reader-chapter-info {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+
+/* ============================================================
+   Custom Context Menu
+   ============================================================ */
+.custom-context-menu {
+  position: fixed;
+  z-index: 10000;
+  min-width: 170px;
+  max-width: 260px;
+  background: var(--panel-dark);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  user-select: none;
+  animation: contextMenuFadeIn 100ms ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms;
+}
+
+.context-menu-item:hover {
+  background: var(--nav-active-bg);
+  color: var(--accent);
+}
+
+.context-menu-item.danger {
+  color: #e07070;
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(224, 112, 112, 0.15);
+  color: #f28585;
+}
+
+.context-menu-icon {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.context-menu-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 3px 2px;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+[hidden] {
+  display: none !important;
+}
+
+/* ============================================================
+   Responsive — narrow windows
+   ============================================================ */
+@media (max-width: 700px) {
+  .sidebar {
+    width: min(280px, 85vw);
+  }
+
+  .topbar {
+    padding: 0 18px;
+  }
+
+  .page-content {
+    padding: 28px 18px;
+  }
+
+  .notes-layout {
+    flex-direction: column;
+    margin: 0 18px 20px;
+  }
+
+  .notes-list-panel {
+    width: 100%;
+    max-height: 180px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .library-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .reader-topbar,
+  .reader-footer {
+    padding: 0 16px;
+  }
+}
+
+
+/* ============================================================
+   Tree Drag & Drop & Global File Drop (Obsidian style)
+   ============================================================ */
+.tree-node.drag-over {
+  background: var(--nav-active-bg) !important;
+  color: var(--accent) !important;
+  outline: 1.5px dashed var(--accent) !important;
+}
+
+.tree-leaf.is-dragging {
+  opacity: 0.45;
+}
+
+.global-drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.global-drop-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drop-overlay-box {
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  background: var(--panel-dark);
+  padding: 36px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.drop-overlay-icon {
+  font-size: 36px;
+}
+
+.drop-overlay-text {
+  font-size: 15px;
+  font-weight: 550;
+  color: var(--text-main);
+}
+
+/* ============================================================
+   Notes Book & Page Linking
+   ============================================================ */
+.note-page-input {
+  width: 72px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text-main);
+  font-size: 12px;
+  outline: none;
+}
+
+.note-page-input:focus {
+  border-color: var(--accent);
+}
+
+.note-jump-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--nav-active-bg);
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.note-jump-page-btn:hover {
+  background: var(--accent);
+  color: var(--panel-dark);
+}
+
+.note-item-book {
+  cursor: pointer;
+  background: var(--nav-active-bg);
+  border: 1px solid var(--nav-active-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 120ms ease;
+}
+
+.note-item-book:hover {
+  background: var(--accent);
+  color: var(--panel-dark);
+}
+
+.reader-note-link-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.reader-page-link-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--nav-active-bg);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+.reader-page-link-pill:hover {
+  background: var(--accent);
+  color: var(--panel-dark);
+}
+
+.reader-pin-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+.reader-pin-page-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-main);
+}
