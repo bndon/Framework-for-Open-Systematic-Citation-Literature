@@ -76,7 +76,7 @@ export const KnowledgeGraph: React.FC = () => {
           id: `coll_${c.id}`,
           label: `📁 ${c.name}`,
           type: "collection",
-          color: "#A855F7",
+          color: "#845177",
           radius: 22,
           data: { type: "collection", entity: c },
         });
@@ -90,7 +90,7 @@ export const KnowledgeGraph: React.FC = () => {
           id: `paper_${p.id}`,
           label: p.title,
           type: "paper",
-          color: "#3B82F6",
+          color: "#a98bb8",
           radius: 16,
           data: { type: "paper", entity: p },
         });
@@ -104,7 +104,7 @@ export const KnowledgeGraph: React.FC = () => {
           id: `claim_${c.id}`,
           label: `🧬 "${c.text.slice(0, 35)}…"`,
           type: "claim",
-          color: "#10B981",
+          color: "#7f9a78",
           radius: 14,
           data: { type: "claim", entity: c },
         });
@@ -124,10 +124,10 @@ export const KnowledgeGraph: React.FC = () => {
           c.evidence.forEach((ev) => {
             const stanceColor =
               ev.stance === "supports"
-                ? "#10B981"
+                ? "#7f9a78"
                 : ev.stance === "contradicts"
-                ? "#EF4444"
-                : "#F59E0B";
+                ? "#c97a86"
+                : "#d9a441";
 
             links.push({
               source: `claim_${c.id}`,
@@ -288,15 +288,15 @@ export const KnowledgeGraph: React.FC = () => {
                       borderRadius: "4px",
                       backgroundColor:
                         selectedNode.type === "paper"
-                          ? "#EBF5FF"
+                          ? "#F1E8F4"
                           : selectedNode.type === "claim"
-                          ? "#ECFDF5"
+                          ? "#EAF0E6"
                           : "#FAF5EC",
                       color:
                         selectedNode.type === "paper"
-                          ? "#1D4ED8"
+                          ? "#6b3f5f"
                           : selectedNode.type === "claim"
-                          ? "#047857"
+                          ? "#4f6b49"
                           : "#8A5A7A",
                     }}
                   >

@@ -153,18 +153,19 @@ export type AppTheme =
   | "citrus"
   | "navy"
   | "forest"
-  | "stone";
+  | "stone"
+  | "plum";
 
 const APP_THEME_KEY = "foscl:app_theme";
 
 export function loadAppTheme(): AppTheme {
   try {
     const raw = localStorage.getItem(APP_THEME_KEY);
-    if (raw && ["night","cream","sepia","dusk","mint","citrus","navy","forest","stone"].includes(raw)) {
+    if (raw && ["night","cream","sepia","dusk","mint","citrus","navy","forest","stone","plum"].includes(raw)) {
       return raw as AppTheme;
     }
   } catch {}
-  return "night";
+  return "plum";
 }
 
 export function saveAppTheme(theme: AppTheme): void {

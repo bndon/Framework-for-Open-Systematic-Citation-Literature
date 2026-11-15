@@ -18,6 +18,19 @@ interface ThemeOption {
 
 const THEMES: ThemeOption[] = [
   {
+    id: "plum",
+    name: "Plum",
+    emoji: "🍇",
+    description: "Cream paper with plum accents",
+    bg: "#f9f4ec",
+    panel: "#f1e8db",
+    accent: "#845177",
+    text: "#351701",
+    textMuted: "#7a6458",
+    border: "#e6dccb",
+    dark: false,
+  },
+  {
     id: "night",
     name: "Night",
     emoji: "🌙",

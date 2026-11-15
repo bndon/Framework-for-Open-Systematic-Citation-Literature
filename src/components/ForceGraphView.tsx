@@ -32,12 +32,12 @@ interface ForceGraphViewProps {
 }
 
 const TYPE_COLORS: Record<string, { fill: string; stroke: string; size: number; icon: string }> = {
-  collection: { fill: "#22c55e", stroke: "#16a34a", size: 44, icon: "⇄" },
-  paper:      { fill: "#38bdf8", stroke: "#0ea5e9", size: 32, icon: "◼" },
-  claim:      { fill: "#06b6d4", stroke: "#0891b2", size: 28, icon: "⬡" },
-  center:     { fill: "#facc15", stroke: "#eab308", size: 48, icon: "★" },
-  reference:  { fill: "#818cf8", stroke: "#6366f1", size: 26, icon: "→" },
-  cited_by:   { fill: "#f87171", stroke: "#ef4444", size: 26, icon: "←" },
+  collection: { fill: "#7f9a78", stroke: "#5f7c59", size: 44, icon: "⇄" },
+  paper:      { fill: "#845177", stroke: "#653756", size: 32, icon: "◼" },
+  claim:      { fill: "#b58b6a", stroke: "#8f6a4c", size: 28, icon: "⬡" },
+  center:     { fill: "#d9a441", stroke: "#b8862b", size: 48, icon: "★" },
+  reference:  { fill: "#a98bb8", stroke: "#8a6a9a", size: 26, icon: "→" },
+  cited_by:   { fill: "#c97a86", stroke: "#a85a66", size: 26, icon: "←" },
 };
 
 export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
@@ -308,7 +308,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Background color
-      ctx.fillStyle = isDark ? "#111216" : "#FAF7F2";
+      ctx.fillStyle = isDark ? "#111216" : "#f9f4ec";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Apply Pan & Zoom Transform
@@ -374,7 +374,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
           ctx.lineWidth = 0.8 * forces.linkThickness;
         } else if (isConnectedToActive) {
           ctx.globalAlpha = 1.0;
-          ctx.strokeStyle = "#E05666"; // Crimson Obsidian feedback
+          ctx.strokeStyle = "#a8445f"; // Crimson Obsidian feedback
           ctx.lineWidth = 2.4 * forces.linkThickness;
         } else {
           ctx.globalAlpha = 0.45;
@@ -451,20 +451,20 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
         if (isActive) {
           ctx.beginPath();
           ctx.roundRect(node.x - half - 8, node.y - half - 8, currentSize + 16, currentSize + 16, cr + 4);
-          ctx.fillStyle = "rgba(224, 86, 102, 0.28)";
+          ctx.fillStyle = "rgba(168, 68, 95, 0.28)";
           ctx.fill();
         }
 
         // Main node square
         ctx.beginPath();
         ctx.roundRect(node.x - half, node.y - half, currentSize, currentSize, cr);
-        ctx.fillStyle = isActive ? "#E05666" : (node.color || style.fill);
+        ctx.fillStyle = isActive ? "#a8445f" : (node.color || style.fill);
         ctx.fill();
 
         ctx.strokeStyle = isActive
           ? "#FFFFFF"
           : isConnected
-          ? "#E05666"
+          ? "#a8445f"
           : (style.stroke || (isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.2)"));
         ctx.lineWidth = isActive ? 2.5 : isConnected ? 2 : 1.2;
         ctx.stroke();
@@ -503,7 +503,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
             const h = 20;
 
             ctx.fillStyle = isDark ? "rgba(18, 18, 24, 0.92)" : "rgba(250, 245, 236, 0.96)";
-            ctx.strokeStyle = "#E05666";
+            ctx.strokeStyle = "#a8445f";
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.roundRect(node.x - w / 2, textY - 2, w, h, 4);
@@ -688,7 +688,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
         height,
         position: "relative",
         overflow: "hidden",
-        backgroundColor: isDark ? "#111216" : "#FAF7F2",
+        backgroundColor: isDark ? "#111216" : "#f9f4ec",
         borderRadius: "8px",
         border: isDark ? "1px solid #2D3139" : "1px solid #EADDCB",
         userSelect: "none",
@@ -766,7 +766,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
             width: "36px",
             height: "36px",
             borderRadius: "8px",
-            backgroundColor: showSettings ? "#E05666" : isDark ? "#1E2028" : "#FFFFFF",
+            backgroundColor: showSettings ? "#a8445f" : isDark ? "#1E2028" : "#FFFFFF",
             border: isDark ? "1px solid #3B404D" : "1px solid #D5C8B8",
             color: showSettings ? "#FFFFFF" : isDark ? "#E2E8F0" : "#4A2418",
             cursor: "pointer",
@@ -899,7 +899,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                       padding: "8px 10px",
                       borderRadius: "6px",
                       border: isDark ? "1px solid #374151" : "1px solid #D5C8B8",
-                      backgroundColor: isDark ? "#181A20" : "#FAF7F2",
+                      backgroundColor: isDark ? "#181A20" : "#f9f4ec",
                       color: isDark ? "#F3F4F6" : "#4A2418",
                       fontSize: "12px",
                       outline: "none",
@@ -915,7 +915,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     type="checkbox"
                     checked={hideOrphans}
                     onChange={(e) => setHideOrphans(e.target.checked)}
-                    style={{ cursor: "pointer", accentColor: "#E05666" }}
+                    style={{ cursor: "pointer", accentColor: "#a8445f" }}
                   />
                 </label>
 
@@ -942,7 +942,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                             width: "8px",
                             height: "8px",
                             borderRadius: "50%",
-                            backgroundColor: TYPE_COLORS[typeKey]?.fill || "#3B82F6",
+                            backgroundColor: TYPE_COLORS[typeKey]?.fill || "#845177",
                           }}
                         />
                         {typeKey.replace("_", " ")}
@@ -953,7 +953,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                         onChange={(e) =>
                           setEnabledTypes((prev) => ({ ...prev, [typeKey]: e.target.checked }))
                         }
-                        style={{ cursor: "pointer", accentColor: "#E05666" }}
+                        style={{ cursor: "pointer", accentColor: "#a8445f" }}
                       />
                     </label>
                   ))}
@@ -1009,7 +1009,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     type="checkbox"
                     checked={showArrows}
                     onChange={(e) => setShowArrows(e.target.checked)}
-                    style={{ cursor: "pointer", accentColor: "#E05666" }}
+                    style={{ cursor: "pointer", accentColor: "#a8445f" }}
                   />
                 </label>
 
@@ -1026,7 +1026,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.05"
                     value={textFadeThreshold}
                     onChange={(e) => setTextFadeThreshold(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1043,7 +1043,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.05"
                     value={nodeSize}
                     onChange={(e) => setNodeSize(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1060,7 +1060,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.05"
                     value={linkThickness}
                     onChange={(e) => setLinkThickness(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1117,7 +1117,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.05"
                     value={centerForceMult}
                     onChange={(e) => setCenterForceMult(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1134,7 +1134,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.5"
                     value={repelForceMult}
                     onChange={(e) => setRepelForceMult(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1151,7 +1151,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="0.05"
                     value={linkForceMult}
                     onChange={(e) => setLinkForceMult(parseFloat(e.target.value))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 
@@ -1168,7 +1168,7 @@ export const ForceGraphView: React.FC<ForceGraphViewProps> = ({
                     step="5"
                     value={linkDistance}
                     onChange={(e) => setLinkDistance(parseInt(e.target.value, 10))}
-                    style={{ width: "100%", accentColor: "#E05666" }}
+                    style={{ width: "100%", accentColor: "#a8445f" }}
                   />
                 </div>
 

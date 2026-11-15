@@ -17,6 +17,7 @@ import { CitationGraph } from "./screens/CitationGraph";
 import { KnowledgeGraph } from "./screens/KnowledgeGraph";
 import { Settings } from "./screens/Settings";
 import { Dashboard } from "./screens/Dashboard";
+import { About } from "./screens/About";
 import { QuarterCircleNav } from "./components/QuarterCircleNav";
 import { loadAppTheme, applyAppTheme } from "./lib/settings";
 import type { AppTheme } from "./lib/settings";
@@ -41,6 +42,7 @@ export const App: React.FC = () => {
         <main style={{ flex: 1, height: "100vh", overflowY: "auto", position: "relative", display: "flex", flexDirection: "column" }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/about" element={<About />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/library" element={<Library />} />
             <Route path="/paper/:paperId" element={<PaperDetail />} />

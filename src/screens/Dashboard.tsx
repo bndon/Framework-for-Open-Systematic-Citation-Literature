@@ -1,655 +1,308 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getCollections, getPapers } from "../lib/api";
-import type { Collection, Paper } from "../types";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getPapers, getCollections } from "../lib/api";
+import type { Collection } from "../types";
+import "../dashboard.css";
+
+/**
+ * Bento dashboard — 6 columns x 4 rows, with three round buttons sitting on grid-line
+ * intersections and biting a circular notch out of every tile they touch.
+ *
+ * ALL layout lives in the tables below. Nothing else needs to change to move things.
+ *
+ *   COLS / ROWS   track sizes as relative weights (measured from the wireframe)
+ *   TILES         where each tile sits (col/row are 1-based and inclusive) and which
+ *                 overlays notch it
+ *   OVERLAYS      where each circle sits. A number is a grid LINE: `3` is the line
+ *                 after column/row 3. A pair [a, b] is the CENTRE of tracks a..b.
+ */
+
+const COLS = [219, 115, 107, 139, 147, 229];
+const ROWS = [107, 106, 88, 185];
+
+type Span = [start: number, end: number];
+type Pos = number | [number, number];
+
+interface TileDef {
+  id: string;
+  to: string;
+  title: string;
+  blurb: string;
+  icon: string;
+  col: Span;
+  row: Span;
+  /** Overlay ids whose circle cuts into this tile. */
+  notches?: string[];
+  /** Where the text sits. Pick the side that is clear of this tile's notches. */
+  anchor: "top" | "bottom";
+  tag?: string;
+  variant?: "feature" | "deep";
+}
+
+const TILES: TileDef[] = [
+  { id: "about", to: "/about", title: "About", icon: "ℹ️", col: [1, 1], row: [1, 1], anchor: "bottom",
+    blurb: "What FOSCL is and how it fits together." },
+  { id: "discover", to: "/discover", title: "Discover", icon: "🔍", col: [1, 1], row: [2, 2], anchor: "bottom",
+    blurb: "Search OpenAlex or look up a DOI." },
+  { id: "library", to: "/library", title: "Library", icon: "📚", col: [2, 3], row: [1, 3], anchor: "top", variant: "feature",
+    notches: ["graph", "citations"],
+    blurb: "Collections, PDFs and annotations." },
+  { id: "export", to: "/export", title: "Export", icon: "📤", col: [1, 1], row: [3, 4], anchor: "bottom",
+    notches: ["graph"],
+    blurb: "Word and PDF, ready to hand in." },
+  { id: "access", to: "/access-hub", title: "Access Hub", icon: "🔑", col: [2, 2], row: [4, 4], anchor: "bottom", tag: "Sim",
+    notches: ["graph"],
+    blurb: "DOI and publisher access." },
+  { id: "converter", to: "/converter", title: "Conference Converter", icon: "📄", col: [3, 3], row: [4, 4], anchor: "bottom", tag: "Sim",
+    blurb: "Check a manuscript against a style." },
+  { id: "compare", to: "/compare", title: "Comparison Table", icon: "📊", col: [4, 4], row: [1, 2], anchor: "top",
+    notches: ["citations"],
+    blurb: "Papers and fields, side by side." },
+  { id: "lineage", to: "/lineage", title: "Research Lineage", icon: "🧬", col: [5, 5], row: [1, 2], anchor: "top",
+    blurb: "Claims, evidence and revisions." },
+  { id: "books", to: "/epub", title: "Books", icon: "📖", col: [4, 5], row: [3, 4], anchor: "bottom", variant: "deep",
+    notches: ["citations", "settings"],
+    blurb: "Your EPUB shelf and reader." },
+  { id: "templates", to: "/templates", title: "Template", icon: "📋", col: [6, 6], row: [1, 4], anchor: "top",
+    notches: ["settings"],
+    blurb: "The fields every comparison table is built from." },
+];
+
+interface OverlayDef {
+  id: string;
+  to: string;
+  label: string;
+  icon: string;
+  x: Pos;
+  y: Pos;
+  size: "sm" | "lg";
+  tone: "plum" | "sage" | "deep";
+}
+
+const OVERLAYS: OverlayDef[] = [
+  { id: "graph", to: "/graph", label: "Knowledge Graph", icon: "🕸️", x: 1, y: 3, size: "sm", tone: "plum" },
+  { id: "citations", to: "/citations", label: "Citation Tree", icon: "🌳", x: 3, y: 2, size: "lg", tone: "sage" },
+  { id: "settings", to: "/settings", label: "Settings", icon: "⚙️", x: 5, y: [3, 4], size: "lg", tone: "deep" },
+];
+
+// ---------------------------------------------------------------------------
+// Geometry. Everything is emitted as CSS calc() so the grid stays fluid. --W / --H are
+// the total track width / height (frame size minus gaps), defined in styles.css.
+// ---------------------------------------------------------------------------
+const sum = (a: number[], n: number) => a.slice(0, n).reduce((s, v) => s + v, 0);
+const TOTAL_C = sum(COLS, COLS.length);
+const TOTAL_R = sum(ROWS, ROWS.length);
+
+function axis(pos: Pos, tracks: number[], total: number, size: string): string {
+  if (typeof pos === "number") {
+    return `calc(${sum(tracks, pos) / total} * ${size} + ${pos} * var(--gap) - var(--gap) / 2)`;
+  }
+  const [a, b] = pos;
+  const mid = (sum(tracks, a - 1) + sum(tracks, b)) / (2 * total);
+  return `calc(${mid} * ${size} + ${(a + b - 2) / 2} * var(--gap))`;
+}
+
+function origin(start: number, tracks: number[], total: number, size: string): string {
+  return `calc(${sum(tracks, start - 1) / total} * ${size} + ${start - 1} * var(--gap))`;
+}
+
+const overlayX = (o: OverlayDef) => axis(o.x, COLS, TOTAL_C, "var(--W)");
+const overlayY = (o: OverlayDef) => axis(o.y, ROWS, TOTAL_R, "var(--H)");
+
+function cellStyle(tile: TileDef): React.CSSProperties {
+  const style: Record<string, string> = {
+    gridColumn: `${tile.col[0]} / ${tile.col[1] + 1}`,
+    gridRow: `${tile.row[0]} / ${tile.row[1] + 1}`,
+  };
+  const x0 = origin(tile.col[0], COLS, TOTAL_C, "var(--W)");
+  const y0 = origin(tile.row[0], ROWS, TOTAL_R, "var(--H)");
+  (tile.notches ?? []).slice(0, 3).forEach((id, i) => {
+    const o = OVERLAYS.find((ov) => ov.id === id);
+    if (!o) return;
+    style[`--n${i}x`] = `calc(${overlayX(o)} - ${x0})`;
+    style[`--n${i}y`] = `calc(${overlayY(o)} - ${y0})`;
+    style[`--n${i}r`] = `calc(var(--d-${o.size}) / 2 + var(--ring) + var(--outline))`;
+  });
+  return style as React.CSSProperties;
+}
+
+// ---------------------------------------------------------------------------
+// Pieces
+// ---------------------------------------------------------------------------
+const Tile: React.FC<{ tile: TileDef; children?: React.ReactNode }> = ({ tile, children }) => {
+  const n = Math.min(tile.notches?.length ?? 0, 3);
+  const notch = n === 0 ? "" : ` n${n}`;
+  const variant = tile.variant ? ` ${tile.variant}` : "";
+  return (
+    <Link to={tile.to} className="bento-cell" style={cellStyle(tile)} aria-label={tile.title}>
+      <span className={`bento-outline${notch}${tile.variant === "deep" ? " on-deep" : ""}`} aria-hidden="true" />
+      <div className={`bento-card${notch}${variant} anchor-${tile.anchor}`}>
+        <span className="bento-arrow" aria-hidden="true">↗</span>
+        <div className="bento-icon" aria-hidden="true">{tile.icon}</div>
+        {tile.anchor === "bottom" ? (
+          <>
+            <div className="bento-spacer" />
+            {children}
+            {tile.tag && <span className="bento-tag">{tile.tag}</span>}
+            <h2 className="bento-title">{tile.title}</h2>
+            <p className="bento-blurb">{tile.blurb}</p>
+          </>
+        ) : (
+          <>
+            {tile.tag && <span className="bento-tag">{tile.tag}</span>}
+            <h2 className="bento-title">{tile.title}</h2>
+            <p className="bento-blurb">{tile.blurb}</p>
+            {children}
+            <div className="bento-spacer" />
+          </>
+        )}
+      </div>
+    </Link>
+  );
+};
+
+/** Original illustration: a shelf of book spines in the theme colours. */
+const BookShelf: React.FC = () => (
+  <svg className="bento-shelf" viewBox="0 0 260 170" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+    <rect x="4" y="160" width="252" height="5" rx="2.5" fill="currentColor" opacity="0.35" />
+    <g>
+      <rect x="18" y="62" width="26" height="98" rx="3" fill="#f9f4ec" />
+      <rect x="18" y="76" width="26" height="4" fill="#845177" />
+      <rect x="18" y="140" width="26" height="4" fill="#845177" />
+
+      <rect x="48" y="38" width="30" height="122" rx="3" fill="#a7bca1" />
+      <circle cx="63" cy="64" r="6" fill="none" stroke="#3e0d33" strokeWidth="2" />
+      <rect x="55" y="96" width="16" height="3" fill="#3e0d33" />
+      <rect x="55" y="104" width="16" height="3" fill="#3e0d33" />
+
+      <rect x="82" y="72" width="22" height="88" rx="3" fill="#c98aa9" />
+      <rect x="82" y="86" width="22" height="3" fill="#f9f4ec" />
+
+      <rect x="108" y="22" width="32" height="138" rx="3" fill="#845177" />
+      <rect x="108" y="40" width="32" height="5" fill="#f9f4ec" />
+      <rect x="108" y="52" width="32" height="2" fill="#f9f4ec" />
+      <circle cx="124" cy="132" r="7" fill="#f9f4ec" />
+
+      <rect x="144" y="56" width="24" height="104" rx="3" fill="#e0b25a" />
+      <rect x="144" y="70" width="24" height="3" fill="#3e0d33" />
+      <rect x="144" y="146" width="24" height="3" fill="#3e0d33" />
+
+      <rect x="172" y="46" width="28" height="114" rx="3" fill="#f9f4ec" />
+      <rect x="179" y="60" width="14" height="14" rx="7" fill="#653756" />
+      <rect x="179" y="84" width="14" height="3" fill="#653756" />
+      <rect x="179" y="92" width="14" height="3" fill="#653756" />
+
+      <g transform="rotate(14 222 160)">
+        <rect x="206" y="64" width="30" height="96" rx="3" fill="#a7bca1" />
+        <rect x="206" y="80" width="30" height="4" fill="#3e0d33" />
+        <rect x="206" y="136" width="30" height="4" fill="#3e0d33" />
+      </g>
+    </g>
+  </svg>
+);
+
+const TEMPLATE_FIELDS = ["Research question", "Methodology", "Dataset", "Findings", "Limitations"];
 
 export const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [paperCount, setPaperCount] = useState<number | null>(null);
+  const [collections, setCollections] = useState<Collection[] | null>(null);
 
   useEffect(() => {
-    loadData();
+    let alive = true;
+    (async () => {
+      try {
+        const [papers, colls] = await Promise.all([getPapers(), getCollections()]);
+        if (!alive) return;
+        setPaperCount(papers.length);
+        setCollections(colls);
+      } catch {
+        // Counts are a nicety; the dashboard works without them.
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  const loadData = async () => {
-    try {
-      const [colls, paperList] = await Promise.all([getCollections(), getPapers()]);
-      setCollections(colls);
-      setPapers(paperList);
-    } catch {}
-  };
-
-  const getCardStyle = (id: string, custom?: React.CSSProperties): React.CSSProperties => {
-    const isHovered = hoveredCard === id;
-    return {
-      background: "var(--panel)",
-      border: `1px solid ${isHovered ? "var(--accent)" : "var(--border)"}`,
-      borderRadius: "20px",
-      padding: "20px",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      cursor: "pointer",
-      position: "relative",
-      overflow: "hidden",
-      boxShadow: isHovered
-        ? "0 16px 36px -10px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--accent)"
-        : "0 4px 16px -4px rgba(0, 0, 0, 0.08)",
-      transform: isHovered ? "translateY(-3px)" : "translateY(0)",
-      transition: "all 0.22s cubic-bezier(0.16, 1, 0.3, 1)",
-      boxSizing: "border-box",
-      ...custom,
-    };
-  };
+  const byId = (id: string) => TILES.find((t) => t.id === id)!;
+  const collectionCount = collections?.length ?? null;
+  const summary =
+    paperCount === null || collectionCount === null
+      ? "Find · Organize · Synthesize · Cite · Link"
+      : `${paperCount} paper${paperCount === 1 ? "" : "s"} · ${collectionCount} collection${collectionCount === 1 ? "" : "s"}`;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        background: "var(--bg)",
-        padding: "24px 32px 28px 88px", // offset for the sleek top-left quarter circle
-        boxSizing: "border-box",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── TOP HEADER / WORKSPACE OVERVIEW BAR ── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "18px",
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div
-            style={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "10px",
-              background: "var(--accent)",
-              color: "var(--panel-dark)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 900,
-              fontSize: "18px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-            }}
-          >
-            F
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: "18px", color: "var(--text-main)", letterSpacing: "-0.3px", lineHeight: 1.15 }}>
-              FOSCL Research Workspace
-            </div>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 500 }}>
-              {papers.length} Papers indexed • {collections.length} Curated Collections • Ready for synthesis
-            </div>
-          </div>
+    <div className="dash-root">
+      <header className="dash-head">
+        <div className="brand">
+          <span className="brand-mark" aria-hidden="true">F</span>
+          <span className="brand-text">
+            <span className="brand-name">FOSCL</span>
+            <span className="brand-sub">Research workspace</span>
+          </span>
         </div>
+        <div className="dash-summary">{summary}</div>
+      </header>
 
-        {/* Global Quick Actions */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
-            onClick={() => navigate("/discover")}
-            style={{
-              padding: "7px 16px",
-              background: "var(--panel)",
-              border: "1px solid var(--border)",
-              borderRadius: "20px",
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "var(--text-muted)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "var(--accent)";
-              e.currentTarget.style.color = "var(--text-main)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "var(--border)";
-              e.currentTarget.style.color = "var(--text-muted)";
-            }}
-          >
-            <span>🔍</span>
-            <span>Quick Search (OpenAlex)</span>
-            <kbd style={{ fontSize: "10px", padding: "1px 5px", background: "var(--panel-dark)", borderRadius: "4px", border: "1px solid var(--border)" }}>
-              Ctrl+K
-            </kbd>
-          </div>
-
-          <button
-            onClick={() => navigate("/settings")}
-            title="Theme Settings"
-            style={{
-              padding: "7px 14px",
-              background: "var(--panel)",
-              border: "1px solid var(--border)",
-              borderRadius: "20px",
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "var(--text-main)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <span>🎨</span>
-            <span>Themes</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── BENTO GRID CANVASES ── */}
-      <div
-        style={{
-          flex: 1,
-          display: "grid",
-          gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1.1fr",
-          gridTemplateRows: "1.2fr 1fr 1fr",
-          gap: "16px",
-          minHeight: 0,
-        }}
-      >
-        {/* CARD 1: DISCOVER PAPERS (Spans 2 columns on top left) */}
+      <div className="bento-frame">
         <div
-          onClick={() => navigate("/discover")}
-          onMouseEnter={() => setHoveredCard("discover")}
-          onMouseLeave={() => setHoveredCard(null)}
+          className="bento"
           style={{
-            ...getCardStyle("discover"),
-            gridColumn: "1 / span 2",
-            gridRow: 1,
-            background: "linear-gradient(135deg, var(--panel) 0%, var(--panel-dark) 100%)",
+            gridTemplateColumns: COLS.map((c) => `minmax(0, ${c}fr)`).join(" "),
+            gridTemplateRows: ROWS.map((r) => `minmax(0, ${r}fr)`).join(" "),
           }}
         >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Literature Mining
-              </span>
-              <span style={{ fontSize: "18px" }}>🔍</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "20px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Discover Papers
-            </div>
-            <div style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              Query 250M+ cross-domain works on OpenAlex with automatic citation metrics and open access resolution.
-            </div>
-          </div>
+          <Tile tile={byId("about")} />
+          <Tile tile={byId("discover")} />
 
-          {/* Mini Search Pill Mockup */}
-          <div
-            style={{
-              marginTop: "14px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 14px",
-              background: "var(--bg)",
-              border: "1px solid var(--border)",
-              borderRadius: "10px",
-            }}
-          >
-            <span style={{ fontSize: "13px", color: "var(--text-muted)" }}>Search: "Deep Learning Foundations"</span>
-            <span style={{ marginLeft: "auto", fontSize: "11px", padding: "2px 8px", background: "var(--accent)", color: "var(--panel-dark)", borderRadius: "6px", fontWeight: 700 }}>
-              Search →
-            </span>
-          </div>
-        </div>
+          <Tile tile={byId("library")}>
+            <div className="bento-stat-row">
+              <span className="bento-stat">{paperCount ?? "—"}</span>
+              <span className="bento-stat-label">papers saved</span>
+            </div>
+            {collections && collections.length > 0 && (
+              <div className="bento-chips lib-chips">
+                {collections.slice(0, 4).map((c) => (
+                  <span key={c.id} className="bento-chip">{c.name}</span>
+                ))}
+                {collections.length > 4 && <span className="bento-chip">+{collections.length - 4}</span>}
+              </div>
+            )}
+          </Tile>
 
-        {/* CARD 2: COMPARISON TABLE (Center Top) */}
-        <div
-          onClick={() => navigate("/compare")}
-          onMouseEnter={() => setHoveredCard("compare")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("compare"), gridColumn: 3, gridRow: 1 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Matrix Synthesis
-              </span>
-              <span style={{ fontSize: "18px" }}>📊</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Comparison Table
-            </div>
-            <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              Cross-paper feature extraction matrix comparing methodology, variables, and empirical claims.
-            </div>
-          </div>
+          <Tile tile={byId("export")} />
+          <Tile tile={byId("access")} />
+          <Tile tile={byId("converter")} />
+          <Tile tile={byId("compare")} />
+          <Tile tile={byId("lineage")} />
 
-          <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
-            <span style={{ fontSize: "10.5px", padding: "3px 8px", background: "var(--nav-active-bg)", borderRadius: "6px", color: "var(--text-muted)" }}>
-              Methods
-            </span>
-            <span style={{ fontSize: "10.5px", padding: "3px 8px", background: "var(--nav-active-bg)", borderRadius: "6px", color: "var(--text-muted)" }}>
-              Variables
-            </span>
-            <span style={{ fontSize: "10.5px", padding: "3px 8px", background: "var(--nav-active-bg)", borderRadius: "6px", color: "var(--text-muted)" }}>
-              Claims
-            </span>
-          </div>
-        </div>
+          <Tile tile={byId("books")}>
+            <BookShelf />
+          </Tile>
 
-        {/* CARD 3: RESEARCH LINEAGE (Column 4 Top) */}
-        <div
-          onClick={() => navigate("/lineage")}
-          onMouseEnter={() => setHoveredCard("lineage")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("lineage"), gridColumn: 4, gridRow: 1 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Evidence Chains
-              </span>
-              <span style={{ fontSize: "18px" }}>🧬</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Research Lineage
-            </div>
-            <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              Track core claims with structured stance links and immutable revision histories.
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
-            <span style={{ fontSize: "10px", padding: "3px 8px", background: "#D1FAE5", color: "#065F46", borderRadius: "6px", fontWeight: 700 }}>
-              SUPPORTS
-            </span>
-            <span style={{ fontSize: "10px", padding: "3px 8px", background: "#FEE2E2", color: "#991B1B", borderRadius: "6px", fontWeight: 700 }}>
-              CONTRADICTS
-            </span>
-          </div>
-        </div>
-
-        {/* CARD 4: TEMPLATES (Tall card spanning Row 1 & 2 on Far Right) */}
-        <div
-          onClick={() => navigate("/templates")}
-          onMouseEnter={() => setHoveredCard("templates")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("templates"), gridColumn: 5, gridRow: "1 / span 2" }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Extraction Schemas
-              </span>
-              <span style={{ fontSize: "18px" }}>📋</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "18px", color: "var(--text-main)", marginBottom: "6px" }}>
-              Templates
-            </div>
-            <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.4, marginBottom: "14px" }}>
-              Define customized structured fields extracted from literature reviews.
-            </div>
-
-            {/* Template Fields Mini Preview */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {["#1 Research Question", "#2 Methodology", "#3 Primary Datasets", "#4 Main Findings", "#5 Limitations"].map((f, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: "6px 10px",
-                    background: "var(--panel-dark)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "6px",
-                    fontSize: "11.5px",
-                    color: "var(--text-main)",
-                    fontWeight: 500,
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span>{f}</span>
-                  <span style={{ opacity: 0.5 }}>⋮⋮</span>
-                </div>
+          <Tile tile={byId("templates")}>
+            <div className="bento-chips tmpl-chips">
+              {TEMPLATE_FIELDS.map((f) => (
+                <span key={f} className="bento-chip">{f}</span>
               ))}
             </div>
-          </div>
-
-          <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "12px", textAlign: "right" }}>
-            Reorder & edit schemas →
-          </div>
+          </Tile>
         </div>
 
-        {/* CARD 5: LIBRARY ARCHIVE (Tall Card spanning Row 2 & 3 on Column 1) */}
-        <div
-          onClick={() => navigate("/library")}
-          onMouseEnter={() => setHoveredCard("library")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("library"), gridColumn: 1, gridRow: "2 / span 2" }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Topic Collections
-              </span>
-              <span style={{ fontSize: "18px" }}>📚</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "19px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Library
-            </div>
-            <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.4, marginBottom: "14px" }}>
-              Your indexed paper library with local offline caching and note highlights.
-            </div>
-
-            {/* Mini Collections List */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {(collections.length > 0 ? collections.slice(0, 3) : [
-                { id: "1", name: "My Review" },
-                { id: "2", name: "Deep Learning Foundations" },
-              ]).map((c) => (
-                <div
-                  key={c.id}
-                  style={{
-                    padding: "8px 12px",
-                    background: "var(--panel-dark)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--text-main)" }}>📁 {c.name}</span>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Active</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div
-            style={{
-              padding: "10px",
-              background: "var(--nav-active-bg)",
-              borderRadius: "8px",
-              textAlign: "center",
-              fontSize: "12px",
-              fontWeight: 700,
-              color: "var(--text-main)",
-            }}
+        {OVERLAYS.map((o) => (
+          <Link
+            key={o.id}
+            to={o.to}
+            title={o.label}
+            aria-label={o.label}
+            className={`bento-ov ${o.size} ${o.tone}`}
+            style={{ "--ox": overlayX(o), "--oy": overlayY(o) } as React.CSSProperties}
           >
-            Open Full Library View →
-          </div>
-        </div>
-
-        {/* CARD 6: KNOWLEDGE GRAPH (Column 2 Row 2) */}
-        <div
-          onClick={() => navigate("/graph")}
-          onMouseEnter={() => setHoveredCard("graph")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("graph"), gridColumn: 2, gridRow: 2 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Interactive Force Web
-              </span>
-              <span style={{ fontSize: "18px" }}>🕸️</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Knowledge Graph
-            </div>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              Obsidian-style force network with rounded squircle entity nodes.
-            </div>
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "10px" }}>
-            <span style={{ width: "10px", height: "10px", borderRadius: "3px", background: "#22c55e" }} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Collections</span>
-            <span style={{ width: "10px", height: "10px", borderRadius: "3px", background: "#38bdf8" }} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Papers</span>
-            <span style={{ width: "10px", height: "10px", borderRadius: "3px", background: "#06b6d4" }} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Claims</span>
-          </div>
-        </div>
-
-        {/* CARD 7: CITATION TREE & NETWORK (Column 3 Row 2) */}
-        <div
-          onClick={() => navigate("/citations")}
-          onMouseEnter={() => setHoveredCard("citations")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("citations"), gridColumn: 3, gridRow: 2 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                Citation Lineage
-              </span>
-              <span style={{ fontSize: "18px" }}>🌳</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "17px", color: "var(--text-main)", marginBottom: "4px" }}>
-              Citation Tree
-            </div>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.4 }}>
-              Upstream foundational literature references & downstream citations.
-            </div>
-          </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", background: "var(--panel-dark)", padding: "8px 12px", borderRadius: "8px" }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: 700 }}>UPSTREAM</div>
-              <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--accent)" }}>References</div>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: 700 }}>DOWNSTREAM</div>
-              <div style={{ fontSize: "14px", fontWeight: 800, color: "var(--signal)" }}>Citations</div>
-            </div>
-          </div>
-        </div>
-
-        {/* CARD 8: BOOKS (ROYAL SAPPHIRE ACCENT CARD - Spans Row 2 & 3 in Col 4) */}
-        <div
-          onClick={() => navigate("/epub")}
-          onMouseEnter={() => setHoveredCard("books")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{
-            ...getCardStyle("books"),
-            gridColumn: 4,
-            gridRow: "2 / span 2",
-            background: "linear-gradient(160deg, #1E1B4B 0%, #172554 50%, #0F172A 100%)",
-            border: "1px solid #3B82F6",
-            color: "#FFFFFF",
-            padding: "20px 20px 0",
-            justifyContent: "space-between",
-          }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "#60A5FA", textTransform: "uppercase", letterSpacing: "1px" }}>
-                EPUB Archive
-              </span>
-              <span style={{ fontSize: "18px" }}>📖</span>
-            </div>
-            <div style={{ fontWeight: 900, fontSize: "20px", color: "#FFFFFF", marginBottom: "4px" }}>
-              Books & Reader
-            </div>
-            <div style={{ fontSize: "12px", color: "#93C5FD", lineHeight: 1.4 }}>
-              Classic local EPUB book archive with offline reading progress.
-            </div>
-          </div>
-
-          {/* Minimalist Graphic Book Spines with Refined Typography */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              gap: "8px",
-              height: "140px",
-              marginTop: "10px",
-            }}
-          >
-            {/* Book Spine 1: Deep Cobalt */}
-            <div
-              style={{
-                width: "24px",
-                height: "82%",
-                background: "#2563EB",
-                borderRadius: "4px 4px 0 0",
-                border: "1px solid rgba(255,255,255,0.2)",
-                writingMode: "vertical-rl",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "8.5px",
-                fontWeight: 700,
-                color: "#FFFFFF",
-                letterSpacing: "1px",
-              }}
-            >
-              DOT LINE
-            </div>
-
-            {/* Book Spine 2: Bright Off-White */}
-            <div
-              style={{
-                width: "28px",
-                height: "94%",
-                background: "#F8FAFC",
-                borderRadius: "4px 4px 0 0",
-                writingMode: "vertical-rl",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "9px",
-                fontWeight: 800,
-                color: "#1E1B4B",
-                letterSpacing: "0.5px",
-              }}
-            >
-              GRAPHIC FEST
-            </div>
-
-            {/* Book Spine 3: Cyan Accent */}
-            <div
-              style={{
-                width: "30px",
-                height: "100%",
-                background: "#0284C7",
-                borderRadius: "4px 4px 0 0",
-                writingMode: "vertical-rl",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "9px",
-                fontWeight: 800,
-                color: "#FFFFFF",
-              }}
-            >
-              GRAPHITE ②
-            </div>
-
-            {/* Book Spine 4: Amber Foil */}
-            <div
-              style={{
-                width: "26px",
-                height: "88%",
-                background: "#F59E0B",
-                borderRadius: "4px 4px 0 0",
-                writingMode: "vertical-rl",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "8.5px",
-                fontWeight: 800,
-                color: "#1E1B4B",
-              }}
-            >
-              FOLK ART 5
-            </div>
-          </div>
-        </div>
-
-        {/* CARD 9: ACCESS HUB (Column 2 Row 3) */}
-        <div
-          onClick={() => navigate("/access-hub")}
-          onMouseEnter={() => setHoveredCard("hub")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("hub"), gridColumn: 2, gridRow: 3 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase" }}>
-                DOI & Publishers
-              </span>
-              <span style={{ fontSize: "16px" }}>🔑</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-main)" }}>
-              Publisher Access Hub
-            </div>
-          </div>
-          <div style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>
-            Direct DOI lookup & institutional access links.
-          </div>
-        </div>
-
-        {/* CARD 10: MANUSCRIPT ANALYZER (Column 3 Row 3) */}
-        <div
-          onClick={() => navigate("/converter")}
-          onMouseEnter={() => setHoveredCard("converter")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("converter"), gridColumn: 3, gridRow: 3 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase" }}>
-                Guidelines (.docx)
-              </span>
-              <span style={{ fontSize: "16px" }}>📄</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-main)" }}>
-              Conference Analyzer
-            </div>
-          </div>
-          <div style={{ fontSize: "11.5px", color: "var(--text-muted)" }}>
-            IEEE, ACM, and Springer LNCS parser.
-          </div>
-        </div>
-
-        {/* CARD 11: EXPORT & SYNTHESIS (Column 5 Row 3) */}
-        <div
-          onClick={() => navigate("/export")}
-          onMouseEnter={() => setHoveredCard("export")}
-          onMouseLeave={() => setHoveredCard(null)}
-          style={{ ...getCardStyle("export"), gridColumn: 5, gridRow: 3 }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-              <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent)", textTransform: "uppercase" }}>
-                Formatted Output
-              </span>
-              <span style={{ fontSize: "16px" }}>📤</span>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-main)" }}>
-              Export Synthesis
-            </div>
-          </div>
-          <div style={{ display: "flex", gap: "6px" }}>
-            <span style={{ fontSize: "11px", padding: "2px 7px", background: "var(--nav-active-bg)", borderRadius: "4px", color: "var(--text-main)", fontWeight: 600 }}>
-              DOCX
-            </span>
-            <span style={{ fontSize: "11px", padding: "2px 7px", background: "var(--nav-active-bg)", borderRadius: "4px", color: "var(--text-main)", fontWeight: 600 }}>
-              PDF
-            </span>
-          </div>
-        </div>
+            <span className="bento-ov-ring" aria-hidden="true" />
+            <span className="bento-ov-icon" aria-hidden="true">{o.icon}</span>
+            <span className="bento-ov-label">{o.label}</span>
+          </Link>
+        ))}
       </div>
     </div>
   );

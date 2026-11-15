@@ -87,7 +87,7 @@ export const CitationGraph: React.FC = () => {
         id: centerId,
         label: graph.center.title,
         type: "center",
-        color: "#E05666",
+        color: "#d9a441",
         radius: 24,
         data: { ...graph.center, category: "Center Work" },
       });
@@ -100,7 +100,7 @@ export const CitationGraph: React.FC = () => {
             id: refId,
             label: ref.title,
             type: "reference",
-            color: "#6366F1",
+            color: "#a98bb8",
             radius: 15,
             data: { ...ref, category: "Reference (Cited by this work)" },
           });
@@ -109,7 +109,7 @@ export const CitationGraph: React.FC = () => {
             source: refId,
             target: centerId,
             label: "cites",
-            color: "rgba(99, 102, 241, 0.45)",
+            color: "rgba(169, 139, 184, 0.55)",
           });
         });
       }
@@ -122,7 +122,7 @@ export const CitationGraph: React.FC = () => {
             id: citeId,
             label: cite.title,
             type: "cited_by",
-            color: "#EC4899",
+            color: "#c97a86",
             radius: 15,
             data: { ...cite, category: "Citation (Cites this work)" },
           });
@@ -131,7 +131,7 @@ export const CitationGraph: React.FC = () => {
             source: centerId,
             target: citeId,
             label: "cited by",
-            color: "rgba(236, 72, 153, 0.45)",
+            color: "rgba(201, 122, 134, 0.55)",
           });
         });
       }
@@ -378,7 +378,7 @@ export const CitationGraph: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#4F46E5", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "#7a5a8e", textTransform: "uppercase" }}>
                   References (Upstream)
                 </div>
                 <div style={{ fontSize: "22px", fontWeight: 800, color: "#4A2418" }}>{graph.references.length}</div>
@@ -399,7 +399,7 @@ export const CitationGraph: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#DB2777", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "#a8546a", textTransform: "uppercase" }}>
                   Citations (Downstream)
                 </div>
                 <div style={{ fontSize: "22px", fontWeight: 800, color: "#4A2418" }}>{graph.cited_by.length}</div>
@@ -484,11 +484,11 @@ export const CitationGraph: React.FC = () => {
                     <span style={{ fontWeight: 600 }}>Center Work</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#4F46E5" }} />
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#7a5a8e" }} />
                     <span>References (Cites)</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#DB2777" }} />
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#a8546a" }} />
                     <span>Cited By (Citations)</span>
                   </div>
                 </div>
@@ -542,8 +542,8 @@ export const CitationGraph: React.FC = () => {
                             selectedNode.type === "center"
                               ? "#8A5A7A"
                               : selectedNode.type === "reference"
-                              ? "#4F46E5"
-                              : "#DB2777",
+                              ? "#7a5a8e"
+                              : "#a8546a",
                           color: "#fff",
                         }}
                       >

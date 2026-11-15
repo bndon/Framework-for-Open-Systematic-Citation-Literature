@@ -1,0 +1,535 @@
+/* ============================================================
+   FOSCL — Plum & Cream theme + Dashboard bento grid.
+   Self-contained and additive: imported by src/screens/Dashboard.tsx, so it does not
+   touch styles.css. To make plum a selectable theme also add "plum" to AppTheme in
+   src/lib/settings.ts and an entry to THEMES in src/screens/Settings.tsx.
+   ============================================================ */
+
+/* ── Plum & Cream (FOSCL signature — default) ── */
+:root[data-theme="plum"] {
+  --bg: #f9f4ec;
+  --panel: #f1e8db;
+  --panel-dark: #fcf9f4;
+  --text-main: #351701;
+  --text-muted: #7a6458;
+  --accent: #845177;
+  --accent-strong: #653756;
+  --deep: #3e0d33;
+  --signal: #a7bca1;
+  --border: #e6dccb;
+  --nav-active-bg: #ede0e8;
+  --nav-active-border: #c9a9bd;
+  --shelf-top: #b58b6a;
+  --shelf-mid: #9f7556;
+  --shelf-bot: #865f44;
+  --shelf-shadow: rgba(53, 23, 1, 0.16);
+  --ribbon-bg: #efe5d6;
+  --tree-guide: rgba(53, 23, 1, 0.09);
+}
+
+/* ============================================================
+   Dashboard — bento grid (6 x 4), notched by three round overlays.
+   Track sizes, tile spans and overlay positions are NOT here: they live in
+   src/screens/Dashboard.tsx (COLS / ROWS / TILES / OVERLAYS).
+   ============================================================ */
+.dash-root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 36px 28px;
+}
+
+/* the global quarter-circle menu button is fixed at the top-left (68px) */
+.dash-head { padding-left: 72px; }
+
+.dash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 7px 16px 7px 9px;
+  border-radius: 14px;
+  background: var(--panel-dark);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--panel-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-main);
+}
+
+.brand-sub {
+  margin-top: 2px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dash-summary {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+}
+
+.bento-frame {
+  --gap: 12px;
+  --tile-r: 22px;
+  --outline: 2px;
+  /* total track width / height: frame size minus the gaps between tracks */
+  --W: calc(100cqw - 5 * var(--gap));
+  --H: calc(100cqh - 3 * var(--gap));
+  /* circle diameters (inside the ring), limited by both frame width and height */
+  --d-lg: min(calc(var(--W) * 0.165), calc(var(--H) * 0.33));
+  --d-sm: calc(var(--d-lg) * 0.72);
+  /* thick ring in the page background colour */
+  --ring: clamp(8px, calc(var(--W) * 0.013), 16px);
+
+  flex: 1;
+  min-height: 520px;
+  position: relative;
+  container-type: size;
+}
+
+.bento {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: var(--gap);
+}
+
+.bento-cell {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--tile-r);
+  outline: none;
+}
+
+/* Accent outline: the tile's shape grown by --outline, with every notch shrunk by
+   --outline, so it follows the circular cut-outs instead of stopping at them. */
+.bento-outline {
+  position: absolute;
+  inset: calc(var(--outline) * -1);
+  border-radius: calc(var(--tile-r) + var(--outline));
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.bento-cell:hover .bento-outline,
+.bento-cell:focus-visible .bento-outline {
+  opacity: 1;
+}
+
+/* on the dark Books tile the plum accent would vanish, so use sage there */
+.bento-outline.on-deep {
+  background: var(--signal);
+}
+
+.bento-card {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px 15px;
+  overflow: hidden;
+  border-radius: var(--tile-r);
+  background: var(--panel);
+  color: var(--text-main);
+  box-shadow: inset 0 0 0 1px var(--border);
+  transition: background 0.2s ease;
+}
+
+.bento-card.feature {
+  background: var(--nav-active-bg);
+}
+
+.bento-card.deep {
+  background: var(--deep, var(--text-main));
+  color: var(--bg);
+  box-shadow: none;
+}
+
+.bento-cell:hover .bento-card {
+  background: var(--panel-dark);
+}
+
+.bento-cell:hover .bento-card.feature {
+  background: #f4eaf0;
+}
+
+.bento-cell:hover .bento-card.deep {
+  background: var(--deep, var(--text-main));
+}
+
+/* Notches. --nNx / --nNy are circle centres in tile coordinates, --nNr the cut radius;
+   all are set inline by Dashboard.tsx. Up to three per tile. */
+.bento-card.n1,
+.bento-card.n2,
+.bento-card.n3 {
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.bento-card.n1 {
+  --m0: radial-gradient(circle at var(--n0x) var(--n0y), transparent var(--n0r), #000 calc(var(--n0r) + 0.7px));
+  -webkit-mask-image: var(--m0);
+  mask-image: var(--m0);
+}
+
+.bento-card.n2 {
+  --m0: radial-gradient(circle at var(--n0x) var(--n0y), transparent var(--n0r), #000 calc(var(--n0r) + 0.7px));
+  --m1: radial-gradient(circle at var(--n1x) var(--n1y), transparent var(--n1r), #000 calc(var(--n1r) + 0.7px));
+  -webkit-mask-image: var(--m0), var(--m1);
+  mask-image: var(--m0), var(--m1);
+}
+
+.bento-card.n3 {
+  --m0: radial-gradient(circle at var(--n0x) var(--n0y), transparent var(--n0r), #000 calc(var(--n0r) + 0.7px));
+  --m1: radial-gradient(circle at var(--n1x) var(--n1y), transparent var(--n1r), #000 calc(var(--n1r) + 0.7px));
+  --m2: radial-gradient(circle at var(--n2x) var(--n2y), transparent var(--n2r), #000 calc(var(--n2r) + 0.7px));
+  -webkit-mask-image: var(--m0), var(--m1), var(--m2);
+  mask-image: var(--m0), var(--m1), var(--m2);
+}
+
+.bento-outline.n1,
+.bento-outline.n2,
+.bento-outline.n3 {
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.bento-outline.n1 {
+  --m0: radial-gradient(circle at calc(var(--n0x) + var(--outline)) calc(var(--n0y) + var(--outline)), transparent calc(var(--n0r) - var(--outline)), #000 calc(var(--n0r) - var(--outline) + 0.7px));
+  -webkit-mask-image: var(--m0);
+  mask-image: var(--m0);
+}
+
+.bento-outline.n2 {
+  --m0: radial-gradient(circle at calc(var(--n0x) + var(--outline)) calc(var(--n0y) + var(--outline)), transparent calc(var(--n0r) - var(--outline)), #000 calc(var(--n0r) - var(--outline) + 0.7px));
+  --m1: radial-gradient(circle at calc(var(--n1x) + var(--outline)) calc(var(--n1y) + var(--outline)), transparent calc(var(--n1r) - var(--outline)), #000 calc(var(--n1r) - var(--outline) + 0.7px));
+  -webkit-mask-image: var(--m0), var(--m1);
+  mask-image: var(--m0), var(--m1);
+}
+
+.bento-outline.n3 {
+  --m0: radial-gradient(circle at calc(var(--n0x) + var(--outline)) calc(var(--n0y) + var(--outline)), transparent calc(var(--n0r) - var(--outline)), #000 calc(var(--n0r) - var(--outline) + 0.7px));
+  --m1: radial-gradient(circle at calc(var(--n1x) + var(--outline)) calc(var(--n1y) + var(--outline)), transparent calc(var(--n1r) - var(--outline)), #000 calc(var(--n1r) - var(--outline) + 0.7px));
+  --m2: radial-gradient(circle at calc(var(--n2x) + var(--outline)) calc(var(--n2y) + var(--outline)), transparent calc(var(--n2r) - var(--outline)), #000 calc(var(--n2r) - var(--outline) + 0.7px));
+  -webkit-mask-image: var(--m0), var(--m1), var(--m2);
+  mask-image: var(--m0), var(--m1), var(--m2);
+}
+
+/* Tile content */
+.bento-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 16px;
+  background: var(--panel-dark);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.bento-card.deep .bento-icon {
+  background: rgba(249, 244, 236, 0.12);
+  box-shadow: none;
+}
+
+.bento-spacer {
+  flex: 1;
+  min-height: 0;
+}
+
+.bento-title {
+  margin: 0;
+  font-size: clamp(14px, 1.15vw, 17px);
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.1px;
+}
+
+.bento-blurb {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bento-card.deep .bento-blurb {
+  color: rgba(249, 244, 236, 0.72);
+}
+
+.bento-arrow {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 15px;
+  color: var(--accent);
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.bento-cell:hover .bento-arrow,
+.bento-cell:focus-visible .bento-arrow {
+  opacity: 1;
+  transform: none;
+}
+
+.bento-tag {
+  align-self: flex-start;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--nav-active-border);
+}
+
+.bento-stat-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.bento-stat {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(26px, 2.8vw, 40px);
+  line-height: 1;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.bento-stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.bento-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* Library: keep chips inside the free top-left area, clear of both notches */
+.lib-chips {
+  margin-top: 6px;
+  padding-right: calc(var(--d-lg) * 0.55);
+}
+
+/* Template: the settings notch bites its left edge, so chips hug the right side */
+.tmpl-chips {
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.bento-chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--panel-dark);
+  box-shadow: inset 0 0 0 1px var(--border);
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Books */
+.bento-shelf {
+  position: absolute;
+  left: 5%;
+  bottom: 20%;
+  width: 68%;
+  height: auto;
+  color: var(--bg);
+  pointer-events: none;
+}
+
+/* Overlays on grid-line intersections */
+.bento-ov {
+  --d: var(--d-lg);
+  --ov-bg: var(--accent);
+  --ov-fg: var(--panel-dark);
+  position: absolute;
+  z-index: 3;
+  left: var(--ox);
+  top: var(--oy);
+  width: var(--d);
+  height: var(--d);
+  box-sizing: content-box;
+  border: var(--ring) solid var(--bg);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  text-decoration: none;
+  text-align: center;
+  background: var(--ov-bg);
+  color: var(--ov-fg);
+  transition: transform 0.2s ease, filter 0.2s ease;
+  outline: none;
+}
+
+.bento-ov.sm {
+  --d: var(--d-sm);
+}
+
+.bento-ov.sage {
+  --ov-bg: var(--signal);
+  --ov-fg: var(--deep, var(--text-main));
+}
+
+.bento-ov.deep {
+  --ov-bg: var(--deep, var(--text-main));
+  --ov-fg: var(--bg);
+}
+
+/* The accent ring sits just outside the disc, over the background-coloured ring */
+.bento-ov-ring {
+  position: absolute;
+  inset: calc(var(--outline) * -1);
+  border: var(--outline) solid var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.bento-ov:hover,
+.bento-ov:focus-visible {
+  transform: translate(-50%, -50%) scale(1.05);
+  filter: brightness(1.06);
+}
+
+.bento-ov:hover .bento-ov-ring,
+.bento-ov:focus-visible .bento-ov-ring {
+  opacity: 1;
+}
+
+.bento-ov-icon {
+  font-size: calc(var(--d) * 0.24);
+  line-height: 1;
+}
+
+.bento-ov-label {
+  max-width: 80%;
+  font-size: clamp(9.5px, calc(var(--d) * 0.085), 13px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* Narrow windows: drop the notched layout for a plain two-column stack */
+@media (max-width: 860px) {
+  .bento-frame {
+    container-type: normal;
+    min-height: 0;
+  }
+
+  .bento {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: minmax(130px, auto);
+  }
+
+  .bento-cell {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .bento-card.n1,
+  .bento-card.n2,
+  .bento-card.n3,
+  .bento-outline.n1,
+  .bento-outline.n2,
+  .bento-outline.n3 {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .bento-shelf {
+    display: none;
+  }
+
+  .bento-ov {
+    position: static;
+    transform: none;
+    width: auto;
+    height: 52px;
+    margin-top: var(--gap);
+    border: 0;
+    border-radius: 14px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .bento-ov:hover,
+  .bento-ov:focus-visible {
+    transform: none;
+  }
+
+  .bento-ov-icon {
+    font-size: 18px;
+  }
+}
