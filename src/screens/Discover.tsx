@@ -207,7 +207,7 @@ export const Discover: React.FC = () => {
         flexDirection: "column",
         height: "100vh",
         background: "var(--bg)",
-        padding: "78px 36px 24px 36px", // clear the fixed quarter-circle menu + breadcrumb
+        padding: "92px 36px 24px 36px", // clear the fixed quarter-circle menu + breadcrumb
         boxSizing: "border-box",
         overflow: "hidden",
       }}

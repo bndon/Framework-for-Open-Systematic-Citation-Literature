@@ -42,7 +42,7 @@
 }
 
 /* the global quarter-circle menu button is fixed at the top-left (68px) */
-.dash-head { padding-left: 72px; }
+.dash-head { padding-left: 88px; }
 
 .dash-head {
   display: flex;
