@@ -245,7 +245,7 @@ export const KnowledgeGraph: React.FC = () => {
               Add papers in Discover or create claims in Research Lineage to build your knowledge galaxy!
             </p>
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/discover")}
               style={{ padding: "8px 18px", backgroundColor: "#8A5A7A", color: "#FAF5EC", border: "none", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
             >
               🔍 Discover Papers

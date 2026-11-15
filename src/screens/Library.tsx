@@ -419,7 +419,7 @@ export const Library: React.FC = () => {
                   Go to the Discover screen to search OpenAlex and add papers here.
                 </p>
                 <button
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/discover")}
                   style={{
                     padding: "8px 18px",
                     backgroundColor: "#8A5A7A",

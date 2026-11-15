@@ -100,9 +100,15 @@ export const QuarterCircleNav: React.FC = () => {
   toggleRef.current = toggleNav;
   const closeRef = useRef(closeNav);
   closeRef.current = closeNav;
+  const openRef = useRef(openNav);
+  openRef.current = openNav;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeRef.current();
+      if (e.key === "Escape" && !e.defaultPrevented) {
+        // Esc opens the menu; pressing it again closes it
+        if (stateRef.current.isOpen && !stateRef.current.closing) closeRef.current();
+        else openRef.current();
+      }
       if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "p")) {
         e.preventDefault();
         toggleRef.current();
@@ -126,7 +132,6 @@ export const QuarterCircleNav: React.FC = () => {
   };
 
   const firstMatch = RINGS.flatMap((r) => r.ids).map((id) => NAV[id]).find(matches);
-  const isHome = location.pathname === "/";
   const open = isOpen;
 
   return (
@@ -136,7 +141,7 @@ export const QuarterCircleNav: React.FC = () => {
         <button
           className={`qn-button${open && !closing ? " open" : ""}`}
           onClick={toggleNav}
-          title="Open Quick Navigator (Ctrl+K)"
+          title="Quick Navigator (Esc or Ctrl+K)"
           aria-expanded={open}
         >
           <span className="qn-button-inner">
@@ -144,13 +149,6 @@ export const QuarterCircleNav: React.FC = () => {
             <small>{open && !closing ? "ESC" : "MENU"}</small>
           </span>
         </button>
-
-        {!isHome && !open && (
-          <div className="qn-crumb" onClick={() => navigate("/")} title="Return to Home Dashboard">
-            <span>←</span>
-            <span>Dashboard</span>
-          </div>
-        )}
       </div>
 
       {open && (
