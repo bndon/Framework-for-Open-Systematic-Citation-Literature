@@ -163,17 +163,17 @@ export const ConferenceConverter: React.FC = () => {
   return (
     <div style={{ padding: "32px 40px", maxWidth: "900px", margin: "0 auto" }}>
       <header style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "24px", color: "#4A2418", margin: "0 0 6px 0" }}>Conference Manuscript Analyzer</h1>
-        <p style={{ color: "#7A6458", fontSize: "14px", margin: 0 }}>
+        <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 6px 0" }}>Conference Manuscript Analyzer</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px", margin: 0 }}>
           Parses your real <code>.docx</code> file structure and checks it against publisher guidelines (IEEE, ACM, Springer LNCS).
         </p>
       </header>
 
       {/* Upload & Style selection */}
-      <div style={{ backgroundColor: "#FAF7F2", border: "1px solid #EADDCB", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
+      <div style={{ backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "16px" }}>
           <div>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>
               Upload Manuscript (.docx)
             </label>
             <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
@@ -190,8 +190,8 @@ export const ConferenceConverter: React.FC = () => {
                 disabled={analyzing}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#fff",
-                  border: "1px solid #C4B5A5",
+                  backgroundColor: "var(--panel-dark)",
+                  border: "1px solid var(--border)",
                   borderRadius: "6px",
                   fontSize: "13px",
                   fontWeight: 600,
@@ -200,14 +200,14 @@ export const ConferenceConverter: React.FC = () => {
               >
                 {analyzing ? "Reading DOCX..." : "📁 Choose .docx File"}
               </button>
-              <span style={{ fontSize: "12px", color: "#666", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {selectedFileName || "No file selected"}
               </span>
             </div>
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>
               Target Conference Style
             </label>
             <select
@@ -220,10 +220,10 @@ export const ConferenceConverter: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "13px",
-                backgroundColor: "#fff",
+                backgroundColor: "var(--panel-dark)",
               }}
             >
               <option value="ieee">IEEE Standard (Two-Column, 10pt, Roman Numerals)</option>
@@ -238,8 +238,8 @@ export const ConferenceConverter: React.FC = () => {
       {analyzed && (
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* Section Checklist */}
-          <div style={{ backgroundColor: "#fff", border: "1px solid #E8DFD3", borderRadius: "8px", padding: "20px" }}>
-            <h3 style={{ margin: "0 0 12px 0", fontSize: "16px", color: "#4A2418" }}>
+          <div style={{ backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "8px", padding: "20px" }}>
+            <h3 style={{ margin: "0 0 12px 0", fontSize: "16px", color: "var(--text-main)" }}>
               Required Section Checklist ({targetTemplate.toUpperCase()})
             </h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", fontSize: "12.5px" }}>
@@ -251,10 +251,10 @@ export const ConferenceConverter: React.FC = () => {
                     key={i}
                     style={{
                       padding: "10px 12px",
-                      backgroundColor: isPass ? "#E8F8F5" : isWarn ? "#FEF9E7" : "#FDEDEC",
-                      color: isPass ? "#16A085" : isWarn ? "#B7950B" : "#C0392B",
+                      backgroundColor: isPass ? "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))" : isWarn ? "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))" : "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
+                      color: isPass ? "var(--success-ink)" : isWarn ? "var(--warn-ink)" : "var(--danger-ink)",
                       borderRadius: "6px",
-                      border: `1px solid ${isPass ? "#A3E4D7" : isWarn ? "#F9E79F" : "#F5B7B1"}`,
+                      border: `1px solid ${isPass ? "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))" : isWarn ? "color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))" : "color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))"}`,
                     }}
                   >
                     <div style={{ fontWeight: 700, marginBottom: "2px" }}>
@@ -268,22 +268,22 @@ export const ConferenceConverter: React.FC = () => {
           </div>
 
           {/* Heading Mapping Preview Table */}
-          <div style={{ backgroundColor: "#fff", border: "1px solid #E8DFD3", borderRadius: "8px", padding: "20px" }}>
-            <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "#4A2418" }}>
+          <div style={{ backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "8px", padding: "20px" }}>
+            <h3 style={{ margin: "0 0 6px 0", fontSize: "16px", color: "var(--text-main)" }}>
               Detected Headings from Document ({headings.length})
             </h3>
-            <p style={{ fontSize: "12.5px", color: "#7A6458", margin: "0 0 14px 0" }}>
+            <p style={{ fontSize: "12.5px", color: "var(--text-muted)", margin: "0 0 14px 0" }}>
               Extracted directly from the XML structure of <strong>{selectedFileName}</strong>:
             </p>
 
             {headings.length === 0 ? (
-              <div style={{ padding: "20px", textAlign: "center", color: "#8A796F", fontStyle: "italic", fontSize: "13px" }}>
+              <div style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)", fontStyle: "italic", fontSize: "13px" }}>
                 No standard headings detected in this DOCX file. Make sure sections use Word's Heading 1/2 styles.
               </div>
             ) : (
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
                 <thead>
-                  <tr style={{ backgroundColor: "#FAF5EC", borderBottom: "2px solid #E4DACB", textAlign: "left" }}>
+                  <tr style={{ backgroundColor: "var(--panel-dark)", borderBottom: "2px solid var(--border)", textAlign: "left" }}>
                     <th style={{ padding: "8px 10px" }}>Detected Input Heading</th>
                     <th style={{ padding: "8px 10px" }}>Target {targetTemplate.toUpperCase()} Format</th>
                     <th style={{ padding: "8px 10px" }}>Level</th>
@@ -292,13 +292,13 @@ export const ConferenceConverter: React.FC = () => {
                 <tbody>
                   {headings.map((h, idx) => (
                     <tr key={idx} style={{ borderBottom: "1px solid #eee" }}>
-                      <td style={{ padding: "8px 10px", fontWeight: 600, color: "#333" }}>
+                      <td style={{ padding: "8px 10px", fontWeight: 600, color: "var(--text-main)" }}>
                         "{h.text}"
                       </td>
-                      <td style={{ padding: "8px 10px", color: "#8A5A7A", fontFamily: "monospace" }}>
+                      <td style={{ padding: "8px 10px", color: "var(--accent-ink)", fontFamily: "monospace" }}>
                         {getTargetHeadingFormat(h.text, h.level, targetTemplate)}
                       </td>
-                      <td style={{ padding: "8px 10px", color: "#7A6458", fontSize: "12px" }}>
+                      <td style={{ padding: "8px 10px", color: "var(--text-muted)", fontSize: "12px" }}>
                         Level {h.level}
                       </td>
                     </tr>

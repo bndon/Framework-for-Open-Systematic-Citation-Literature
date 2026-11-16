@@ -8,20 +8,20 @@ interface OriginBadgeProps {
 export const OriginBadge: React.FC<OriginBadgeProps> = ({ origin = 'user', size = 'sm' }) => {
   const norm = origin.toLowerCase();
   let label = "You";
-  let bg = "#EBF5FB";
-  let color = "#2980B9";
-  let border = "#AED6F1";
+  let bg = "color-mix(in srgb, var(--accent-ink) 13%, var(--panel-dark))";
+  let color = "var(--accent-ink)";
+  let border = "color-mix(in srgb, var(--accent-ink) 35%, var(--panel-dark))";
 
   if (norm === "source") {
     label = "Source";
-    bg = "#E8F8F5";
-    color = "#16A085";
-    border = "#A3E4D7";
+    bg = "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))";
+    color = "var(--success-ink)";
+    border = "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))";
   } else if (norm === "ai") {
     label = "AI (mock)";
-    bg = "#FEF9E7";
-    color = "#D4AC0D";
-    border = "#F9E79F";
+    bg = "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))";
+    color = "var(--warn-ink)";
+    border = "color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))";
   }
 
   const isSmall = size === 'sm';

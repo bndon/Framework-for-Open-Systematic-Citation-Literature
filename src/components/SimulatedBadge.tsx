@@ -22,18 +22,18 @@ export const SimulatedBadge: React.FC<SimulatedBadgeProps> = ({
         alignItems: "center",
         gap: "10px",
         padding: "8px 14px",
-        backgroundColor: isSim ? "#FFF8E1" : "#F3E5F5",
-        border: `1px solid ${isSim ? "#FFE082" : "#E1BEE7"}`,
+        backgroundColor: isSim ? "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))" : "color-mix(in srgb, var(--accent-ink) 13%, var(--panel-dark))",
+        border: `1px solid ${isSim ? "color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))" : "color-mix(in srgb, var(--accent-ink) 35%, var(--panel-dark))"}`,
         borderRadius: "6px",
-        color: isSim ? "#F57F17" : "#6A1B9A",
+        color: isSim ? "var(--warn-ink)" : "var(--accent-ink)",
         fontSize: "12px",
         marginBottom: "16px",
       }}
     >
       <span
         style={{
-          backgroundColor: isSim ? "#F57F17" : "#6A1B9A",
-          color: "#fff",
+          backgroundColor: isSim ? "var(--warn-ink)" : "var(--accent-ink)",
+          color: "var(--panel-dark)",
           padding: "2px 6px",
           borderRadius: "4px",
           fontWeight: 700,

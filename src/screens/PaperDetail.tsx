@@ -70,11 +70,11 @@ export const PaperDetail: React.FC = () => {
   };
 
   if (loading) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "#8A5A7A" }}>Loading paper details...</div>;
+    return <div style={{ padding: "40px", textAlign: "center", color: "var(--accent-ink)" }}>Loading paper details...</div>;
   }
 
   if (!paper) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "#C0392B" }}>Paper not found.</div>;
+    return <div style={{ padding: "40px", textAlign: "center", color: "var(--danger-ink)" }}>Paper not found.</div>;
   }
 
   let authorsList: string[] = [];
@@ -95,7 +95,7 @@ export const PaperDetail: React.FC = () => {
         style={{
           border: "none",
           background: "none",
-          color: "#8A5A7A",
+          color: "var(--accent-ink)",
           cursor: "pointer",
           fontWeight: 600,
           fontSize: "13px",
@@ -109,19 +109,19 @@ export const PaperDetail: React.FC = () => {
       {/* Main Paper Header */}
       <div
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #E8DFD3",
+          backgroundColor: "var(--panel-dark)",
+          border: "1px solid var(--border)",
           borderRadius: "8px",
           padding: "24px",
           marginBottom: "24px",
           boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
         }}
       >
-        <h1 style={{ fontSize: "22px", color: "#4A2418", margin: "0 0 10px 0", lineHeight: 1.35 }}>
+        <h1 style={{ fontSize: "22px", color: "var(--text-main)", margin: "0 0 10px 0", lineHeight: 1.35 }}>
           {paper.title}
         </h1>
 
-        <div style={{ fontSize: "14px", color: "#7A6458", marginBottom: "14px", lineHeight: 1.5 }}>
+        <div style={{ fontSize: "14px", color: "var(--text-muted)", marginBottom: "14px", lineHeight: 1.5 }}>
           <strong>Authors:</strong> {authorsList.length > 0 ? authorsList.join(", ") : "Unknown"}
           <br />
           {paper.venue && (
@@ -142,7 +142,7 @@ export const PaperDetail: React.FC = () => {
                 href={`https://doi.org/${paper.doi}`}
                 target="_blank"
                 rel="noreferrer"
-                style={{ color: "#8A5A7A", textDecoration: "none" }}
+                style={{ color: "var(--accent-ink)", textDecoration: "none" }}
               >
                 {paper.doi} ↗
               </a>
@@ -153,7 +153,7 @@ export const PaperDetail: React.FC = () => {
               <br />
               <Link
                 to={`/citations?id=${encodeURIComponent(paper.openalex_id)}&title=${encodeURIComponent(paper.title)}`}
-                style={{ color: "#8A5A7A", fontSize: "13px", fontWeight: 600, textDecoration: "none", marginTop: "4px", display: "inline-block" }}
+                style={{ color: "var(--accent-ink)", fontSize: "13px", fontWeight: 600, textDecoration: "none", marginTop: "4px", display: "inline-block" }}
               >
                 🕸 View Citation Network →
               </Link>
@@ -168,17 +168,17 @@ export const PaperDetail: React.FC = () => {
             alignItems: "center",
             justifyContent: "space-between",
             padding: "16px",
-            backgroundColor: hasPdf ? "#E8F8F5" : "#FAF5EC",
-            border: `1px solid ${hasPdf ? "#A3E4D7" : "#E4DACB"}`,
+            backgroundColor: hasPdf ? "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))" : "var(--panel-dark)",
+            border: `1px solid ${hasPdf ? "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))" : "var(--border)"}`,
             borderRadius: "6px",
             marginBottom: "18px",
           }}
         >
           <div>
-            <strong style={{ color: hasPdf ? "#16A085" : "#8A5A7A", fontSize: "14px" }}>
+            <strong style={{ color: hasPdf ? "var(--success-ink)" : "var(--accent-ink)", fontSize: "14px" }}>
               {hasPdf ? "✓ PDF is uploaded and ready for reading" : "No PDF attached to this paper yet"}
             </strong>
-            <div style={{ fontSize: "12px", color: "#7A6458", marginTop: "2px" }}>
+            <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
               {hasPdf
                 ? "You can view the document and highlight annotations."
                 : "Upload a local PDF file to read and annotate text in the workspace."}
@@ -201,9 +201,9 @@ export const PaperDetail: React.FC = () => {
                   disabled={uploading}
                   style={{
                     padding: "8px 14px",
-                    backgroundColor: "#FAF5EC",
-                    color: "#4A2418",
-                    border: "1px solid #D5C8B8",
+                    backgroundColor: "var(--panel-dark)",
+                    color: "var(--text-main)",
+                    border: "1px solid var(--border)",
                     borderRadius: "6px",
                     fontSize: "13px",
                     cursor: "pointer",
@@ -215,8 +215,8 @@ export const PaperDetail: React.FC = () => {
                   to={`/reader/${paper.id}`}
                   style={{
                     padding: "8px 18px",
-                    backgroundColor: "#8A5A7A",
-                    color: "#FAF5EC",
+                    backgroundColor: "var(--accent)",
+                    color: "var(--on-accent)",
                     borderRadius: "6px",
                     textDecoration: "none",
                     fontWeight: 600,
@@ -232,8 +232,8 @@ export const PaperDetail: React.FC = () => {
                 disabled={uploading}
                 style={{
                   padding: "8px 18px",
-                  backgroundColor: "#8A5A7A",
-                  color: "#FAF5EC",
+                  backgroundColor: "var(--accent)",
+                  color: "var(--on-accent)",
                   border: "none",
                   borderRadius: "6px",
                   fontWeight: 600,
@@ -249,11 +249,11 @@ export const PaperDetail: React.FC = () => {
 
         {/* Add to another collection */}
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          <span style={{ fontSize: "13px", color: "#7A6458", fontWeight: 500 }}>Add to Collection:</span>
+          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 500 }}>Add to Collection:</span>
           <select
             value={selectedColl}
             onChange={(e) => setSelectedColl(e.target.value)}
-            style={{ padding: "6px 10px", borderRadius: "4px", border: "1px solid #D5C8B8", fontSize: "12px", backgroundColor: "#FAF5EC" }}
+            style={{ padding: "6px 10px", borderRadius: "4px", border: "1px solid var(--border)", fontSize: "12px", backgroundColor: "var(--panel-dark)" }}
           >
             {collections.map((c) => (
               <option key={c.id} value={c.id}>
@@ -265,8 +265,8 @@ export const PaperDetail: React.FC = () => {
             onClick={handleAddToCollection}
             style={{
               padding: "6px 12px",
-              backgroundColor: "#6E4363",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "4px",
               fontSize: "12px",
@@ -282,36 +282,36 @@ export const PaperDetail: React.FC = () => {
       {/* Abstract */}
       <div
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #E8DFD3",
+          backgroundColor: "var(--panel-dark)",
+          border: "1px solid var(--border)",
           borderRadius: "8px",
           padding: "20px",
           marginBottom: "24px",
         }}
       >
-        <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#4A2418" }}>Abstract</h3>
-        <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.6, color: "#44342D" }}>
-          {paper.abstract || <em style={{ color: "#8A796F" }}>Not available</em>}
+        <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "var(--text-main)" }}>Abstract</h3>
+        <p style={{ margin: 0, fontSize: "13.5px", lineHeight: 1.6, color: "var(--text-main)" }}>
+          {paper.abstract || <em style={{ color: "var(--text-muted)" }}>Not available</em>}
         </p>
       </div>
 
       {/* Annotations Section */}
       <div
         style={{
-          backgroundColor: "#fff",
-          border: "1px solid #E8DFD3",
+          backgroundColor: "var(--panel-dark)",
+          border: "1px solid var(--border)",
           borderRadius: "8px",
           padding: "20px",
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-          <h3 style={{ margin: 0, fontSize: "16px", color: "#4A2418" }}>
+          <h3 style={{ margin: 0, fontSize: "16px", color: "var(--text-main)" }}>
             Annotations ({annotations.length})
           </h3>
           {hasPdf && (
             <Link
               to={`/reader/${paper.id}`}
-              style={{ fontSize: "12px", color: "#8A5A7A", textDecoration: "none", fontWeight: 600 }}
+              style={{ fontSize: "12px", color: "var(--accent-ink)", textDecoration: "none", fontWeight: 600 }}
             >
               Add Highlights in Reader →
             </Link>
@@ -319,11 +319,11 @@ export const PaperDetail: React.FC = () => {
         </div>
 
         {annotations.length === 0 ? (
-          <div style={{ padding: "20px", textAlign: "center", color: "#8A796F", fontSize: "13px", backgroundColor: "#FAF7F2", borderRadius: "6px" }}>
+          <div style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px", backgroundColor: "var(--panel-dark)", borderRadius: "6px" }}>
             No highlights or notes recorded yet for this paper.
             {hasPdf && (
               <div style={{ marginTop: "8px" }}>
-                <Link to={`/reader/${paper.id}`} style={{ color: "#8A5A7A", fontWeight: 600 }}>
+                <Link to={`/reader/${paper.id}`} style={{ color: "var(--accent-ink)", fontWeight: 600 }}>
                   Open PDF Reader to highlight text
                 </Link>
               </div>
@@ -337,20 +337,20 @@ export const PaperDetail: React.FC = () => {
                 style={{
                   padding: "12px 14px",
                   borderRadius: "6px",
-                  backgroundColor: "#FAF7F2",
+                  backgroundColor: "var(--panel-dark)",
                   borderLeft: `4px solid ${ann.color || "#8A5A7A"}`,
                   fontSize: "13px",
                 }}
               >
-                <div style={{ fontStyle: "italic", color: "#3B2A20", marginBottom: "4px" }}>
+                <div style={{ fontStyle: "italic", color: "var(--text-main)", marginBottom: "4px" }}>
                   "{ann.quote}"
                 </div>
                 {ann.note && (
-                  <div style={{ color: "#6E4363", fontWeight: 500, fontSize: "12px", marginBottom: "4px" }}>
+                  <div style={{ color: "var(--accent-ink)", fontWeight: 500, fontSize: "12px", marginBottom: "4px" }}>
                     📝 Note: {ann.note}
                   </div>
                 )}
-                <div style={{ fontSize: "11px", color: "#9E8B7F" }}>
+                <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                   {ann.page ? `Page ${ann.page}` : "Manual quote"} &bull; {new Date(ann.created_at).toLocaleDateString()}
                 </div>
               </div>

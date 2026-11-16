@@ -15,19 +15,19 @@ interface ToastProps {
 
 const STYLES: Record<ToastType, React.CSSProperties> = {
   success: {
-    backgroundColor: "#E8F8F5",
-    color: "#16A085",
-    border: "1px solid #A3E4D7",
+    backgroundColor: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))",
+    color: "var(--success-ink)",
+    border: "1px solid color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))",
   },
   error: {
-    backgroundColor: "#FDEDEC",
-    color: "#C0392B",
-    border: "1px solid #F5B7B1",
+    backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
+    color: "var(--danger-ink)",
+    border: "1px solid color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))",
   },
   info: {
-    backgroundColor: "#FAF5EC",
-    color: "#8A5A7A",
-    border: "1px solid #D5C8B8",
+    backgroundColor: "var(--panel-dark)",
+    color: "var(--accent-ink)",
+    border: "1px solid var(--border)",
   },
 };
 

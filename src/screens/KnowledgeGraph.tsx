@@ -162,13 +162,13 @@ export const KnowledgeGraph: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
       {/* Header bar */}
       <div
         style={{
           padding: "16px 28px",
-          backgroundColor: "#FAF5EC",
-          borderBottom: "1px solid #E4DACB",
+          backgroundColor: "var(--panel-dark)",
+          borderBottom: "1px solid var(--border)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -177,17 +177,17 @@ export const KnowledgeGraph: React.FC = () => {
         }}
       >
         <div>
-          <h1 style={{ fontSize: "20px", color: "#4A2418", margin: "0 0 2px 0", display: "flex", alignItems: "center", gap: "8px" }}>
+          <h1 style={{ fontSize: "20px", color: "var(--text-main)", margin: "0 0 2px 0", display: "flex", alignItems: "center", gap: "8px" }}>
             <span>🕸️</span> Knowledge Graph
           </h1>
-          <p style={{ margin: 0, fontSize: "12px", color: "#7A6458" }}>
+          <p style={{ margin: 0, fontSize: "12px", color: "var(--text-muted)" }}>
             Interactive Obsidian-style force graph connecting Papers, Collections, and Evidence Lineage.
           </p>
         </div>
 
         {/* Filter controls & stats */}
         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: "6px", backgroundColor: "#fff", padding: "3px 6px", borderRadius: "6px", border: "1px solid #D5C8B8" }}>
+          <div style={{ display: "flex", gap: "6px", backgroundColor: "var(--panel-dark)", padding: "3px 6px", borderRadius: "6px", border: "1px solid var(--border)" }}>
             {[
               { id: "all", label: "All Items" },
               { id: "papers", label: `Papers (${papers.length})` },
@@ -201,8 +201,8 @@ export const KnowledgeGraph: React.FC = () => {
                   padding: "5px 10px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: filterType === f.id ? "#8A5A7A" : "transparent",
-                  color: filterType === f.id ? "#FAF5EC" : "#4A2418",
+                  backgroundColor: filterType === f.id ? "var(--accent)" : "transparent",
+                  color: filterType === f.id ? "var(--on-accent)" : "var(--text-main)",
                   fontSize: "12px",
                   fontWeight: 600,
                   cursor: "pointer",
@@ -217,13 +217,13 @@ export const KnowledgeGraph: React.FC = () => {
             onClick={loadGraphData}
             style={{
               padding: "6px 12px",
-              backgroundColor: "#FAF5EC",
-              border: "1px solid #D5C8B8",
+              backgroundColor: "var(--panel-dark)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               fontSize: "12px",
               cursor: "pointer",
               fontWeight: 600,
-              color: "#4A2418",
+              color: "var(--text-main)",
             }}
           >
             ↻ Refresh
@@ -234,19 +234,19 @@ export const KnowledgeGraph: React.FC = () => {
       {/* Main Graph Canvas & Inspector Drawer */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative" }}>
         {loading ? (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#8A5A7A" }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-ink)" }}>
             Synthesizing Knowledge Network…
           </div>
         ) : graphNodes.length === 0 ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#8A796F", padding: "40px" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-muted)", padding: "40px" }}>
             <div style={{ fontSize: "40px", marginBottom: "12px" }}>🌌</div>
-            <h3 style={{ margin: "0 0 8px 0", color: "#4A2418" }}>Graph is currently empty</h3>
+            <h3 style={{ margin: "0 0 8px 0", color: "var(--text-main)" }}>Graph is currently empty</h3>
             <p style={{ margin: "0 0 16px 0", fontSize: "13px" }}>
               Add papers in Discover or create claims in Research Lineage to build your knowledge galaxy!
             </p>
             <button
               onClick={() => navigate("/discover")}
-              style={{ padding: "8px 18px", backgroundColor: "#8A5A7A", color: "#FAF5EC", border: "none", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
+              style={{ padding: "8px 18px", backgroundColor: "var(--accent)", color: "var(--on-accent)", border: "none", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
             >
               🔍 Discover Papers
             </button>
@@ -268,8 +268,8 @@ export const KnowledgeGraph: React.FC = () => {
               <div
                 style={{
                   width: "340px",
-                  backgroundColor: "#fff",
-                  borderLeft: "1px solid #E4DACB",
+                  backgroundColor: "var(--panel-dark)",
+                  borderLeft: "1px solid var(--border)",
                   display: "flex",
                   flexDirection: "column",
                   padding: "20px",
@@ -291,37 +291,37 @@ export const KnowledgeGraph: React.FC = () => {
                           ? "#F1E8F4"
                           : selectedNode.type === "claim"
                           ? "#EAF0E6"
-                          : "#FAF5EC",
+                          : "var(--panel-dark)",
                       color:
                         selectedNode.type === "paper"
                           ? "#6b3f5f"
                           : selectedNode.type === "claim"
                           ? "#4f6b49"
-                          : "#8A5A7A",
+                          : "var(--accent-ink)",
                     }}
                   >
                     {selectedNode.type}
                   </span>
                   <button
                     onClick={() => setSelectedNode(null)}
-                    style={{ border: "none", background: "none", fontSize: "18px", cursor: "pointer", color: "#8A796F" }}
+                    style={{ border: "none", background: "none", fontSize: "18px", cursor: "pointer", color: "var(--text-muted)" }}
                   >
                     ×
                   </button>
                 </div>
 
-                <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "#4A2418", lineHeight: 1.35 }}>
+                <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "var(--text-main)", lineHeight: 1.35 }}>
                   {selectedNode.label}
                 </h3>
 
                 {selectedNode.data?.type === "paper" && (
                   <div>
-                    <div style={{ fontSize: "13px", color: "#7A6458", marginBottom: "12px" }}>
+                    <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "12px" }}>
                       {selectedNode.data.entity.year && <div><strong>Year:</strong> {selectedNode.data.entity.year}</div>}
                       {selectedNode.data.entity.venue && <div><strong>Venue:</strong> {selectedNode.data.entity.venue}</div>}
                     </div>
 
-                    <div style={{ fontSize: "12.5px", color: "#4B5563", lineHeight: 1.5, marginBottom: "18px", backgroundColor: "#FAF7F2", padding: "10px", borderRadius: "6px" }}>
+                    <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.5, marginBottom: "18px", backgroundColor: "var(--panel-dark)", padding: "10px", borderRadius: "6px" }}>
                       {selectedNode.data.entity.abstract || "No abstract available for this work."}
                     </div>
 
@@ -331,8 +331,8 @@ export const KnowledgeGraph: React.FC = () => {
                         style={{
                           flex: 1,
                           padding: "8px 12px",
-                          backgroundColor: "#8A5A7A",
-                          color: "#FAF5EC",
+                          backgroundColor: "var(--accent)",
+                          color: "var(--on-accent)",
                           borderRadius: "6px",
                           textAlign: "center",
                           textDecoration: "none",
@@ -347,9 +347,9 @@ export const KnowledgeGraph: React.FC = () => {
                           to={`/reader/${selectedNode.data.entity.id}`}
                           style={{
                             padding: "8px 14px",
-                            backgroundColor: "#FAF5EC",
-                            border: "1px solid #D5C8B8",
-                            color: "#4A2418",
+                            backgroundColor: "var(--panel-dark)",
+                            border: "1px solid var(--border)",
+                            color: "var(--text-main)",
                             borderRadius: "6px",
                             textAlign: "center",
                             textDecoration: "none",
@@ -366,7 +366,7 @@ export const KnowledgeGraph: React.FC = () => {
 
                 {selectedNode.data?.type === "claim" && (
                   <div>
-                    <div style={{ fontSize: "13px", color: "#555", marginBottom: "14px" }}>
+                    <div style={{ fontSize: "13px", color: "var(--text-main)", marginBottom: "14px" }}>
                       <strong>Evidence links:</strong> {selectedNode.data.entity.evidence?.length || 0}
                       <br />
                       <strong>Revisions:</strong> {selectedNode.data.entity.revisions?.length || 0}
@@ -376,8 +376,8 @@ export const KnowledgeGraph: React.FC = () => {
                       style={{
                         display: "block",
                         padding: "8px 12px",
-                        backgroundColor: "#8A5A7A",
-                        color: "#FAF5EC",
+                        backgroundColor: "var(--accent)",
+                        color: "var(--on-accent)",
                         borderRadius: "6px",
                         textAlign: "center",
                         textDecoration: "none",
@@ -392,7 +392,7 @@ export const KnowledgeGraph: React.FC = () => {
 
                 {selectedNode.data?.type === "collection" && (
                   <div>
-                    <div style={{ fontSize: "13px", color: "#555", marginBottom: "14px" }}>
+                    <div style={{ fontSize: "13px", color: "var(--text-main)", marginBottom: "14px" }}>
                       Topic Collection grouping papers and synthesis claims.
                     </div>
                     <Link
@@ -400,8 +400,8 @@ export const KnowledgeGraph: React.FC = () => {
                       style={{
                         display: "block",
                         padding: "8px 12px",
-                        backgroundColor: "#8A5A7A",
-                        color: "#FAF5EC",
+                        backgroundColor: "var(--accent)",
+                        color: "var(--on-accent)",
                         borderRadius: "6px",
                         textAlign: "center",
                         textDecoration: "none",

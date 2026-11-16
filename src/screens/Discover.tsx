@@ -5,7 +5,9 @@ import {
   getCollections,
   upsertPaper,
   addPaperToCollection,
+  createCollection,
 } from "../lib/api";
+import { Modal } from "../components/Modal";
 import { toast } from "../lib/toast";
 import type { Collection, PaperResult } from "../types";
 import { mergeResults, applyFilters, countActiveFilters, DEFAULT_FILTERS } from "../lib/papers";
@@ -58,8 +60,8 @@ const lbl: React.CSSProperties = { fontSize: "12px", fontWeight: 600, color: "va
 const primaryBtn: React.CSSProperties = {
   width: "100%",
   padding: "12px",
-  background: "var(--deep, var(--accent))",
-  color: "var(--panel-dark)",
+  background: "var(--deep)",
+  color: "var(--on-deep)",
   border: "none",
   borderRadius: "6px",
   fontSize: "14px",
@@ -100,6 +102,12 @@ export const Discover: React.FC = () => {
   const [page, setPage] = useState(session.page);
   const [canLoadMore, setCanLoadMore] = useState(session.canLoadMore);
   const requestId = useRef(0);
+
+  // "Add selected to collection" dialog
+  const [showCollModal, setShowCollModal] = useState(false);
+  const [newCollName, setNewCollName] = useState("");
+  const [existingCollId, setExistingCollId] = useState("");
+  const [addingToColl, setAddingToColl] = useState(false);
 
   // keep the session cache in step with the screen
   useEffect(() => {
@@ -204,6 +212,61 @@ export const Discover: React.FC = () => {
     }
   };
 
+  const typedName = newCollName.trim();
+  const sameNameColl = typedName ? collections.find((c) => c.name.trim().toLowerCase() === typedName.toLowerCase()) : undefined;
+  const pickedColl = collections.find((c) => c.id === existingCollId);
+
+  const openCollModal = () => {
+    setNewCollName("");
+    setExistingCollId((prev) => (collections.some((c) => c.id === prev) ? prev : collections[0]?.id ?? ""));
+    setShowCollModal(true);
+  };
+
+  /** Typed name wins (reused if it already exists, otherwise created); with no name, the picked collection is used. */
+  const handleAddToCollection = async () => {
+    if (selectedPapers.length === 0 || addingToColl) return;
+    if (!typedName && !pickedColl) return;
+    setAddingToColl(true);
+    try {
+      let target: Collection | undefined = typedName ? sameNameColl : pickedColl;
+      let created = false;
+      if (!target) {
+        target = await createCollection(typedName);
+        created = true;
+        setCollections((prev) => [...prev, target as Collection]);
+      }
+      let added = 0;
+      let failed = 0;
+      for (const p of selectedPapers) {
+        try {
+          const record = await upsertPaper({
+            title: p.title,
+            openalex_id: p.openalex_id,
+            doi: p.doi,
+            authors_json: JSON.stringify(p.authors),
+            year: p.year,
+            venue: p.venue,
+            abstract: p.abstract,
+            oa_url: p.oa_url,
+          });
+          await addPaperToCollection(target.id, record.id);
+          added += 1;
+        } catch {
+          failed += 1;
+        }
+      }
+      if (added > 0) {
+        toast.success(`${created ? "Created “" + target.name + "” and added" : "Added"} ${added} paper${added === 1 ? "" : "s"}${created ? "" : " to “" + target.name + "”"}`);
+        setShowCollModal(false);
+      }
+      if (failed > 0) toast.error(`${failed} paper${failed === 1 ? "" : "s"} could not be saved`);
+    } catch {
+      toast.error("Could not create the collection");
+    } finally {
+      setAddingToColl(false);
+    }
+  };
+
   // ── Lineage timeline geometry (from the selected papers) ─────────────
   const timeline = useMemo(() => {
     const dated = selectedPapers.filter((p) => p.year != null).sort((a, b) => (a.year as number) - (b.year as number));
@@ -237,9 +300,9 @@ export const Discover: React.FC = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "100%",
         background: "var(--bg)",
-        padding: "92px 36px 24px 36px", // clear the fixed quarter-circle menu
+        padding: "20px 36px 24px 36px",
         boxSizing: "border-box",
         overflow: "hidden",
       }}
@@ -265,7 +328,7 @@ export const Discover: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            style={{ padding: "0 18px", background: "var(--accent)", border: "none", borderRadius: "6px", fontSize: "13px", fontWeight: 700, color: "var(--panel-dark)", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
+            style={{ padding: "0 18px", background: "var(--accent)", border: "none", borderRadius: "6px", fontSize: "13px", fontWeight: 700, color: "var(--on-accent)", cursor: loading ? "wait" : "pointer", opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "Searching..." : "Search"}
           </button>
@@ -310,9 +373,17 @@ export const Discover: React.FC = () => {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", ...lbl, flexShrink: 0 }}>
               <span>{selected.length} selected</span>
               {selected.length > 0 && (
-                <button onClick={() => setSelected([])} style={{ ...ctl, height: "24px", cursor: "pointer", fontWeight: 600 }}>
-                  Clear
-                </button>
+                <span style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    onClick={openCollModal}
+                    style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 700, background: "var(--accent)", color: "var(--on-accent)", border: "1px solid var(--accent)" }}
+                  >
+                    ＋ Add {selected.length} to collection…
+                  </button>
+                  <button onClick={() => setSelected([])} style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 600 }}>
+                    Clear
+                  </button>
+                </span>
               )}
             </div>
           )}
@@ -360,7 +431,7 @@ export const Discover: React.FC = () => {
                       {paper.authors.join(", ")} • {paper.year ?? "n.d."}{paper.oa_url ? " • 🔓" : ""}
                     </div>
                     {count !== undefined && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--nav-active-bg)", color: "var(--accent)", padding: "3px 8px", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--nav-active-bg)", color: "var(--accent-ink)", padding: "3px 8px", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
                         ★ {count.toLocaleString()} Citations
                       </span>
                     )}
@@ -398,8 +469,8 @@ export const Discover: React.FC = () => {
                     padding: "8px 24px",
                     borderRadius: "6px",
                     border: "none",
-                    background: isActive ? "var(--deep, var(--accent))" : "transparent",
-                    color: isActive ? "var(--panel-dark)" : "var(--text-main)",
+                    background: isActive ? "var(--deep)" : "transparent",
+                    color: isActive ? "var(--on-deep)" : "var(--text-main)",
                     fontWeight: 700,
                     fontSize: "13px",
                     cursor: "pointer",
@@ -443,7 +514,7 @@ export const Discover: React.FC = () => {
                       <g key={n.paper.openalex_id} style={{ cursor: "pointer" }} onClick={() => openInReader(n.paper.openalex_id)}>
                         <title>{`${n.paper.title} (${n.paper.year}) — click to read`}</title>
                         <line x1={n.x} y1={n.y + n.r} x2={n.x} y2="215" stroke="var(--border)" strokeWidth="1.5" />
-                        <circle cx={n.x} cy={n.y} r={n.r} fill={n.paper.oa_url ? "var(--accent)" : "var(--deep, var(--accent))"} stroke="var(--panel)" strokeWidth="3" />
+                        <circle cx={n.x} cy={n.y} r={n.r} fill={n.paper.oa_url ? "var(--accent)" : "var(--deep)"} stroke="var(--panel)" strokeWidth="3" />
                         <text x={n.x} y={n.y + n.r + 15} textAnchor="middle" fontSize="11" fontWeight="bold" fill="var(--text-main)">{shortLabel(n.paper)}</text>
                       </g>
                     ))}
@@ -546,7 +617,7 @@ export const Discover: React.FC = () => {
                           key={p.openalex_id}
                           onClick={() => openInReader(p.openalex_id)}
                           title={p.title}
-                          style={{ ...ctl, cursor: "pointer", fontWeight: 700, background: on ? "var(--accent)" : "var(--panel-dark)", color: on ? "var(--panel-dark)" : "var(--text-main)", border: on ? "1px solid var(--accent)" : "1px solid var(--border)" }}
+                          style={{ ...ctl, cursor: "pointer", fontWeight: 700, background: on ? "var(--accent)" : "var(--panel-dark)", color: on ? "var(--on-accent)" : "var(--text-main)", border: on ? "1px solid var(--accent)" : "1px solid var(--border)" }}
                         >
                           {shortLabel(p)}
                         </button>
@@ -562,7 +633,7 @@ export const Discover: React.FC = () => {
                 </div>
 
                 <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
-                  <span style={{ padding: "4px 10px", background: "var(--nav-active-bg)", color: "var(--accent)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
+                  <span style={{ padding: "4px 10px", background: "var(--nav-active-bg)", color: "var(--accent-ink)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
                     {readerPaper.doi ? `DOI ${readerPaper.doi}` : "No DOI"}
                   </span>
                   <span style={{ padding: "4px 10px", background: readerPaper.oa_url ? "#D1FAE5" : "var(--nav-active-bg)", color: readerPaper.oa_url ? "#065F46" : "var(--text-muted)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
@@ -581,10 +652,10 @@ export const Discover: React.FC = () => {
                       onClick={() => setReaderSubTab(st.id)}
                       style={{
                         paddingBottom: "6px",
-                        borderBottom: readerSubTab === st.id ? "2.5px solid var(--deep, var(--accent))" : "2.5px solid transparent",
+                        borderBottom: readerSubTab === st.id ? "2.5px solid var(--accent-ink)" : "2.5px solid transparent",
                         fontWeight: 700,
                         fontSize: "13px",
-                        color: readerSubTab === st.id ? "var(--deep, var(--accent))" : "var(--text-muted)",
+                        color: readerSubTab === st.id ? "var(--accent-ink)" : "var(--text-muted)",
                         cursor: "pointer",
                       }}
                     >
@@ -599,7 +670,7 @@ export const Discover: React.FC = () => {
                     (readerPaper.oa_url ? (
                       <div>
                         <p style={{ marginTop: 0 }}>An open-access copy is available from the publisher or repository.</p>
-                        <a href={readerPaper.oa_url} target="_blank" rel="noreferrer" style={{ color: "var(--accent)", fontWeight: 700 }}>Open PDF in browser →</a>
+                        <a href={readerPaper.oa_url} target="_blank" rel="noreferrer" style={{ color: "var(--accent-ink)", fontWeight: 700 }}>Open PDF in browser →</a>
                       </div>
                     ) : (
                       <span style={{ color: "var(--text-muted)" }}>No open-access PDF found. Try the Access Hub for publisher options.</span>
@@ -621,6 +692,55 @@ export const Discover: React.FC = () => {
           )}
         </div>
       </div>
+
+      <Modal isOpen={showCollModal} onClose={() => setShowCollModal(false)} title={`Add ${selectedPapers.length} paper${selectedPapers.length === 1 ? "" : "s"} to a collection`} width="460px">
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label style={{ ...lbl, display: "block", marginBottom: "6px" }}>New collection name</label>
+            <input
+              autoFocus
+              value={newCollName}
+              onChange={(e) => setNewCollName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleAddToCollection(); }}
+              placeholder="Type a name to create a new collection…"
+              style={{ ...ctl, width: "100%", height: "36px", boxSizing: "border-box", padding: "0 12px", fontSize: "13px" }}
+            />
+          </div>
+          <div style={{ opacity: typedName ? 0.45 : 1 }}>
+            <label style={{ ...lbl, display: "block", marginBottom: "6px" }}>…or use an existing collection</label>
+            <select
+              value={existingCollId}
+              onChange={(e) => setExistingCollId(e.target.value)}
+              disabled={collections.length === 0}
+              style={{ ...ctl, width: "100%", height: "36px", boxSizing: "border-box", fontSize: "13px" }}
+            >
+              {collections.length === 0 && <option value="">No collections yet — type a name above</option>}
+              {collections.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={{ fontSize: "12.5px", color: "var(--text-muted)", background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", padding: "9px 12px" }}>
+            {typedName
+              ? sameNameColl
+                ? <>“{sameNameColl.name}” already exists — papers will be added to it.</>
+                : <>A new collection “{typedName}” will be created.</>
+              : pickedColl
+                ? <>Papers will be added to “{pickedColl.name}”.</>
+                : <>Type a name to create a collection.</>}
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+            <button onClick={() => setShowCollModal(false)} style={{ ...ctl, height: "34px", padding: "0 16px", cursor: "pointer" }}>Cancel</button>
+            <button
+              onClick={handleAddToCollection}
+              disabled={addingToColl || (!typedName && !pickedColl)}
+              style={{ height: "34px", padding: "0 18px", border: "none", borderRadius: "6px", fontWeight: 700, fontSize: "13px", background: "var(--accent)", color: "var(--on-accent)", cursor: addingToColl ? "wait" : "pointer", opacity: addingToColl || (!typedName && !pickedColl) ? 0.55 : 1 }}
+            >
+              {addingToColl ? "Adding…" : "Add papers"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

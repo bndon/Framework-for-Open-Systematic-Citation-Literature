@@ -11,10 +11,10 @@ export const Pricing: React.FC = () => {
       />
 
       <header style={{ textAlign: "center", marginBottom: "36px" }}>
-        <h1 style={{ fontSize: "28px", color: "#4A2418", margin: "0 0 8px 0" }}>
+        <h1 style={{ fontSize: "28px", color: "var(--text-main)", margin: "0 0 8px 0" }}>
           Workspace Subscription Plans
         </h1>
-        <p style={{ color: "#7A6458", fontSize: "14px", margin: 0 }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px", margin: 0 }}>
           Commercial concept tiers for collaborative labs and institutional research teams.
         </p>
       </header>
@@ -24,8 +24,8 @@ export const Pricing: React.FC = () => {
         {/* Free Plan */}
         <div
           style={{
-            backgroundColor: "#fff",
-            border: "1px solid #E8DFD3",
+            backgroundColor: "var(--panel-dark)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
             padding: "28px 24px",
             display: "flex",
@@ -35,15 +35,15 @@ export const Pricing: React.FC = () => {
           }}
         >
           <div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#8A5A7A", textTransform: "uppercase", marginBottom: "8px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase", marginBottom: "8px" }}>
               Community
             </div>
-            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "#4A2418" }}>Free Tier</h3>
-            <div style={{ fontSize: "28px", fontWeight: 800, color: "#4A2418", marginBottom: "16px" }}>
-              $0 <span style={{ fontSize: "13px", fontWeight: 500, color: "#7A6458" }}>/ forever</span>
+            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "var(--text-main)" }}>Free Tier</h3>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-main)", marginBottom: "16px" }}>
+              $0 <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-muted)" }}>/ forever</span>
             </div>
 
-            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "#555", lineHeight: 1.7, margin: "0 0 24px 0" }}>
+            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "var(--text-main)", lineHeight: 1.7, margin: "0 0 24px 0" }}>
               <li>Local SQLite database storage</li>
               <li>Unlimited OpenAlex searches & DOIs</li>
               <li>PDF reader & manual highlights</li>
@@ -56,8 +56,8 @@ export const Pricing: React.FC = () => {
             disabled
             style={{
               padding: "10px",
-              backgroundColor: "#EADDCB",
-              color: "#4A2418",
+              backgroundColor: "var(--panel)",
+              color: "var(--text-main)",
               border: "none",
               borderRadius: "6px",
               fontWeight: 600,
@@ -72,8 +72,8 @@ export const Pricing: React.FC = () => {
         {/* Researcher Plan */}
         <div
           style={{
-            backgroundColor: "#FAF5EC",
-            border: "2px solid #8A5A7A",
+            backgroundColor: "var(--panel-dark)",
+            border: "2px solid var(--accent)",
             borderRadius: "8px",
             padding: "28px 24px",
             display: "flex",
@@ -89,8 +89,8 @@ export const Pricing: React.FC = () => {
               top: "-11px",
               left: "50%",
               transform: "translateX(-50%)",
-              backgroundColor: "#8A5A7A",
-              color: "#fff",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               padding: "2px 12px",
               borderRadius: "10px",
               fontSize: "10px",
@@ -102,15 +102,15 @@ export const Pricing: React.FC = () => {
           </div>
 
           <div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#8A5A7A", textTransform: "uppercase", marginBottom: "8px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase", marginBottom: "8px" }}>
               Individual Pro
             </div>
-            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "#4A2418" }}>Researcher</h3>
-            <div style={{ fontSize: "28px", fontWeight: 800, color: "#4A2418", marginBottom: "16px" }}>
-              $9.99 <span style={{ fontSize: "13px", fontWeight: 500, color: "#7A6458" }}>/ month</span>
+            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "var(--text-main)" }}>Researcher</h3>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-main)", marginBottom: "16px" }}>
+              $9.99 <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-muted)" }}>/ month</span>
             </div>
 
-            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "#44342D", lineHeight: 1.7, margin: "0 0 24px 0" }}>
+            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "var(--text-main)", lineHeight: 1.7, margin: "0 0 24px 0" }}>
               <li>Everything in Free</li>
               <li>Real LLM Extraction Engine</li>
               <li>Automated Citation Network Graphing</li>
@@ -123,8 +123,8 @@ export const Pricing: React.FC = () => {
             onClick={() => toast.info("Researcher tier is a concept plan preview. No active billing.")}
             style={{
               padding: "10px",
-              backgroundColor: "#8A5A7A",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "6px",
               fontWeight: 600,
@@ -139,8 +139,8 @@ export const Pricing: React.FC = () => {
         {/* Group / Lab Plan */}
         <div
           style={{
-            backgroundColor: "#fff",
-            border: "1px solid #E8DFD3",
+            backgroundColor: "var(--panel-dark)",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
             padding: "28px 24px",
             display: "flex",
@@ -150,15 +150,15 @@ export const Pricing: React.FC = () => {
           }}
         >
           <div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: "#8A5A7A", textTransform: "uppercase", marginBottom: "8px" }}>
+            <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase", marginBottom: "8px" }}>
               Laboratory
             </div>
-            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "#4A2418" }}>Group / Lab</h3>
-            <div style={{ fontSize: "28px", fontWeight: 800, color: "#4A2418", marginBottom: "16px" }}>
-              $29.99 <span style={{ fontSize: "13px", fontWeight: 500, color: "#7A6458" }}>/ month</span>
+            <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", color: "var(--text-main)" }}>Group / Lab</h3>
+            <div style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-main)", marginBottom: "16px" }}>
+              $29.99 <span style={{ fontSize: "13px", fontWeight: 500, color: "var(--text-muted)" }}>/ month</span>
             </div>
 
-            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "#555", lineHeight: 1.7, margin: "0 0 24px 0" }}>
+            <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "var(--text-main)", lineHeight: 1.7, margin: "0 0 24px 0" }}>
               <li>Everything in Researcher</li>
               <li>Multi-user shared collection vaults</li>
               <li>Consensus verification for claim evidence</li>
@@ -171,8 +171,8 @@ export const Pricing: React.FC = () => {
             onClick={() => toast.info("Lab & Group tier is a concept plan preview. No active billing.")}
             style={{
               padding: "10px",
-              backgroundColor: "#6E4363",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "6px",
               fontWeight: 600,

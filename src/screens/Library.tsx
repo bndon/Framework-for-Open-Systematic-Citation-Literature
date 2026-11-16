@@ -186,14 +186,14 @@ export const Library: React.FC = () => {
   const activeCollection = collections.find((c) => c.id === activeCollectionId);
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
       {/* Left panel: Collections list */}
       <div
         style={{
           width: "280px",
           minWidth: "280px",
-          backgroundColor: "#FAF7F2",
-          borderRight: "1px solid #E4DACB",
+          backgroundColor: "var(--panel-dark)",
+          borderRight: "1px solid var(--border)",
           display: "flex",
           flexDirection: "column",
         }}
@@ -201,21 +201,21 @@ export const Library: React.FC = () => {
         <div
           style={{
             padding: "18px 16px",
-            borderBottom: "1px solid #EADDCB",
+            borderBottom: "1px solid var(--border)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <h2 style={{ fontSize: "16px", fontWeight: 700, margin: 0, color: "#4A2418" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 700, margin: 0, color: "var(--text-main)" }}>
             Collections
           </h2>
           <button
             onClick={() => setShowCreateModal(true)}
             style={{
               padding: "4px 10px",
-              backgroundColor: "#8A5A7A",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "4px",
               fontSize: "12px",
@@ -229,7 +229,7 @@ export const Library: React.FC = () => {
 
         <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
           {collections.length === 0 ? (
-            <div style={{ padding: "20px 10px", textAlign: "center", color: "#8A796F", fontSize: "13px" }}>
+            <div style={{ padding: "20px 10px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>
               No collections yet.<br />Click "+ New" to create one.
             </div>
           ) : (
@@ -244,8 +244,8 @@ export const Library: React.FC = () => {
                     borderRadius: "6px",
                     marginBottom: "4px",
                     cursor: "pointer",
-                    backgroundColor: isActive ? "#8A5A7A" : "transparent",
-                    color: isActive ? "#FAF5EC" : "#4A2418",
+                    backgroundColor: isActive ? "var(--accent)" : "transparent",
+                    color: isActive ? "var(--on-accent)" : "var(--text-main)",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -265,7 +265,7 @@ export const Library: React.FC = () => {
                       style={{
                         background: "none",
                         border: "none",
-                        color: isActive ? "#FAF5EC" : "#7A6458",
+                        color: isActive ? "var(--on-accent)" : "var(--text-muted)",
                         cursor: "pointer",
                         fontSize: "12px",
                         padding: "2px 4px",
@@ -279,7 +279,7 @@ export const Library: React.FC = () => {
                       style={{
                         background: "none",
                         border: "none",
-                        color: isActive ? "#FAF5EC" : "#7A6458",
+                        color: isActive ? "var(--on-accent)" : "var(--text-muted)",
                         cursor: "pointer",
                         fontSize: "12px",
                         padding: "2px 4px",
@@ -296,7 +296,7 @@ export const Library: React.FC = () => {
       </div>
 
       {/* Right panel: Papers in collection */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", backgroundColor: "#fff" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", backgroundColor: "var(--panel-dark)" }}>
         {activeCollection ? (
           <div style={{ padding: "28px 36px" }}>
             <div
@@ -306,14 +306,14 @@ export const Library: React.FC = () => {
                 alignItems: "center",
                 marginBottom: "20px",
                 paddingBottom: "16px",
-                borderBottom: "1px solid #EFE6D8",
+                borderBottom: "1px solid var(--border)",
               }}
             >
               <div>
-                <h1 style={{ fontSize: "22px", color: "#4A2418", margin: "0 0 4px 0" }}>
+                <h1 style={{ fontSize: "22px", color: "var(--text-main)", margin: "0 0 4px 0" }}>
                   {activeCollection.name}
                 </h1>
-                <p style={{ margin: 0, fontSize: "13px", color: "#7A6458" }}>
+                <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
                   {papers.length} {papers.length === 1 ? "paper" : "papers"} in collection
                 </p>
               </div>
@@ -323,9 +323,9 @@ export const Library: React.FC = () => {
                   to={`/compare?collectionId=${activeCollection.id}`}
                   style={{
                     padding: "8px 14px",
-                    backgroundColor: "#FAF5EC",
-                    color: "#8A5A7A",
-                    border: "1px solid #D5C8B8",
+                    backgroundColor: "var(--panel-dark)",
+                    color: "var(--accent-ink)",
+                    border: "1px solid var(--border)",
                     borderRadius: "6px",
                     textDecoration: "none",
                     fontSize: "12px",
@@ -338,9 +338,9 @@ export const Library: React.FC = () => {
                   to={`/lineage?collectionId=${activeCollection.id}`}
                   style={{
                     padding: "8px 14px",
-                    backgroundColor: "#FAF5EC",
-                    color: "#8A5A7A",
-                    border: "1px solid #D5C8B8",
+                    backgroundColor: "var(--panel-dark)",
+                    color: "var(--accent-ink)",
+                    border: "1px solid var(--border)",
                     borderRadius: "6px",
                     textDecoration: "none",
                     fontSize: "12px",
@@ -361,9 +361,9 @@ export const Library: React.FC = () => {
                   alignItems: "center",
                   marginBottom: "16px",
                   padding: "10px 14px",
-                  backgroundColor: "#FAF7F2",
+                  backgroundColor: "var(--panel-dark)",
                   borderRadius: "6px",
-                  border: "1px solid #EADDCB",
+                  border: "1px solid var(--border)",
                 }}
               >
                 <input
@@ -375,9 +375,9 @@ export const Library: React.FC = () => {
                     flex: 1,
                     padding: "6px 10px",
                     borderRadius: "4px",
-                    border: "1px solid #D5C8B8",
+                    border: "1px solid var(--border)",
                     fontSize: "12px",
-                    backgroundColor: "#fff",
+                    backgroundColor: "var(--panel-dark)",
                   }}
                 />
                 <select
@@ -386,10 +386,10 @@ export const Library: React.FC = () => {
                   style={{
                     padding: "6px 10px",
                     borderRadius: "4px",
-                    border: "1px solid #D5C8B8",
+                    border: "1px solid var(--border)",
                     fontSize: "12px",
-                    backgroundColor: "#fff",
-                    color: "#4A2418",
+                    backgroundColor: "var(--panel-dark)",
+                    color: "var(--text-main)",
                   }}
                 >
                   <option value="year-desc">Year (Newest first)</option>
@@ -401,20 +401,20 @@ export const Library: React.FC = () => {
             )}
 
             {loading ? (
-              <div style={{ padding: "30px", textAlign: "center", color: "#8A5A7A" }}>Loading papers...</div>
+              <div style={{ padding: "30px", textAlign: "center", color: "var(--accent-ink)" }}>Loading papers...</div>
             ) : papers.length === 0 ? (
               <div
                 style={{
                   padding: "40px",
                   textAlign: "center",
-                  backgroundColor: "#FAF7F2",
+                  backgroundColor: "var(--panel-dark)",
                   borderRadius: "8px",
-                  border: "1px dashed #D5C8B8",
-                  color: "#7A6458",
+                  border: "1px dashed var(--border)",
+                  color: "var(--text-muted)",
                 }}
               >
                 <div style={{ fontSize: "32px", marginBottom: "8px" }}>📄</div>
-                <h3 style={{ margin: "0 0 6px 0", color: "#4A2418" }}>No papers in this collection yet</h3>
+                <h3 style={{ margin: "0 0 6px 0", color: "var(--text-main)" }}>No papers in this collection yet</h3>
                 <p style={{ fontSize: "13px", margin: "0 0 16px 0" }}>
                   Go to the Discover screen to search OpenAlex and add papers here.
                 </p>
@@ -422,8 +422,8 @@ export const Library: React.FC = () => {
                   onClick={() => navigate("/discover")}
                   style={{
                     padding: "8px 18px",
-                    backgroundColor: "#8A5A7A",
-                    color: "#FAF5EC",
+                    backgroundColor: "var(--accent)",
+                    color: "var(--on-accent)",
                     border: "none",
                     borderRadius: "6px",
                     fontWeight: 600,
@@ -434,7 +434,7 @@ export const Library: React.FC = () => {
                 </button>
               </div>
             ) : filteredPapers.length === 0 ? (
-              <div style={{ padding: "30px", textAlign: "center", color: "#8A796F", fontSize: "13px" }}>
+              <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>
                 No papers match "{filterQuery}".
               </div>
             ) : (
@@ -457,8 +457,8 @@ export const Library: React.FC = () => {
                       style={{
                         padding: "18px 20px",
                         borderRadius: "8px",
-                        border: "1px solid #E8DFD3",
-                        backgroundColor: "#fff",
+                        border: "1px solid var(--border)",
+                        backgroundColor: "var(--panel-dark)",
                         boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                         display: "flex",
                         justifyContent: "space-between",
@@ -472,7 +472,7 @@ export const Library: React.FC = () => {
                           style={{
                             fontSize: "16px",
                             fontWeight: 700,
-                            color: "#4A2418",
+                            color: "var(--text-main)",
                             textDecoration: "none",
                             lineHeight: 1.35,
                             display: "inline-block",
@@ -481,7 +481,7 @@ export const Library: React.FC = () => {
                         >
                           {paper.title}
                         </Link>
-                        <div style={{ fontSize: "13px", color: "#7A6458", marginBottom: "8px" }}>
+                        <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "8px" }}>
                           <span>{authorsList.length > 0 ? authorsList.join(", ") : "Unknown authors"}</span>
                           {paper.year && <span> • {paper.year}</span>}
                           {paper.venue && <span> • <em>{paper.venue}</em></span>}
@@ -489,16 +489,16 @@ export const Library: React.FC = () => {
 
                         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                           {paper.doi && (
-                            <span style={{ fontSize: "11px", backgroundColor: "#F0EAE1", color: "#6E4363", padding: "2px 8px", borderRadius: "4px", fontWeight: 500 }}>
+                            <span style={{ fontSize: "11px", backgroundColor: "var(--panel)", color: "var(--accent-ink)", padding: "2px 8px", borderRadius: "4px", fontWeight: 500 }}>
                               DOI: {paper.doi}
                             </span>
                           )}
                           {hasPdf ? (
-                            <span style={{ fontSize: "11px", backgroundColor: "#E8F8F5", color: "#16A085", padding: "2px 8px", borderRadius: "4px", fontWeight: 600 }}>
+                            <span style={{ fontSize: "11px", backgroundColor: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", color: "var(--success-ink)", padding: "2px 8px", borderRadius: "4px", fontWeight: 600 }}>
                               ✓ PDF Uploaded
                             </span>
                           ) : (
-                            <span style={{ fontSize: "11px", backgroundColor: "#FDEDEC", color: "#C0392B", padding: "2px 8px", borderRadius: "4px" }}>
+                            <span style={{ fontSize: "11px", backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", color: "var(--danger-ink)", padding: "2px 8px", borderRadius: "4px" }}>
                               No PDF
                             </span>
                           )}
@@ -512,9 +512,9 @@ export const Library: React.FC = () => {
                           style={{
                             padding: "6px 12px",
                             borderRadius: "4px",
-                            border: "1px solid #D5C8B8",
-                            backgroundColor: "#FAF5EC",
-                            color: "#4A2418",
+                            border: "1px solid var(--border)",
+                            backgroundColor: "var(--panel-dark)",
+                            color: "var(--text-main)",
                             textDecoration: "none",
                             fontSize: "12px",
                             fontWeight: 600,
@@ -528,8 +528,8 @@ export const Library: React.FC = () => {
                             style={{
                               padding: "6px 14px",
                               borderRadius: "4px",
-                              backgroundColor: "#8A5A7A",
-                              color: "#FAF5EC",
+                              backgroundColor: "var(--accent)",
+                              color: "var(--on-accent)",
                               textDecoration: "none",
                               fontSize: "12px",
                               fontWeight: 600,
@@ -543,8 +543,8 @@ export const Library: React.FC = () => {
                             style={{
                               padding: "6px 14px",
                               borderRadius: "4px",
-                              backgroundColor: "#6E4363",
-                              color: "#FAF5EC",
+                              backgroundColor: "var(--accent)",
+                              color: "var(--on-accent)",
                               textDecoration: "none",
                               fontSize: "12px",
                               fontWeight: 600,
@@ -559,7 +559,7 @@ export const Library: React.FC = () => {
                           style={{
                             background: "none",
                             border: "none",
-                            color: "#B03A2E",
+                            color: "var(--danger-ink)",
                             cursor: "pointer",
                             fontSize: "15px",
                             padding: "4px 8px",
@@ -575,7 +575,7 @@ export const Library: React.FC = () => {
             )}
           </div>
         ) : (
-          <div style={{ padding: "60px", textAlign: "center", color: "#8A796F" }}>
+          <div style={{ padding: "60px", textAlign: "center", color: "var(--text-muted)" }}>
             Select or create a collection from the sidebar to view its papers.
           </div>
         )}
@@ -585,7 +585,7 @@ export const Library: React.FC = () => {
       <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create New Collection">
         <form onSubmit={handleCreateCollection}>
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "6px" }}>
               Collection Name
             </label>
             <input
@@ -597,7 +597,7 @@ export const Library: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "14px",
                 boxSizing: "border-box",
@@ -610,8 +610,8 @@ export const Library: React.FC = () => {
               onClick={() => setShowCreateModal(false)}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#fff",
-                border: "1px solid #D5C8B8",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 cursor: "pointer",
               }}
@@ -623,8 +623,8 @@ export const Library: React.FC = () => {
               disabled={!newCollectionName.trim()}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#8A5A7A",
-                color: "#FAF5EC",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 border: "none",
                 borderRadius: "6px",
                 fontWeight: 600,
@@ -641,7 +641,7 @@ export const Library: React.FC = () => {
       <Modal isOpen={Boolean(editingCollection)} onClose={() => setEditingCollection(null)} title="Rename Collection">
         <form onSubmit={handleRename}>
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "6px" }}>
               Collection Name
             </label>
             <input
@@ -652,7 +652,7 @@ export const Library: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "14px",
                 boxSizing: "border-box",
@@ -665,8 +665,8 @@ export const Library: React.FC = () => {
               onClick={() => setEditingCollection(null)}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#fff",
-                border: "1px solid #D5C8B8",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 cursor: "pointer",
               }}
@@ -678,8 +678,8 @@ export const Library: React.FC = () => {
               disabled={!renameValue.trim()}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#8A5A7A",
-                color: "#FAF5EC",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 border: "none",
                 borderRadius: "6px",
                 fontWeight: 600,

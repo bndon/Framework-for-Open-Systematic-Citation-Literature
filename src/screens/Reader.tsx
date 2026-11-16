@@ -106,7 +106,7 @@ export const Reader: React.FC = () => {
           pageWrapper.style.position = "relative";
           pageWrapper.style.marginBottom = "24px";
           pageWrapper.style.boxShadow = "0 3px 10px rgba(0,0,0,0.15)";
-          pageWrapper.style.backgroundColor = "#fff";
+          pageWrapper.style.backgroundColor = "var(--panel-dark)";
           pageWrapper.style.width = `${viewport.width}px`;
           pageWrapper.style.height = `${viewport.height}px`;
           pageWrapper.dataset.pageNumber = String(pageNum);
@@ -236,13 +236,13 @@ export const Reader: React.FC = () => {
   });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", backgroundColor: "#333", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", backgroundColor: "#333", overflow: "hidden" }}>
       {/* Top Controls Bar */}
       <div
         style={{
           padding: "10px 20px",
-          backgroundColor: "#FAF5EC",
-          borderBottom: "1px solid #E4DACB",
+          backgroundColor: "var(--panel-dark)",
+          borderBottom: "1px solid var(--border)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -254,32 +254,32 @@ export const Reader: React.FC = () => {
             onClick={() => navigate(`/paper/${paperId}`)}
             style={{
               padding: "6px 12px",
-              backgroundColor: "#fff",
-              border: "1px solid #D5C8B8",
+              backgroundColor: "var(--panel-dark)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               cursor: "pointer",
               fontWeight: 600,
               fontSize: "12px",
-              color: "#4A2418",
+              color: "var(--text-main)",
             }}
           >
             ← Back to Paper
           </button>
           <div style={{ maxWidth: "450px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            <strong style={{ fontSize: "14px", color: "#4A2418" }}>{paper?.title}</strong>
+            <strong style={{ fontSize: "14px", color: "var(--text-main)" }}>{paper?.title}</strong>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {/* Zoom controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", backgroundColor: "#fff", padding: "2px 6px", borderRadius: "4px", border: "1px solid #D5C8B8" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", backgroundColor: "var(--panel-dark)", padding: "2px 6px", borderRadius: "4px", border: "1px solid var(--border)" }}>
             <button
               onClick={() => setScale((s) => Math.max(0.6, s - 0.2))}
               style={{ border: "none", background: "none", cursor: "pointer", fontWeight: 700 }}
             >
               -
             </button>
-            <span style={{ fontSize: "12px", minWidth: "40px", textAlign: "center", color: "#4A2418" }}>
+            <span style={{ fontSize: "12px", minWidth: "40px", textAlign: "center", color: "var(--text-main)" }}>
               {Math.round(scale * 100)}%
             </span>
             <button
@@ -296,9 +296,9 @@ export const Reader: React.FC = () => {
             title="Toggle dark reading mode"
             style={{
               padding: "5px 10px",
-              backgroundColor: darkMode ? "#333" : "#fff",
-              color: darkMode ? "#FAF5EC" : "#4A2418",
-              border: "1px solid #D5C8B8",
+              backgroundColor: darkMode ? "#333" : "var(--panel-dark)",
+              color: darkMode ? "#FAF5EC" : "var(--text-main)",
+              border: "1px solid var(--border)",
               borderRadius: "4px",
               fontSize: "12px",
               fontWeight: 600,
@@ -312,8 +312,8 @@ export const Reader: React.FC = () => {
             onClick={() => setShowManualModal(true)}
             style={{
               padding: "6px 12px",
-              backgroundColor: "#6E4363",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "4px",
               fontSize: "12px",
@@ -342,7 +342,7 @@ export const Reader: React.FC = () => {
           }}
         >
           {loading ? (
-            <div style={{ color: "#FAF5EC", marginTop: "60px", fontSize: "16px" }}>Loading PDF document...</div>
+            <div style={{ color: "var(--panel-dark)", marginTop: "60px", fontSize: "16px" }}>Loading PDF document...</div>
           ) : (
             <div
               ref={containerRef}
@@ -362,8 +362,8 @@ export const Reader: React.FC = () => {
           style={{
             width: "320px",
             minWidth: "320px",
-            backgroundColor: "#FAF7F2",
-            borderLeft: "1px solid #E4DACB",
+            backgroundColor: "var(--panel-dark)",
+            borderLeft: "1px solid var(--border)",
             display: "flex",
             flexDirection: "column",
           }}
@@ -373,8 +373,8 @@ export const Reader: React.FC = () => {
             <div
               style={{
                 padding: "16px",
-                backgroundColor: "#FEF9E7",
-                borderBottom: "2px solid #F9E79F",
+                backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))",
+                borderBottom: "2px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))",
               }}
             >
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#7D6608", marginBottom: "6px" }}>
@@ -383,14 +383,14 @@ export const Reader: React.FC = () => {
               <div
                 style={{
                   fontSize: "12px",
-                  color: "#333",
+                  color: "var(--text-main)",
                   fontStyle: "italic",
                   maxHeight: "80px",
                   overflowY: "auto",
-                  backgroundColor: "#fff",
+                  backgroundColor: "var(--panel-dark)",
                   padding: "6px 8px",
                   borderRadius: "4px",
-                  border: "1px solid #FAD7A0",
+                  border: "1px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))",
                   marginBottom: "10px",
                 }}
               >
@@ -399,7 +399,7 @@ export const Reader: React.FC = () => {
 
               {/* Color picker selector */}
               <div style={{ display: "flex", gap: "6px", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "11px", color: "#666" }}>Color:</span>
+                <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Color:</span>
                 {["#FFEB3B", "#A3E4D7", "#F5B7B1", "#D7BDE2", "#FAD7A0"].map((c) => (
                   <button
                     key={c}
@@ -410,7 +410,7 @@ export const Reader: React.FC = () => {
                       height: "18px",
                       borderRadius: "50%",
                       backgroundColor: c,
-                      border: colorInput === c ? "2px solid #4A2418" : "1px solid #ccc",
+                      border: colorInput === c ? "2px solid var(--text-main)" : "1px solid #ccc",
                       cursor: "pointer",
                       padding: 0,
                     }}
@@ -428,7 +428,7 @@ export const Reader: React.FC = () => {
                   padding: "6px 8px",
                   fontSize: "12px",
                   borderRadius: "4px",
-                  border: "1px solid #D5C8B8",
+                  border: "1px solid var(--border)",
                   boxSizing: "border-box",
                   marginBottom: "8px",
                 }}
@@ -440,8 +440,8 @@ export const Reader: React.FC = () => {
                   style={{
                     flex: 1,
                     padding: "6px 12px",
-                    backgroundColor: "#8A5A7A",
-                    color: "#FAF5EC",
+                    backgroundColor: "var(--accent)",
+                    color: "var(--on-accent)",
                     border: "none",
                     borderRadius: "4px",
                     fontWeight: 600,
@@ -458,8 +458,8 @@ export const Reader: React.FC = () => {
                   }}
                   style={{
                     padding: "6px 10px",
-                    backgroundColor: "#fff",
-                    border: "1px solid #D5C8B8",
+                    backgroundColor: "var(--panel-dark)",
+                    border: "1px solid var(--border)",
                     borderRadius: "4px",
                     fontSize: "12px",
                     cursor: "pointer",
@@ -475,14 +475,14 @@ export const Reader: React.FC = () => {
           <div
             style={{
               padding: "14px 18px",
-              borderBottom: "1px solid #EADDCB",
+              borderBottom: "1px solid var(--border)",
               display: "flex",
               flexDirection: "column",
               gap: "8px",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, color: "#4A2418" }}>
+              <h3 style={{ fontSize: "14px", fontWeight: 700, margin: 0, color: "var(--text-main)" }}>
                 Annotations ({annotations.length})
               </h3>
             </div>
@@ -497,7 +497,7 @@ export const Reader: React.FC = () => {
                   padding: "5px 8px",
                   fontSize: "11px",
                   borderRadius: "4px",
-                  border: "1px solid #D5C8B8",
+                  border: "1px solid var(--border)",
                   boxSizing: "border-box",
                 }}
               />
@@ -507,11 +507,11 @@ export const Reader: React.FC = () => {
           {/* Annotations List */}
           <div style={{ flex: 1, overflowY: "auto", padding: "14px" }}>
             {annotations.length === 0 ? (
-              <div style={{ textAlign: "center", color: "#8A796F", fontSize: "13px", padding: "30px 10px" }}>
+              <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "13px", padding: "30px 10px" }}>
                 Select text in the PDF with your mouse to highlight it, or click "+ Manual Quote".
               </div>
             ) : filteredAnnotations.length === 0 ? (
-              <div style={{ textAlign: "center", color: "#8A796F", fontSize: "12px", padding: "20px 10px" }}>
+              <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "12px", padding: "20px 10px" }}>
                 No annotations match "{annFilter}".
               </div>
             ) : (
@@ -522,21 +522,21 @@ export const Reader: React.FC = () => {
                     style={{
                       padding: "12px",
                       borderRadius: "6px",
-                      backgroundColor: "#fff",
-                      border: "1px solid #EADDCB",
+                      backgroundColor: "var(--panel-dark)",
+                      border: "1px solid var(--border)",
                       borderLeft: `5px solid ${ann.color || "#8A5A7A"}`,
                       boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
                     }}
                   >
-                    <div style={{ fontSize: "12.5px", color: "#3B2A20", fontStyle: "italic", marginBottom: "6px", lineHeight: 1.4 }}>
+                    <div style={{ fontSize: "12.5px", color: "var(--text-main)", fontStyle: "italic", marginBottom: "6px", lineHeight: 1.4 }}>
                       "{ann.quote}"
                     </div>
                     {ann.note && (
-                      <div style={{ fontSize: "12px", color: "#6E4363", fontWeight: 500, marginBottom: "6px" }}>
+                      <div style={{ fontSize: "12px", color: "var(--accent-ink)", fontWeight: 500, marginBottom: "6px" }}>
                         📝 {ann.note}
                       </div>
                     )}
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", color: "#9E8B7F" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", color: "var(--text-muted)" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                         <span
                           style={{
@@ -560,7 +560,7 @@ export const Reader: React.FC = () => {
                         style={{
                           border: "none",
                           background: "none",
-                          color: "#C0392B",
+                          color: "var(--danger-ink)",
                           cursor: "pointer",
                           fontSize: "12px",
                           padding: "2px",
@@ -581,7 +581,7 @@ export const Reader: React.FC = () => {
       <Modal isOpen={showManualModal} onClose={() => setShowManualModal(false)} title="Add Manual Quote / Annotation">
         <form onSubmit={handleCreateManualAnnotation}>
           <div style={{ marginBottom: "12px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "4px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "4px" }}>
               Passage Quote *
             </label>
             <textarea
@@ -593,7 +593,7 @@ export const Reader: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "8px 10px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "13px",
                 boxSizing: "border-box",
@@ -602,7 +602,7 @@ export const Reader: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: "12px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "4px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "4px" }}>
               Page Number (Optional)
             </label>
             <input
@@ -613,7 +613,7 @@ export const Reader: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "6px 10px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "13px",
                 boxSizing: "border-box",
@@ -622,7 +622,7 @@ export const Reader: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "4px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "4px" }}>
               Note / Observations (Optional)
             </label>
             <input
@@ -633,7 +633,7 @@ export const Reader: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "6px 10px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "13px",
                 boxSizing: "border-box",
@@ -647,8 +647,8 @@ export const Reader: React.FC = () => {
               onClick={() => setShowManualModal(false)}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#fff",
-                border: "1px solid #D5C8B8",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 cursor: "pointer",
               }}
@@ -660,8 +660,8 @@ export const Reader: React.FC = () => {
               disabled={!manualQuote.trim()}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#8A5A7A",
-                color: "#FAF5EC",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 border: "none",
                 borderRadius: "6px",
                 fontWeight: 600,

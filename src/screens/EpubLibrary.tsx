@@ -58,8 +58,8 @@ export const EpubLibrary: React.FC = () => {
     <div style={{ padding: "32px 40px", maxWidth: "900px", margin: "0 auto" }}>
       <header style={{ marginBottom: "24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h1 style={{ fontSize: "24px", color: "#4A2418", margin: "0 0 6px 0" }}>Library reader (EPUB)</h1>
-          <p style={{ color: "#7A6458", fontSize: "14px", margin: 0 }}>
+          <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 6px 0" }}>Library reader (EPUB)</h1>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", margin: 0 }}>
             Classic FOSCL local EPUB book archive with IndexedDB storage.
           </p>
         </div>
@@ -76,8 +76,8 @@ export const EpubLibrary: React.FC = () => {
             onClick={() => document.getElementById("epub-upload")?.click()}
             style={{
               padding: "8px 16px",
-              backgroundColor: "#8A5A7A",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "6px",
               fontWeight: 600,
@@ -91,12 +91,12 @@ export const EpubLibrary: React.FC = () => {
       </header>
 
       {readingBook ? (
-        <div style={{ backgroundColor: "#FAF5EC", border: "1px solid #E4DACB", borderRadius: "8px", padding: "20px" }}>
+        <div style={{ backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "8px", padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-            <h2 style={{ fontSize: "18px", color: "#4A2418", margin: 0 }}>{readingBook.title}</h2>
+            <h2 style={{ fontSize: "18px", color: "var(--text-main)", margin: 0 }}>{readingBook.title}</h2>
             <button
               onClick={() => setReadingBook(null)}
-              style={{ padding: "6px 12px", border: "1px solid #D5C8B8", borderRadius: "4px", backgroundColor: "#fff", cursor: "pointer", fontWeight: 600 }}
+              style={{ padding: "6px 12px", border: "1px solid var(--border)", borderRadius: "4px", backgroundColor: "var(--panel-dark)", cursor: "pointer", fontWeight: 600 }}
             >
               ← Back to Bookshelf
             </button>
@@ -110,9 +110,9 @@ export const EpubLibrary: React.FC = () => {
               style={{
                 width: "100%",
                 height: "70vh",
-                border: "1px solid #E4DACB",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
-                backgroundColor: "#FAF5EC",
+                backgroundColor: "var(--panel-dark)",
               }}
               title={readingBook.title}
             />
@@ -121,18 +121,18 @@ export const EpubLibrary: React.FC = () => {
       ) : (
         <div>
           {books.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px", backgroundColor: "#FAF7F2", borderRadius: "8px", border: "1px dashed #D5C8B8" }}>
+            <div style={{ textAlign: "center", padding: "60px", backgroundColor: "var(--panel-dark)", borderRadius: "8px", border: "1px dashed var(--border)" }}>
               <div style={{ fontSize: "32px", marginBottom: "8px" }}>📖</div>
-              <h3 style={{ margin: "0 0 6px 0", color: "#4A2418" }}>No EPUB books in archive</h3>
-              <p style={{ fontSize: "13px", color: "#7A6458", margin: "0 0 16px 0" }}>
+              <h3 style={{ margin: "0 0 6px 0", color: "var(--text-main)" }}>No EPUB books in archive</h3>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px 0" }}>
                 Import any standard .epub file to read with the built-in reader.
               </p>
               <button
                 onClick={() => document.getElementById("epub-upload")?.click()}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#8A5A7A",
-                  color: "#FAF5EC",
+                  backgroundColor: "var(--accent)",
+                  color: "var(--on-accent)",
                   border: "none",
                   borderRadius: "6px",
                   fontWeight: 600,
@@ -149,8 +149,8 @@ export const EpubLibrary: React.FC = () => {
                 <div
                   key={b.id}
                   style={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #E8DFD3",
+                    backgroundColor: "var(--panel-dark)",
+                    border: "1px solid var(--border)",
                     borderRadius: "8px",
                     padding: "16px",
                     boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
@@ -160,8 +160,8 @@ export const EpubLibrary: React.FC = () => {
                   }}
                 >
                   <div>
-                    <h3 style={{ margin: "0 0 6px 0", fontSize: "15px", color: "#4A2418" }}>{b.title}</h3>
-                    <div style={{ fontSize: "12px", color: "#7A6458", marginBottom: "12px" }}>
+                    <h3 style={{ margin: "0 0 6px 0", fontSize: "15px", color: "var(--text-main)" }}>{b.title}</h3>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "12px" }}>
                       Author: {b.author || "Unknown"}
                     </div>
                   </div>
@@ -170,8 +170,8 @@ export const EpubLibrary: React.FC = () => {
                       onClick={() => handleOpenBook(b)}
                       style={{
                         padding: "6px 12px",
-                        backgroundColor: "#8A5A7A",
-                        color: "#FAF5EC",
+                        backgroundColor: "var(--accent)",
+                        color: "var(--on-accent)",
                         border: "none",
                         borderRadius: "4px",
                         fontSize: "12px",
@@ -185,9 +185,9 @@ export const EpubLibrary: React.FC = () => {
                       onClick={() => handleDeleteBook(b.id, b.title)}
                       style={{
                         padding: "6px 8px",
-                        backgroundColor: "#FDEDEC",
-                        color: "#C0392B",
-                        border: "1px solid #F5B7B1",
+                        backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
+                        color: "var(--danger-ink)",
+                        border: "1px solid color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))",
                         borderRadius: "4px",
                         fontSize: "12px",
                         cursor: "pointer",

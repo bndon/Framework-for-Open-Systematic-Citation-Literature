@@ -1,3 +1,19 @@
+/* fallbacks; applyAppTheme() overrides these with contrast-checked values */
+:root {
+  --on-accent: #ffffff;
+  --accent-ink: var(--accent);
+  --on-signal: #161210;
+  --danger-ink: #c0392b;
+  --success-ink: #16a085;
+  --warn-ink: #b7950b;
+  --deep: color-mix(in srgb, var(--accent) 50%, #000);
+  --on-deep: #ffffff;
+}
+
+/* native controls inherit the theme text colour (inline styles still win) */
+:where(button, select, input, textarea) { color: var(--text-main); font-family: inherit; }
+:where(input, textarea)::placeholder { color: var(--text-muted); opacity: 0.85; }
+
 /* ============================================================
    FOSCL — Plum & Cream theme + Dashboard bento grid.
    Self-contained and additive: imported by src/screens/Dashboard.tsx, so it does not
@@ -42,7 +58,7 @@
 }
 
 /* the global quarter-circle menu button is fixed at the top-left (68px) */
-.dash-head { padding-left: 88px; }
+.dash-head { padding-left: 84px; }
 
 .dash-head {
   display: flex;
@@ -69,7 +85,7 @@
   justify-content: center;
   border-radius: 9px;
   background: var(--accent);
-  color: var(--panel-dark);
+  color: var(--on-accent);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 19px;
   font-weight: 700;
@@ -184,8 +200,8 @@
 }
 
 .bento-card.deep {
-  background: var(--deep, var(--text-main));
-  color: var(--bg);
+  background: var(--deep);
+  color: var(--on-deep);
   box-shadow: none;
 }
 
@@ -194,11 +210,11 @@
 }
 
 .bento-cell:hover .bento-card.feature {
-  background: #f4eaf0;
+  background: color-mix(in srgb, var(--nav-active-bg) 65%, var(--panel-dark));
 }
 
 .bento-cell:hover .bento-card.deep {
-  background: var(--deep, var(--text-main));
+  background: var(--deep);
 }
 
 /* Notches. --nNx / --nNy are circle centres in tile coordinates, --nNr the cut radius;
@@ -274,7 +290,7 @@
 }
 
 .bento-card.deep .bento-icon {
-  background: rgba(249, 244, 236, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   box-shadow: none;
 }
 
@@ -302,8 +318,10 @@
   overflow: hidden;
 }
 
+.bento-card.deep .bento-title { color: var(--on-deep); }
+
 .bento-card.deep .bento-blurb {
-  color: rgba(249, 244, 236, 0.72);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .bento-arrow {
@@ -311,7 +329,7 @@
   top: 14px;
   right: 16px;
   font-size: 15px;
-  color: var(--accent);
+  color: var(--accent-ink);
   opacity: 0;
   transform: translate(-4px, 4px);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -331,7 +349,7 @@
   font-weight: 700;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-ink);
   box-shadow: inset 0 0 0 1px var(--nav-active-border);
 }
 
@@ -347,7 +365,7 @@
   font-size: clamp(26px, 2.8vw, 40px);
   line-height: 1;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .bento-stat-label {
@@ -405,7 +423,7 @@
 .bento-ov {
   --d: var(--d-lg);
   --ov-bg: var(--accent);
-  --ov-fg: var(--panel-dark);
+  --ov-fg: var(--on-accent);
   position: absolute;
   z-index: 3;
   left: var(--ox);
@@ -435,12 +453,12 @@
 
 .bento-ov.sage {
   --ov-bg: var(--signal);
-  --ov-fg: var(--deep, var(--text-main));
+  --ov-fg: var(--on-signal);
 }
 
 .bento-ov.deep {
-  --ov-bg: var(--deep, var(--text-main));
-  --ov-fg: var(--bg);
+  --ov-bg: var(--deep);
+  --ov-fg: var(--on-deep);
 }
 
 /* The accent ring sits just outside the disc, over the background-coloured ring */

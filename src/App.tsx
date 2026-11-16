@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { ToastContainer } from "./components/ToastContainer";
 import { Discover } from "./screens/Discover";
 import { Library } from "./screens/Library";
@@ -22,6 +22,77 @@ import { QuarterCircleNav } from "./components/QuarterCircleNav";
 import { loadAppTheme, applyAppTheme } from "./lib/settings";
 import type { AppTheme } from "./lib/settings";
 
+const PAGE_TITLES: Record<string, string> = {
+  "/about": "About",
+  "/discover": "Discover",
+  "/library": "Library",
+  "/templates": "Templates",
+  "/compare": "Comparison Table",
+  "/comparison": "Comparison Table",
+  "/export": "Export",
+  "/lineage": "Research Lineage",
+  "/graph": "Knowledge Graph",
+  "/knowledge-graph": "Knowledge Graph",
+  "/citations": "Citation Tree",
+  "/citation": "Citation Tree",
+  "/access-hub": "Access Hub",
+  "/converter": "Manuscript Analyzer",
+  "/conference": "Manuscript Analyzer",
+  "/pricing": "Subscription Tiers",
+  "/epub": "Books",
+  "/settings": "Settings",
+};
+
+/** Reserves the corner for the menu button on every page except the Dashboard. */
+const TOP_STRIP = 68;
+const Shell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { pathname } = useLocation();
+  const home = pathname === "/";
+  const title = PAGE_TITLES[pathname] ?? (pathname.startsWith("/paper") ? "Paper" : pathname.startsWith("/reader") ? "Reader" : "");
+  return (
+    <>
+      {!home && (
+        <div
+          style={{
+            height: TOP_STRIP,
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            padding: `0 24px 0 ${TOP_STRIP + 14}px`,
+            borderBottom: "1px solid var(--border)",
+            background: "var(--panel)",
+            color: "var(--text-muted)",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.8px",
+            textTransform: "uppercase",
+            gap: "10px",
+          }}
+        >
+          <span style={{ color: "var(--accent-ink)" }}>FOSCL</span>
+          <span style={{ opacity: 0.5 }}>/</span>
+          <span style={{ color: "var(--text-main)" }}>{title}</span>
+          <span style={{ marginLeft: "auto", fontWeight: 600, textTransform: "none", letterSpacing: 0, opacity: 0.8 }}>
+            Esc opens the menu
+          </span>
+        </div>
+      )}
+      <main
+        style={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </main>
+    </>
+  );
+};
+
 export const App: React.FC = () => {
   const [theme, setTheme] = useState<AppTheme>(() => loadAppTheme());
 
@@ -35,11 +106,11 @@ export const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div style={{ display: "flex", width: "100vw", height: "100vh", overflow: "hidden", background: "var(--bg)", position: "relative" }}>
+      <div style={{ display: "flex", flexDirection: "column", width: "100vw", height: "100vh", overflow: "hidden", background: "var(--bg)", position: "relative" }}>
         {/* Global Quarter Circle Navigation (as seen across all screenshots) */}
         <QuarterCircleNav />
 
-        <main style={{ flex: 1, height: "100vh", overflowY: "auto", position: "relative", display: "flex", flexDirection: "column" }}>
+        <Shell>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/about" element={<About />} />
@@ -64,7 +135,7 @@ export const App: React.FC = () => {
             <Route path="/settings" element={<Settings currentTheme={theme} onThemeChange={handleThemeChange} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </main>
+        </Shell>
         <ToastContainer />
       </div>
     </BrowserRouter>

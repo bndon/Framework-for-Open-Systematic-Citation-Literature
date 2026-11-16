@@ -152,7 +152,7 @@ export const CitationGraph: React.FC = () => {
             style={{
               border: "none",
               background: "none",
-              color: "#8A5A7A",
+              color: "var(--accent-ink)",
               cursor: "pointer",
               fontWeight: 600,
               fontSize: "13px",
@@ -165,15 +165,15 @@ export const CitationGraph: React.FC = () => {
           >
             ← Back
           </button>
-          <h1 style={{ fontSize: "24px", color: "#4A2418", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
+          <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: "8px" }}>
             <span>🌳</span> Citation Tree & Network
           </h1>
           {openalexId ? (
-            <p style={{ color: "#7A6458", fontSize: "14px", margin: 0, fontStyle: "italic", maxWidth: "700px" }}>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", margin: 0, fontStyle: "italic", maxWidth: "700px" }}>
               Focus: "{paperTitle}"
             </p>
           ) : (
-            <p style={{ color: "#7A6458", fontSize: "13px", margin: 0 }}>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", margin: 0 }}>
               Explore connected references and downstream citations visually like Obsidian.
             </p>
           )}
@@ -184,10 +184,10 @@ export const CitationGraph: React.FC = () => {
           <div
             style={{
               display: "flex",
-              backgroundColor: "#EFE6D8",
+              backgroundColor: "var(--panel)",
               padding: "3px",
               borderRadius: "8px",
-              border: "1px solid #D5C8B8",
+              border: "1px solid var(--border)",
             }}
           >
             <button
@@ -199,8 +199,8 @@ export const CitationGraph: React.FC = () => {
                 fontSize: "13px",
                 fontWeight: 600,
                 cursor: "pointer",
-                backgroundColor: viewMode === "graph" ? "#8A5A7A" : "transparent",
-                color: viewMode === "graph" ? "#FAF5EC" : "#4A2418",
+                backgroundColor: viewMode === "graph" ? "var(--accent)" : "transparent",
+                color: viewMode === "graph" ? "var(--on-accent)" : "var(--text-main)",
                 transition: "all 0.15s ease",
                 display: "flex",
                 alignItems: "center",
@@ -218,8 +218,8 @@ export const CitationGraph: React.FC = () => {
                 fontSize: "13px",
                 fontWeight: 600,
                 cursor: "pointer",
-                backgroundColor: viewMode === "list" ? "#8A5A7A" : "transparent",
-                color: viewMode === "list" ? "#FAF5EC" : "#4A2418",
+                backgroundColor: viewMode === "list" ? "var(--accent)" : "transparent",
+                color: viewMode === "list" ? "var(--on-accent)" : "var(--text-main)",
                 transition: "all 0.15s ease",
                 display: "flex",
                 alignItems: "center",
@@ -238,16 +238,16 @@ export const CitationGraph: React.FC = () => {
           <div
             style={{
               padding: "36px",
-              backgroundColor: "#FAF7F2",
+              backgroundColor: "var(--panel-dark)",
               borderRadius: "12px",
-              border: "1px dashed #D5C8B8",
+              border: "1px dashed var(--border)",
               marginBottom: "24px",
               textAlign: "center",
             }}
           >
             <div style={{ fontSize: "40px", marginBottom: "12px" }}>🌳</div>
-            <h2 style={{ fontSize: "18px", color: "#4A2418", margin: "0 0 8px 0" }}>Choose a Paper to Explore Citations</h2>
-            <p style={{ color: "#7A6458", fontSize: "14px", maxWidth: "560px", margin: "0 auto 20px" }}>
+            <h2 style={{ fontSize: "18px", color: "var(--text-main)", margin: "0 0 8px 0" }}>Choose a Paper to Explore Citations</h2>
+            <p style={{ color: "var(--text-muted)", fontSize: "14px", maxWidth: "560px", margin: "0 auto 20px" }}>
               Search citation trees, upstream literature references, and downstream papers that cite your target work.
             </p>
 
@@ -260,18 +260,18 @@ export const CitationGraph: React.FC = () => {
                 style={{
                   flex: 1,
                   padding: "10px 14px",
-                  border: "1px solid #D5C8B8",
+                  border: "1px solid var(--border)",
                   borderRadius: "6px",
                   fontSize: "13px",
-                  backgroundColor: "#fff",
+                  backgroundColor: "var(--panel-dark)",
                 }}
               />
               <button
                 type="submit"
                 style={{
                   padding: "10px 18px",
-                  backgroundColor: "#8A5A7A",
-                  color: "#FAF5EC",
+                  backgroundColor: "var(--accent)",
+                  color: "var(--on-accent)",
                   border: "none",
                   borderRadius: "6px",
                   fontWeight: 600,
@@ -286,7 +286,7 @@ export const CitationGraph: React.FC = () => {
 
           {libraryPapers.length > 0 && (
             <div>
-              <h3 style={{ fontSize: "15px", color: "#4A2418", marginBottom: "12px" }}>
+              <h3 style={{ fontSize: "15px", color: "var(--text-main)", marginBottom: "12px" }}>
                 Or select from your Library papers:
               </h3>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "12px" }}>
@@ -302,23 +302,23 @@ export const CitationGraph: React.FC = () => {
                     }}
                     style={{
                       padding: "16px",
-                      backgroundColor: "#fff",
-                      border: "1px solid #E8DFD3",
+                      backgroundColor: "var(--panel-dark)",
+                      border: "1px solid var(--border)",
                       borderRadius: "8px",
                       cursor: "pointer",
                       transition: "all 0.15s ease",
                       boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#8A5A7A")}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#E8DFD3")}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--accent)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
                   >
-                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#4A2418", lineHeight: 1.35, marginBottom: "6px" }}>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)", lineHeight: 1.35, marginBottom: "6px" }}>
                       {p.title}
                     </div>
-                    <div style={{ fontSize: "12px", color: "#7A6458" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
                       {p.year && <span>{p.year} • </span>}
                       {p.venue && <span>{p.venue} • </span>}
-                      <span style={{ color: "#8A5A7A", fontWeight: 600 }}>Explore Citations →</span>
+                      <span style={{ color: "var(--accent-ink)", fontWeight: 600 }}>Explore Citations →</span>
                     </div>
                   </div>
                 ))}
@@ -329,16 +329,16 @@ export const CitationGraph: React.FC = () => {
       ) : loading ? (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
           <div style={{ fontSize: "36px", animation: "spin 2s linear infinite", marginBottom: "12px" }}>🌀</div>
-          <div style={{ color: "#8A5A7A", fontSize: "16px", fontWeight: 600 }}>Loading citation tree from OpenAlex...</div>
-          <p style={{ color: "#7A6458", fontSize: "13px", marginTop: "6px" }}>Connecting references and citing nodes</p>
+          <div style={{ color: "var(--accent-ink)", fontSize: "16px", fontWeight: 600 }}>Loading citation tree from OpenAlex...</div>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "6px" }}>Connecting references and citing nodes</p>
         </div>
       ) : error ? (
         <div
           style={{
             padding: "20px",
-            backgroundColor: "#FDEDEC",
-            color: "#C0392B",
-            border: "1px solid #F5B7B1",
+            backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
+            color: "var(--danger-ink)",
+            border: "1px solid color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))",
             borderRadius: "8px",
             margin: "20px 0",
           }}
@@ -369,8 +369,8 @@ export const CitationGraph: React.FC = () => {
               style={{
                 flex: 1,
                 padding: "12px 16px",
-                backgroundColor: "#FAF7F2",
-                border: "1px solid #E4DACB",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
@@ -378,10 +378,10 @@ export const CitationGraph: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#7a5a8e", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase" }}>
                   References (Upstream)
                 </div>
-                <div style={{ fontSize: "22px", fontWeight: 800, color: "#4A2418" }}>{graph.references.length}</div>
+                <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-main)" }}>{graph.references.length}</div>
               </div>
               <span style={{ fontSize: "24px" }}>📚</span>
             </div>
@@ -390,8 +390,8 @@ export const CitationGraph: React.FC = () => {
               style={{
                 flex: 1,
                 padding: "12px 16px",
-                backgroundColor: "#FAF7F2",
-                border: "1px solid #E4DACB",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
@@ -399,10 +399,10 @@ export const CitationGraph: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#a8546a", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase" }}>
                   Citations (Downstream)
                 </div>
-                <div style={{ fontSize: "22px", fontWeight: 800, color: "#4A2418" }}>{graph.cited_by.length}</div>
+                <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-main)" }}>{graph.cited_by.length}</div>
               </div>
               <span style={{ fontSize: "24px" }}>🌟</span>
             </div>
@@ -411,8 +411,8 @@ export const CitationGraph: React.FC = () => {
               style={{
                 flex: 1,
                 padding: "12px 16px",
-                backgroundColor: "#FAF7F2",
-                border: "1px solid #E4DACB",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
                 display: "flex",
                 alignItems: "center",
@@ -420,10 +420,10 @@ export const CitationGraph: React.FC = () => {
               }}
             >
               <div>
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#8A5A7A", textTransform: "uppercase" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-ink)", textTransform: "uppercase" }}>
                   Total Nodes in Graph
                 </div>
-                <div style={{ fontSize: "22px", fontWeight: 800, color: "#4A2418" }}>
+                <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-main)" }}>
                   {1 + graph.references.length + graph.cited_by.length}
                 </div>
               </div>
@@ -441,14 +441,14 @@ export const CitationGraph: React.FC = () => {
                   justifyContent: "space-between",
                   alignItems: "center",
                   padding: "8px 12px",
-                  backgroundColor: "#FAF7F2",
-                  border: "1px solid #E4DACB",
+                  backgroundColor: "var(--panel-dark)",
+                  border: "1px solid var(--border)",
                   borderRadius: "8px 8px 0 0",
                   borderBottom: "none",
                 }}
               >
                 <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 700, color: "#7A6458", textTransform: "uppercase", marginRight: "4px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", marginRight: "4px" }}>
                     Filter:
                   </span>
                   {[
@@ -466,9 +466,9 @@ export const CitationGraph: React.FC = () => {
                         borderRadius: "4px",
                         border: "1px solid",
                         cursor: "pointer",
-                        backgroundColor: graphFilter === f.key ? "#8A5A7A" : "#fff",
-                        borderColor: graphFilter === f.key ? "#8A5A7A" : "#D5C8B8",
-                        color: graphFilter === f.key ? "#FAF5EC" : "#4A2418",
+                        backgroundColor: graphFilter === f.key ? "var(--accent)" : "var(--panel-dark)",
+                        borderColor: graphFilter === f.key ? "var(--accent)" : "var(--border)",
+                        color: graphFilter === f.key ? "var(--on-accent)" : "var(--text-main)",
                         transition: "all 0.15s ease",
                       }}
                     >
@@ -478,9 +478,9 @@ export const CitationGraph: React.FC = () => {
                 </div>
 
                 {/* Graph Legend */}
-                <div style={{ display: "flex", gap: "14px", alignItems: "center", fontSize: "11px", color: "#7A6458" }}>
+                <div style={{ display: "flex", gap: "14px", alignItems: "center", fontSize: "11px", color: "var(--text-muted)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#8A5A7A" }} />
+                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "var(--accent)" }} />
                     <span style={{ fontWeight: 600 }}>Center Work</span>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
@@ -499,7 +499,7 @@ export const CitationGraph: React.FC = () => {
                 style={{
                   flex: 1,
                   minHeight: "560px",
-                  border: "1px solid #E4DACB",
+                  border: "1px solid var(--border)",
                   borderRadius: "0 0 8px 8px",
                   overflow: "hidden",
                   position: "relative",
@@ -522,8 +522,8 @@ export const CitationGraph: React.FC = () => {
                       bottom: "20px",
                       right: "20px",
                       width: "360px",
-                      backgroundColor: "#FAF7F2",
-                      border: "1px solid #8A5A7A",
+                      backgroundColor: "var(--panel-dark)",
+                      border: "1px solid var(--accent)",
                       borderRadius: "10px",
                       padding: "18px",
                       boxShadow: "0 8px 24px rgba(74, 36, 24, 0.15)",
@@ -540,7 +540,7 @@ export const CitationGraph: React.FC = () => {
                           borderRadius: "4px",
                           backgroundColor:
                             selectedNode.type === "center"
-                              ? "#8A5A7A"
+                              ? "var(--accent)"
                               : selectedNode.type === "reference"
                               ? "#7a5a8e"
                               : "#a8546a",
@@ -555,7 +555,7 @@ export const CitationGraph: React.FC = () => {
                           border: "none",
                           background: "none",
                           cursor: "pointer",
-                          color: "#7A6458",
+                          color: "var(--text-muted)",
                           fontSize: "16px",
                           lineHeight: 1,
                           padding: "0 4px",
@@ -565,11 +565,11 @@ export const CitationGraph: React.FC = () => {
                       </button>
                     </div>
 
-                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "#4A2418", margin: "0 0 8px 0", lineHeight: 1.35 }}>
+                    <h3 style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-main)", margin: "0 0 8px 0", lineHeight: 1.35 }}>
                       {selectedNode.data?.title || selectedNode.label}
                     </h3>
 
-                    <div style={{ fontSize: "12px", color: "#7A6458", marginBottom: "14px", display: "flex", flexDirection: "column", gap: "3px" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "14px", display: "flex", flexDirection: "column", gap: "3px" }}>
                       {selectedNode.data?.year && <div><strong>Year:</strong> {selectedNode.data.year}</div>}
                       {selectedNode.data?.doi && (
                         <div>
@@ -578,7 +578,7 @@ export const CitationGraph: React.FC = () => {
                             href={`https://doi.org/${selectedNode.data.doi}`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ color: "#8A5A7A", textDecoration: "none" }}
+                            style={{ color: "var(--accent-ink)", textDecoration: "none" }}
                           >
                             {selectedNode.data.doi} ↗
                           </a>
@@ -596,8 +596,8 @@ export const CitationGraph: React.FC = () => {
                           style={{
                             flex: 1,
                             padding: "8px 12px",
-                            backgroundColor: "#8A5A7A",
-                            color: "#FAF5EC",
+                            backgroundColor: "var(--accent)",
+                            color: "var(--on-accent)",
                             border: "none",
                             borderRadius: "6px",
                             fontSize: "12px",
@@ -619,9 +619,9 @@ export const CitationGraph: React.FC = () => {
                           rel="noreferrer"
                           style={{
                             padding: "8px 12px",
-                            backgroundColor: "#fff",
-                            color: "#4A2418",
-                            border: "1px solid #D5C8B8",
+                            backgroundColor: "var(--panel-dark)",
+                            color: "var(--text-main)",
+                            border: "1px solid var(--border)",
                             borderRadius: "6px",
                             fontSize: "12px",
                             fontWeight: 600,
@@ -648,9 +648,9 @@ export const CitationGraph: React.FC = () => {
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    backgroundColor: activeTab === "references" ? "#8A5A7A" : "#FAF7F2",
-                    color: activeTab === "references" ? "#FAF5EC" : "#4A2418",
-                    border: `1px solid ${activeTab === "references" ? "#8A5A7A" : "#E4DACB"}`,
+                    backgroundColor: activeTab === "references" ? "var(--accent)" : "var(--panel-dark)",
+                    color: activeTab === "references" ? "var(--on-accent)" : "var(--text-main)",
+                    border: `1px solid ${activeTab === "references" ? "var(--accent)" : "var(--border)"}`,
                     borderRadius: "8px",
                     cursor: "pointer",
                     textAlign: "left",
@@ -665,9 +665,9 @@ export const CitationGraph: React.FC = () => {
                   style={{
                     flex: 1,
                     padding: "12px 16px",
-                    backgroundColor: activeTab === "cited_by" ? "#8A5A7A" : "#FAF7F2",
-                    color: activeTab === "cited_by" ? "#FAF5EC" : "#4A2418",
-                    border: `1px solid ${activeTab === "cited_by" ? "#8A5A7A" : "#E4DACB"}`,
+                    backgroundColor: activeTab === "cited_by" ? "var(--accent)" : "var(--panel-dark)",
+                    color: activeTab === "cited_by" ? "var(--on-accent)" : "var(--text-main)",
+                    border: `1px solid ${activeTab === "cited_by" ? "var(--accent)" : "var(--border)"}`,
                     borderRadius: "8px",
                     cursor: "pointer",
                     textAlign: "left",
@@ -684,10 +684,10 @@ export const CitationGraph: React.FC = () => {
                   style={{
                     padding: "36px",
                     textAlign: "center",
-                    color: "#8A796F",
-                    backgroundColor: "#FAF7F2",
+                    color: "var(--text-muted)",
+                    backgroundColor: "var(--panel-dark)",
                     borderRadius: "8px",
-                    border: "1px dashed #D5C8B8",
+                    border: "1px dashed var(--border)",
                   }}
                 >
                   No {activeTab === "references" ? "references" : "citations"} found for this work in OpenAlex.
@@ -699,8 +699,8 @@ export const CitationGraph: React.FC = () => {
                       key={node.openalex_id || idx}
                       style={{
                         padding: "16px 20px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #E8DFD3",
+                        backgroundColor: "var(--panel-dark)",
+                        border: "1px solid var(--border)",
                         borderRadius: "8px",
                         boxShadow: "0 1px 2px rgba(0,0,0,0.03)",
                         display: "flex",
@@ -709,11 +709,11 @@ export const CitationGraph: React.FC = () => {
                       }}
                     >
                       <div style={{ flex: 1, paddingRight: "16px" }}>
-                        <div style={{ fontSize: "14px", fontWeight: 600, color: "#4A2418", lineHeight: 1.35, marginBottom: "6px" }}>
+                        <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-main)", lineHeight: 1.35, marginBottom: "6px" }}>
                           {node.title}
                         </div>
                         <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                          {node.year && <span style={{ fontSize: "12px", color: "#7A6458" }}>Year: {node.year}</span>}
+                          {node.year && <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Year: {node.year}</span>}
                           {node.doi && (
                             <a
                               href={`https://doi.org/${node.doi}`}
@@ -721,8 +721,8 @@ export const CitationGraph: React.FC = () => {
                               rel="noreferrer"
                               style={{
                                 fontSize: "11px",
-                                backgroundColor: "#F0EAE1",
-                                color: "#6E4363",
+                                backgroundColor: "var(--panel)",
+                                color: "var(--accent-ink)",
                                 padding: "2px 8px",
                                 borderRadius: "4px",
                                 textDecoration: "none",
@@ -740,9 +740,9 @@ export const CitationGraph: React.FC = () => {
                           onClick={() => pivotToNode(node)}
                           style={{
                             padding: "8px 14px",
-                            backgroundColor: "#FAF5EC",
-                            border: "1px solid #8A5A7A",
-                            color: "#8A5A7A",
+                            backgroundColor: "var(--panel-dark)",
+                            border: "1px solid var(--accent)",
+                            color: "var(--accent-ink)",
                             borderRadius: "6px",
                             fontSize: "12px",
                             fontWeight: 600,
@@ -751,12 +751,12 @@ export const CitationGraph: React.FC = () => {
                             transition: "all 0.15s ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "#8A5A7A";
-                            e.currentTarget.style.color = "#FAF5EC";
+                            e.currentTarget.style.backgroundColor = "var(--accent)";
+                            e.currentTarget.style.color = "var(--on-accent)";
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "#FAF5EC";
-                            e.currentTarget.style.color = "#8A5A7A";
+                            e.currentTarget.style.backgroundColor = "var(--panel-dark)";
+                            e.currentTarget.style.color = "var(--accent-ink)";
                           }}
                         >
                           🌳 Explore Tree →

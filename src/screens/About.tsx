@@ -50,14 +50,14 @@ const sectionTitle: React.CSSProperties = {
   fontWeight: 700,
   letterSpacing: "0.8px",
   textTransform: "uppercase",
-  color: "var(--accent)",
+  color: "var(--accent-ink)",
 };
 
 export const About: React.FC = () => {
   return (
     <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "44px 40px 56px" }}>
-        <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--accent)", marginBottom: "8px" }}>
+        <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--accent-ink)", marginBottom: "8px" }}>
           About
         </div>
         <h1 style={{ margin: 0, fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "40px", letterSpacing: "2px", color: "var(--text-main)" }}>
@@ -88,7 +88,7 @@ export const About: React.FC = () => {
                   boxShadow: "inset 0 0 0 1px var(--border)",
                 }}
               >
-                <div style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 700, color: "var(--accent)", lineHeight: 1 }}>
+                <div style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 700, color: "var(--accent-ink)", lineHeight: 1 }}>
                   {letter}
                 </div>
                 <div style={{ marginTop: "6px", fontSize: "13px", fontWeight: 600, color: "var(--text-main)" }}>{word}</div>
@@ -120,7 +120,7 @@ export const About: React.FC = () => {
                   {text}
                   <div style={{ marginTop: "6px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
                     {links.map((l) => (
-                      <Link key={l.to} to={l.to} style={{ fontWeight: 600, fontSize: "12.5px", color: "var(--accent)", textDecoration: "none" }}>
+                      <Link key={l.to} to={l.to} style={{ fontWeight: 600, fontSize: "12.5px", color: "var(--accent-ink)", textDecoration: "none" }}>
                         {l.label} →
                       </Link>
                     ))}

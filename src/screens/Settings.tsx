@@ -16,6 +16,15 @@ interface ThemeOption {
   dark: boolean;
 }
 
+/** black or white, whichever reads better on `hex` (swatch check marks). */
+function readableOn(hex: string): string {
+  const h = hex.replace("#", "");
+  const lin = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)));
+  const l = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  // contrast with white vs. with near-black; pick the better one
+  return 1.05 / (l + 0.05) >= (l + 0.05) / 0.0563 ? "#ffffff" : "#161210";
+}
+
 const THEMES: ThemeOption[] = [
   {
     id: "plum",
@@ -167,7 +176,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "44px 44px" }}>
         {/* Page Header */}
         <div style={{ marginBottom: "40px" }}>
-          <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--accent)", marginBottom: "8px" }}>
+          <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--accent-ink)", marginBottom: "8px" }}>
             Preferences
           </div>
           <h1 style={{ margin: 0, fontSize: "28px", fontWeight: 500, letterSpacing: "-0.6px", color: "var(--text-main)" }}>
@@ -196,7 +205,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
               border: "1px solid var(--accent)",
               fontSize: "11px",
               fontWeight: 600,
-              color: "var(--accent)",
+              color: "var(--accent-ink)",
             }}>
               {THEMES.find(t => t.id === currentTheme)?.name ?? currentTheme}
             </div>
@@ -302,7 +311,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: "11px",
-                        color: theme.dark ? theme.bg : "#fff",
+                        color: readableOn(theme.accent),
                         fontWeight: 700,
                       }}>
                         ✓

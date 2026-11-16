@@ -18,14 +18,14 @@ export const AccessHub: React.FC = () => {
       <SimulatedBadge type="simulated" message="Simulated Access Hub & Marketplace. Sample prices only — no real financial transactions." />
 
       <header style={{ marginBottom: "24px" }}>
-        <h1 style={{ fontSize: "24px", color: "#4A2418", margin: "0 0 6px 0" }}>Publisher Access Hub</h1>
-        <p style={{ color: "#7A6458", fontSize: "14px", margin: 0 }}>
+        <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 6px 0" }}>Publisher Access Hub</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "14px", margin: 0 }}>
           Direct DOI links, Open Access verification, and publisher institutional acquisition simulations.
         </p>
       </header>
 
       {papers.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px", color: "#8A796F", backgroundColor: "#FAF7F2", borderRadius: "8px" }}>
+        <div style={{ textAlign: "center", padding: "60px", color: "var(--text-muted)", backgroundColor: "var(--panel-dark)", borderRadius: "8px" }}>
           No papers in your workspace yet. Discover and save papers first!
         </div>
       ) : (
@@ -35,9 +35,9 @@ export const AccessHub: React.FC = () => {
               key={p.id}
               style={{
                 padding: "18px 20px",
-                border: "1px solid #E8DFD3",
+                border: "1px solid var(--border)",
                 borderRadius: "8px",
-                backgroundColor: "#fff",
+                backgroundColor: "var(--panel-dark)",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -45,10 +45,10 @@ export const AccessHub: React.FC = () => {
               }}
             >
               <div style={{ flex: 1, paddingRight: "20px" }}>
-                <h3 style={{ margin: "0 0 6px 0", fontSize: "15.5px", color: "#4A2418" }}>
+                <h3 style={{ margin: "0 0 6px 0", fontSize: "15.5px", color: "var(--text-main)" }}>
                   {p.title}
                 </h3>
-                <div style={{ fontSize: "12.5px", color: "#7A6458", marginBottom: "8px" }}>
+                <div style={{ fontSize: "12.5px", color: "var(--text-muted)", marginBottom: "8px" }}>
                   {p.venue || "Scholarly venue"} {p.year ? `(${p.year})` : ""}
                 </div>
 
@@ -58,12 +58,12 @@ export const AccessHub: React.FC = () => {
                       href={`https://doi.org/${p.doi}`}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ fontSize: "12px", color: "#8A5A7A", textDecoration: "none", fontWeight: 600 }}
+                      style={{ fontSize: "12px", color: "var(--accent-ink)", textDecoration: "none", fontWeight: 600 }}
                     >
                       DOI: {p.doi} ↗
                     </a>
                   ) : (
-                    <span style={{ fontSize: "12px", color: "#999" }}>No DOI registered</span>
+                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>No DOI registered</span>
                   )}
 
                   {p.oa_url ? (
@@ -73,8 +73,8 @@ export const AccessHub: React.FC = () => {
                       rel="noreferrer"
                       style={{
                         fontSize: "11px",
-                        backgroundColor: "#E8F8F5",
-                        color: "#16A085",
+                        backgroundColor: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))",
+                        color: "var(--success-ink)",
                         padding: "2px 8px",
                         borderRadius: "4px",
                         fontWeight: 600,
@@ -84,7 +84,7 @@ export const AccessHub: React.FC = () => {
                       🔓 Open Access Available
                     </a>
                   ) : (
-                    <span style={{ fontSize: "11px", backgroundColor: "#FDF2E9", color: "#BA4A00", padding: "2px 8px", borderRadius: "4px" }}>
+                    <span style={{ fontSize: "11px", backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", padding: "2px 8px", borderRadius: "4px" }}>
                       Institutional Access / Paywall
                     </span>
                   )}
@@ -96,9 +96,9 @@ export const AccessHub: React.FC = () => {
                   onClick={() => setPurchaseModalPaper(p)}
                   style={{
                     padding: "8px 16px",
-                    backgroundColor: "#FAF5EC",
-                    border: "1px solid #D5C8B8",
-                    color: "#4A2418",
+                    backgroundColor: "var(--panel-dark)",
+                    border: "1px solid var(--border)",
+                    color: "var(--text-main)",
                     borderRadius: "6px",
                     fontWeight: 600,
                     fontSize: "13px",
@@ -122,41 +122,41 @@ export const AccessHub: React.FC = () => {
       >
         <div style={{ marginBottom: "16px" }}>
           <SimulatedBadge type="simulated" message="Mock payment preview. No charges or card processing." />
-          <h4 style={{ margin: "0 0 6px 0", color: "#4A2418" }}>{purchaseModalPaper?.title}</h4>
-          <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#7A6458" }}>
+          <h4 style={{ margin: "0 0 6px 0", color: "var(--text-main)" }}>{purchaseModalPaper?.title}</h4>
+          <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "var(--text-muted)" }}>
             DOI: {purchaseModalPaper?.doi || "N/A"}
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
-            <div style={{ padding: "12px", border: "1px solid #EADDCB", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ padding: "12px", border: "1px solid var(--border)", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <strong>24-Hour Rental</strong>
-                <div style={{ fontSize: "12px", color: "#777" }}>Read-only online access</div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Read-only online access</div>
               </div>
-              <span style={{ fontSize: "16px", fontWeight: 700, color: "#8A5A7A" }}>$8.99</span>
+              <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--accent-ink)" }}>$8.99</span>
             </div>
 
-            <div style={{ padding: "12px", border: "2px solid #8A5A7A", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "#FAF5EC" }}>
+            <div style={{ padding: "12px", border: "2px solid var(--accent)", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: "var(--panel-dark)" }}>
               <div>
                 <strong>Full PDF Download (Single User)</strong>
-                <div style={{ fontSize: "12px", color: "#777" }}>Perpetual personal research license</div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Perpetual personal research license</div>
               </div>
-              <span style={{ fontSize: "16px", fontWeight: 700, color: "#8A5A7A" }}>$32.50</span>
+              <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--accent-ink)" }}>$32.50</span>
             </div>
 
-            <div style={{ padding: "12px", border: "1px solid #EADDCB", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ padding: "12px", border: "1px solid var(--border)", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
                 <strong>Institutional Multi-User License</strong>
-                <div style={{ fontSize: "12px", color: "#777" }}>Lab & group shared archive</div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Lab & group shared archive</div>
               </div>
-              <span style={{ fontSize: "16px", fontWeight: 700, color: "#8A5A7A" }}>$120.00</span>
+              <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--accent-ink)" }}>$120.00</span>
             </div>
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
             <button
               onClick={() => setPurchaseModalPaper(null)}
-              style={{ padding: "8px 16px", backgroundColor: "#fff", border: "1px solid #D5C8B8", borderRadius: "6px", cursor: "pointer" }}
+              style={{ padding: "8px 16px", backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "6px", cursor: "pointer" }}
             >
               Close
             </button>
@@ -167,8 +167,8 @@ export const AccessHub: React.FC = () => {
               }}
               style={{
                 padding: "8px 18px",
-                backgroundColor: "#8A5A7A",
-                color: "#FAF5EC",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 border: "none",
                 borderRadius: "6px",
                 fontWeight: 600,

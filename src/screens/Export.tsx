@@ -421,8 +421,8 @@ export const Export: React.FC = () => {
           ...referencesContent,
         ],
         styles: {
-          header: { fontSize: 18, bold: true, margin: [0, 0, 0, 6], color: "#4A2418" },
-          sectionHeader: { fontSize: 14, bold: true, margin: [0, 12, 0, 8], color: "#6E4363" },
+          header: { fontSize: 18, bold: true, margin: [0, 0, 0, 6], color: "var(--text-main)" },
+          sectionHeader: { fontSize: 14, bold: true, margin: [0, 12, 0, 8], color: "var(--accent-ink)" },
         },
       };
 
@@ -447,23 +447,23 @@ export const Export: React.FC = () => {
   return (
     <div style={{ padding: "36px 44px", maxWidth: "800px", margin: "0 auto" }}>
       <header style={{ marginBottom: "26px" }}>
-        <h1 style={{ fontSize: "24px", color: "#4A2418", margin: "0 0 6px 0" }}>Export Synthesis</h1>
-        <p style={{ margin: 0, fontSize: "14px", color: "#7A6458" }}>
+        <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 6px 0" }}>Export Synthesis</h1>
+        <p style={{ margin: 0, fontSize: "14px", color: "var(--text-muted)" }}>
           Export the cross-paper comparison table, annotations appendix, research claims & lineage, and reference list to DOCX or PDF.
         </p>
       </header>
 
       {/* Selectors */}
-      <div style={{ backgroundColor: "#FAF7F2", border: "1px solid #EADDCB", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
+      <div style={{ backgroundColor: "var(--panel-dark)", border: "1px solid var(--border)", borderRadius: "8px", padding: "20px", marginBottom: "24px" }}>
         <div style={{ display: "flex", gap: "20px", marginBottom: "16px" }}>
           <div style={{ flex: 1 }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>
               Collection to Export
             </label>
             <select
               value={selectedCollectionId}
               onChange={(e) => setSelectedCollectionId(e.target.value)}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #C4B5A5", fontSize: "13px", backgroundColor: "#fff" }}
+              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid var(--border)", fontSize: "13px", backgroundColor: "var(--panel-dark)" }}
             >
               {collections.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -474,13 +474,13 @@ export const Export: React.FC = () => {
           </div>
 
           <div style={{ flex: 1 }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "var(--text-main)", marginBottom: "6px" }}>
               Template
             </label>
             <select
               value={selectedTemplateId}
               onChange={(e) => setSelectedTemplateId(e.target.value)}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #C4B5A5", fontSize: "13px", backgroundColor: "#fff" }}
+              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid var(--border)", fontSize: "13px", backgroundColor: "var(--panel-dark)" }}
             >
               {templates.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -491,7 +491,7 @@ export const Export: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ fontSize: "13px", color: "#666" }}>
+        <div style={{ fontSize: "13px", color: "var(--text-muted)" }}>
           <strong>Papers in export:</strong> {papers.length}
         </div>
       </div>
@@ -501,10 +501,10 @@ export const Export: React.FC = () => {
         {/* Word Document */}
         <div
           style={{
-            border: "1px solid #E8DFD3",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
             padding: "24px",
-            backgroundColor: "#fff",
+            backgroundColor: "var(--panel-dark)",
             boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
             display: "flex",
             flexDirection: "column",
@@ -513,8 +513,8 @@ export const Export: React.FC = () => {
         >
           <div>
             <div style={{ fontSize: "32px", marginBottom: "10px" }}>📝</div>
-            <h3 style={{ margin: "0 0 6px 0", color: "#4A2418" }}>Microsoft Word (.docx)</h3>
-            <p style={{ fontSize: "13px", color: "#7A6458", margin: "0 0 16px 0", lineHeight: 1.5 }}>
+            <h3 style={{ margin: "0 0 6px 0", color: "var(--text-main)" }}>Microsoft Word (.docx)</h3>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px 0", lineHeight: 1.5 }}>
               Generates a formatted DOCX document with title, structured comparison table, quotation appendix, claim lineage, and references.
             </p>
           </div>
@@ -539,10 +539,10 @@ export const Export: React.FC = () => {
         {/* PDF Document */}
         <div
           style={{
-            border: "1px solid #E8DFD3",
+            border: "1px solid var(--border)",
             borderRadius: "8px",
             padding: "24px",
-            backgroundColor: "#fff",
+            backgroundColor: "var(--panel-dark)",
             boxShadow: "0 2px 4px rgba(0,0,0,0.04)",
             display: "flex",
             flexDirection: "column",
@@ -551,8 +551,8 @@ export const Export: React.FC = () => {
         >
           <div>
             <div style={{ fontSize: "32px", marginBottom: "10px" }}>📄</div>
-            <h3 style={{ margin: "0 0 6px 0", color: "#4A2418" }}>PDF Document (.pdf)</h3>
-            <p style={{ fontSize: "13px", color: "#7A6458", margin: "0 0 16px 0", lineHeight: 1.5 }}>
+            <h3 style={{ margin: "0 0 6px 0", color: "var(--text-main)" }}>PDF Document (.pdf)</h3>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 16px 0", lineHeight: 1.5 }}>
               Generates a landscape PDF document via pdfmake with identical table structure, annotations, claims, and references.
             </p>
           </div>

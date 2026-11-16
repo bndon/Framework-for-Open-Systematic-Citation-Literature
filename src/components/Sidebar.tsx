@@ -135,7 +135,7 @@ export const Sidebar: React.FC = () => {
               <div
                 style={{
                   fontSize: "9px",
-                  color: "var(--accent)",
+                  color: "var(--accent-ink)",
                   letterSpacing: "0.5px",
                   textTransform: "uppercase",
                   fontWeight: 600,
@@ -265,7 +265,7 @@ export const Sidebar: React.FC = () => {
               }}
             >
               <span>Collections</span>
-              <span style={{ fontSize: "10px", color: "var(--accent)" }}>{collections.length}</span>
+              <span style={{ fontSize: "10px", color: "var(--accent-ink)" }}>{collections.length}</span>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "2px", maxHeight: "150px", overflowY: "auto" }}>
@@ -404,7 +404,7 @@ export const Sidebar: React.FC = () => {
                   fontWeight: 700,
                   padding: "1px 5px",
                   borderRadius: "3px",
-                  backgroundColor: item.tag === "Sim" ? "#FFE082" : "#E1BEE7",
+                  backgroundColor: item.tag === "Sim" ? "#FFE082" : "color-mix(in srgb, var(--accent-ink) 30%, var(--panel-dark))",
                   color: item.tag === "Sim" ? "#8D6E63" : "#4A148C",
                 }}
               >
@@ -419,9 +419,9 @@ export const Sidebar: React.FC = () => {
       <div
         style={{
           padding: collapsed ? "10px 4px" : "10px 14px",
-          borderTop: "1px solid #EFE6D8",
+          borderTop: "1px solid var(--border)",
           fontSize: "11px",
-          color: "#8A5A7A",
+          color: "var(--accent-ink)",
           display: "flex",
           justifyContent: collapsed ? "center" : "space-between",
           alignItems: "center",
@@ -431,7 +431,7 @@ export const Sidebar: React.FC = () => {
         {!collapsed ? (
           <>
             <span style={{ fontWeight: 600 }}>FOSCL v0.2.0</span>
-            <span style={{ fontSize: "9px", background: "#E8DDD0", padding: "2px 6px", borderRadius: "3px", color: "#4A2418", fontWeight: 600 }}>
+            <span style={{ fontSize: "9px", background: "#E8DDD0", padding: "2px 6px", borderRadius: "3px", color: "var(--text-main)", fontWeight: 600 }}>
               Ctrl+\
             </span>
           </>

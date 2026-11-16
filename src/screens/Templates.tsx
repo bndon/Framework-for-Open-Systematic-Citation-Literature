@@ -168,14 +168,14 @@ export const Templates: React.FC = () => {
   const currentTemplate = templates.find((t) => t.id === selectedTemplateId);
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
       {/* Left panel: Templates list */}
       <div
         style={{
           width: "280px",
           minWidth: "280px",
-          backgroundColor: "#FAF7F2",
-          borderRight: "1px solid #E4DACB",
+          backgroundColor: "var(--panel-dark)",
+          borderRight: "1px solid var(--border)",
           display: "flex",
           flexDirection: "column",
         }}
@@ -183,21 +183,21 @@ export const Templates: React.FC = () => {
         <div
           style={{
             padding: "18px 16px",
-            borderBottom: "1px solid #EADDCB",
+            borderBottom: "1px solid var(--border)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <h2 style={{ fontSize: "16px", fontWeight: 700, margin: 0, color: "#4A2418" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 700, margin: 0, color: "var(--text-main)" }}>
             Templates
           </h2>
           <button
             onClick={() => setShowNewModal(true)}
             style={{
               padding: "4px 10px",
-              backgroundColor: "#8A5A7A",
-              color: "#FAF5EC",
+              backgroundColor: "var(--accent)",
+              color: "var(--on-accent)",
               border: "none",
               borderRadius: "4px",
               fontSize: "12px",
@@ -211,7 +211,7 @@ export const Templates: React.FC = () => {
 
         <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
           {templates.length === 0 ? (
-            <div style={{ padding: "20px 10px", textAlign: "center", color: "#8A796F", fontSize: "13px" }}>
+            <div style={{ padding: "20px 10px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>
               No templates found.
             </div>
           ) : (
@@ -226,8 +226,8 @@ export const Templates: React.FC = () => {
                     borderRadius: "6px",
                     marginBottom: "4px",
                     cursor: "pointer",
-                    backgroundColor: isActive ? "#8A5A7A" : "transparent",
-                    color: isActive ? "#FAF5EC" : "#4A2418",
+                    backgroundColor: isActive ? "var(--accent)" : "transparent",
+                    color: isActive ? "var(--on-accent)" : "var(--text-main)",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -246,7 +246,7 @@ export const Templates: React.FC = () => {
                       style={{
                         background: "none",
                         border: "none",
-                        color: isActive ? "#FAF5EC" : "#8A796F",
+                        color: isActive ? "var(--on-accent)" : "var(--text-muted)",
                         cursor: "pointer",
                         fontSize: "12px",
                       }}
@@ -262,7 +262,7 @@ export const Templates: React.FC = () => {
       </div>
 
       {/* Right panel: Template fields editor */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", backgroundColor: "#fff" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", backgroundColor: "var(--panel-dark)" }}>
         {currentTemplate ? (
           <div style={{ padding: "28px 36px", maxWidth: "800px" }}>
             <div
@@ -272,14 +272,14 @@ export const Templates: React.FC = () => {
                 alignItems: "center",
                 marginBottom: "20px",
                 paddingBottom: "16px",
-                borderBottom: "1px solid #EFE6D8",
+                borderBottom: "1px solid var(--border)",
               }}
             >
               <div>
-                <h1 style={{ fontSize: "22px", color: "#4A2418", margin: "0 0 4px 0" }}>
+                <h1 style={{ fontSize: "22px", color: "var(--text-main)", margin: "0 0 4px 0" }}>
                   {currentTemplate.name}
                 </h1>
-                <p style={{ margin: 0, fontSize: "13px", color: "#7A6458" }}>
+                <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)" }}>
                   Define the structured fields extracted from papers in this template.
                 </p>
               </div>
@@ -295,8 +295,8 @@ export const Templates: React.FC = () => {
                   disabled={!isDirty}
                   style={{
                     padding: "8px 18px",
-                    backgroundColor: isDirty ? "#8A5A7A" : "#D5C8B8",
-                    color: "#FAF5EC",
+                    backgroundColor: isDirty ? "var(--accent)" : "var(--border)",
+                    color: isDirty ? "var(--on-accent)" : "var(--text-muted)",
                     border: "none",
                     borderRadius: "6px",
                     fontWeight: 600,
@@ -320,7 +320,7 @@ export const Templates: React.FC = () => {
                   flex: 1,
                   padding: "8px 12px",
                   borderRadius: "6px",
-                  border: "1px solid #C4B5A5",
+                  border: "1px solid var(--border)",
                   fontSize: "13px",
                 }}
               />
@@ -329,8 +329,8 @@ export const Templates: React.FC = () => {
                 disabled={!newFieldName.trim()}
                 style={{
                   padding: "8px 16px",
-                  backgroundColor: "#6E4363",
-                  color: "#FAF5EC",
+                  backgroundColor: "var(--accent)",
+                  color: "var(--on-accent)",
                   border: "none",
                   borderRadius: "6px",
                   fontWeight: 600,
@@ -352,12 +352,12 @@ export const Templates: React.FC = () => {
                     alignItems: "center",
                     gap: "10px",
                     padding: "10px 14px",
-                    backgroundColor: "#FAF7F2",
+                    backgroundColor: "var(--panel-dark)",
                     borderRadius: "6px",
-                    border: "1px solid #EADDCB",
+                    border: "1px solid var(--border)",
                   }}
                 >
-                  <span style={{ fontSize: "12px", color: "#8A796F", minWidth: "24px", fontWeight: 700 }}>
+                  <span style={{ fontSize: "12px", color: "var(--text-muted)", minWidth: "24px", fontWeight: 700 }}>
                     #{idx + 1}
                   </span>
 
@@ -369,10 +369,10 @@ export const Templates: React.FC = () => {
                       flex: 1,
                       padding: "5px 8px",
                       borderRadius: "4px",
-                      border: "1px solid #D5C8B8",
+                      border: "1px solid var(--border)",
                       fontSize: "13px",
-                      backgroundColor: "#fff",
-                      color: "#4A2418",
+                      backgroundColor: "var(--panel-dark)",
+                      color: "var(--text-main)",
                     }}
                   />
 
@@ -384,8 +384,8 @@ export const Templates: React.FC = () => {
                       onClick={() => handleMoveField(idx, "up")}
                       style={{
                         padding: "3px 8px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #D5C8B8",
+                        backgroundColor: "var(--panel-dark)",
+                        border: "1px solid var(--border)",
                         borderRadius: "4px",
                         cursor: idx === 0 ? "default" : "pointer",
                         opacity: idx === 0 ? 0.4 : 1,
@@ -400,8 +400,8 @@ export const Templates: React.FC = () => {
                       onClick={() => handleMoveField(idx, "down")}
                       style={{
                         padding: "3px 8px",
-                        backgroundColor: "#fff",
-                        border: "1px solid #D5C8B8",
+                        backgroundColor: "var(--panel-dark)",
+                        border: "1px solid var(--border)",
                         borderRadius: "4px",
                         cursor: idx === fields.length - 1 ? "default" : "pointer",
                         opacity: idx === fields.length - 1 ? 0.4 : 1,
@@ -418,7 +418,7 @@ export const Templates: React.FC = () => {
                     style={{
                       border: "none",
                       background: "none",
-                      color: "#C0392B",
+                      color: "var(--danger-ink)",
                       cursor: "pointer",
                       fontSize: "15px",
                       padding: "0 4px",
@@ -432,7 +432,7 @@ export const Templates: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div style={{ padding: "60px", textAlign: "center", color: "#8A796F" }}>
+          <div style={{ padding: "60px", textAlign: "center", color: "var(--text-muted)" }}>
             Select a template from the left sidebar to view its configuration.
           </div>
         )}
@@ -442,7 +442,7 @@ export const Templates: React.FC = () => {
       <Modal isOpen={showNewModal} onClose={() => setShowNewModal(false)} title="Create New Template">
         <form onSubmit={handleCreateTemplate}>
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#4A2418", marginBottom: "6px" }}>
+            <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginBottom: "6px" }}>
               Template Name
             </label>
             <input
@@ -454,7 +454,7 @@ export const Templates: React.FC = () => {
               style={{
                 width: "100%",
                 padding: "8px 12px",
-                border: "1px solid #C4B5A5",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 fontSize: "14px",
                 boxSizing: "border-box",
@@ -467,8 +467,8 @@ export const Templates: React.FC = () => {
               onClick={() => setShowNewModal(false)}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#fff",
-                border: "1px solid #D5C8B8",
+                backgroundColor: "var(--panel-dark)",
+                border: "1px solid var(--border)",
                 borderRadius: "6px",
                 cursor: "pointer",
               }}
@@ -480,8 +480,8 @@ export const Templates: React.FC = () => {
               disabled={!newTemplateName.trim()}
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#8A5A7A",
-                color: "#FAF5EC",
+                backgroundColor: "var(--accent)",
+                color: "var(--on-accent)",
                 border: "none",
                 borderRadius: "6px",
                 fontWeight: 600,

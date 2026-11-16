@@ -1,3 +1,14 @@
+/* ring palette — derived from the active theme so labels always contrast */
+:root {
+  --qn-r1: color-mix(in srgb, var(--accent) 55%, #000);
+  --qn-r1-fg: #ffffff;
+  --qn-r2: var(--accent);
+  --qn-r2-fg: var(--on-accent, #fff);
+  --qn-r3: color-mix(in srgb, var(--accent) 22%, var(--panel));
+  --qn-r3-fg: var(--text-main);
+  --qn-r4: var(--panel);
+  --qn-r4-fg: var(--text-main);
+}
 /* ============================================================
    Quarter-circle navigator
    Concentric rings grow out of the top-left corner, innermost first.
@@ -15,26 +26,26 @@
 }
 
 .qn-button {
-  width: 80px;
-  height: 80px;
+  width: 68px;
+  height: 68px;
   border: 1px solid var(--border);
   border-top: none;
   border-left: none;
-  border-bottom-right-radius: 80px;
+  border-bottom-right-radius: 68px;
   background: var(--panel);
   color: var(--text-main);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 14px 14px 0;
+  padding: 0 12px 12px 0;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   outline: none;
 }
 .qn-button:hover { border-color: var(--accent); }
 .qn-button:focus-visible { box-shadow: 0 0 0 3px var(--accent); }
-.qn-button.open { background: var(--deep, var(--accent)); color: var(--panel-dark); }
+.qn-button.open { background: var(--qn-r1); color: var(--qn-r1-fg); }
 .qn-button-inner { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: -8px 0 0 -8px; }
 .qn-button-inner b { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
 .qn-button-inner small { font-size: 9px; font-weight: 700; letter-spacing: 1px; opacity: 0.65; }
@@ -56,8 +67,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 440px;
-  height: 440px;
+  width: 470px;
+  height: 470px;
   overflow: hidden;
 }
 .qn-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -76,7 +87,6 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 70px;
   padding: 0;
   border: none;
   background: none;
@@ -87,14 +97,15 @@
   animation: qn-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) var(--qn-delay, 0ms) forwards;
 }
 .qn-item .qn-dot {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--panel-dark);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
+  font-size: 18px;
+  line-height: 1;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
   transition: transform 0.15s;
 }
@@ -103,11 +114,12 @@
 .qn-item:focus-visible { outline: none; }
 .qn-item:focus-visible .qn-dot { box-shadow: 0 0 0 3px var(--signal); }
 .qn-item .qn-label {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
-  max-width: 70px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .qn-item.current .qn-dot { box-shadow: 0 0 0 3px var(--signal), 0 2px 6px rgba(0, 0, 0, 0.22); }
 .qn-item.dim { filter: grayscale(1); }
@@ -117,8 +129,8 @@
 .qn-bar {
   position: absolute;
   top: 22px;
-  left: 456px;
-  width: min(520px, calc(100vw - 480px));
+  left: 490px;
+  width: min(520px, calc(100vw - 520px));
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -131,7 +143,7 @@
 .qn-kbd { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border); background: var(--nav-active-bg); color: var(--text-muted); }
 .qn-pills { display: flex; flex-wrap: wrap; gap: 6px; padding: 9px 14px; }
 .qn-pill { padding: 4px 12px; border-radius: 14px; border: none; font-size: 11px; font-weight: 600; background: var(--nav-active-bg); color: var(--text-muted); cursor: pointer; }
-.qn-pill.active { background: var(--accent); color: var(--panel-dark); }
+.qn-pill.active { background: var(--accent); color: var(--on-accent); }
 .qn-foot { padding: 8px 16px; border-top: 1px solid var(--border); background: var(--panel-dark); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; gap: 10px; }
 
 @keyframes qn-sweep { to { stroke-dashoffset: 0; } }

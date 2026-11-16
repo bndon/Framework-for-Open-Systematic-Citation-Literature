@@ -22,7 +22,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} width="420px">
-      <p style={{ margin: "0 0 24px 0", fontSize: "14px", color: "#44342D", lineHeight: 1.5 }}>
+      <p style={{ margin: "0 0 24px 0", fontSize: "14px", color: "var(--text-main)", lineHeight: 1.5 }}>
         {message}
       </p>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
@@ -31,12 +31,12 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           onClick={onClose}
           style={{
             padding: "8px 18px",
-            backgroundColor: "#fff",
-            border: "1px solid #D5C8B8",
+            backgroundColor: "var(--panel-dark)",
+            border: "1px solid var(--border)",
             borderRadius: "6px",
             fontSize: "13px",
             cursor: "pointer",
-            color: "#4A2418",
+            color: "var(--text-main)",
           }}
         >
           Cancel
@@ -49,8 +49,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           }}
           style={{
             padding: "8px 18px",
-            backgroundColor: isDanger ? "#C0392B" : "#8A5A7A",
-            color: "#FAF5EC",
+            backgroundColor: isDanger ? "#C0392B" : "var(--accent)",
+            color: isDanger ? "#ffffff" : "var(--on-accent)",
             border: "none",
             borderRadius: "6px",
             fontSize: "13px",

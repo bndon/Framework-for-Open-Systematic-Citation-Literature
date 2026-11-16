@@ -3,9 +3,9 @@ import { subscribeToToasts, toast as toastApi } from "../lib/toast";
 import type { ToastItem } from "../lib/toast";
 
 const typeStyles: Record<string, { bg: string; border: string; color: string; icon: string }> = {
-  success: { bg: "#E8F8F5", border: "#A3E4D7", color: "#16A085", icon: "✓" },
-  error:   { bg: "#FDEDEC", border: "#F5B7B1", color: "#C0392B", icon: "⚠" },
-  info:    { bg: "#FAF5EC", border: "#D5C8B8", color: "#8A5A7A", icon: "ℹ" },
+  success: { bg: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))", color: "var(--success-ink)", icon: "✓" },
+  error:   { bg: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))", color: "var(--danger-ink)", icon: "⚠" },
+  info:    { bg: "var(--panel-dark)", border: "var(--border)", color: "var(--accent-ink)", icon: "ℹ" },
 };
 
 export const ToastContainer: React.FC = () => {

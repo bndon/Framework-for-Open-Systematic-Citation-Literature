@@ -29,6 +29,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
+      data-modal="open"
       style={{
         position: "fixed",
         top: 0,
@@ -46,7 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       <div
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: "var(--panel-dark)",
           borderRadius: "8px",
           width,
           maxWidth: "92vw",
@@ -65,7 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            backgroundColor: "#FAF5EC",
+            backgroundColor: "var(--panel-dark)",
           }}
         >
           <h3
@@ -73,7 +74,7 @@ export const Modal: React.FC<ModalProps> = ({
               margin: 0,
               fontSize: "16px",
               fontWeight: 700,
-              color: "#4A2418",
+              color: "var(--text-main)",
             }}
           >
             {title}
@@ -85,7 +86,7 @@ export const Modal: React.FC<ModalProps> = ({
               background: "transparent",
               fontSize: "20px",
               cursor: "pointer",
-              color: "#8A5A7A",
+              color: "var(--accent-ink)",
               padding: "0 4px",
               lineHeight: 1,
             }}

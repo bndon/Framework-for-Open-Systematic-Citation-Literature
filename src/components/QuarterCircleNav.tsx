@@ -34,19 +34,23 @@ const NAV: Record<string, NavAction> = {
  * `reverse` flips the sweep direction so the rings alternate
  * (top edge -> left edge, left edge -> top edge, ...).
  */
-const RINGS: { ids: string[]; reverse: boolean; stroke: string; fg: string }[] = [
-  { ids: ["dashboard", "discover", "library"], reverse: false, stroke: "var(--deep, var(--text-main))", fg: "#fff" },
-  { ids: ["epub", "compare", "lineage", "graph"], reverse: true, stroke: "var(--accent)", fg: "#fff" },
-  { ids: ["citations", "templates", "export", "hub", "converter", "settings"], reverse: false, stroke: "var(--panel)", fg: "var(--text-main)" },
+const RINGS: { ids: string[]; reverse: boolean; fill: string; fg: string }[] = [
+  { ids: ["dashboard"], reverse: false, fill: "var(--qn-r1)", fg: "var(--qn-r1-fg)" },
+  { ids: ["discover", "library", "epub"], reverse: true, fill: "var(--qn-r2)", fg: "var(--qn-r2-fg)" },
+  { ids: ["compare", "lineage", "graph", "citations"], reverse: false, fill: "var(--qn-r3)", fg: "var(--qn-r3-fg)" },
+  { ids: ["templates", "export", "hub", "converter", "settings"], reverse: true, fill: "var(--qn-r4)", fg: "var(--qn-r4-fg)" },
 ];
 
-const R_INNER = 88; // radius where the first ring starts (button is 80px)
-const THICKNESS = 100;
+const R_INNER = 84; // radius where the first ring starts (button is 68px)
+const THICKNESS = 88;
 const GAP = 6;
-const SWEEP_MS = 520;
-const RING_STAGGER_MS = 230;
-const A_MIN = 8; // degrees of padding at each end of a ring
-const A_MAX = 82;
+const SWEEP_MS = 480;
+const RING_STAGGER_MS = 200;
+// Every item is a box of ITEM_W x ITEM_H (dot + two label lines). Positions are chosen so that
+// boxes never overlap each other, the corner button, or the screen edge (checked by script).
+const ITEM_W = 56;
+const ITEM_H = 58;
+const STAGE = 470;
 const CLOSE_MS = 160;
 
 const CATEGORIES: { id: "all" | Category; label: string }[] = [
@@ -104,7 +108,7 @@ export const QuarterCircleNav: React.FC = () => {
   openRef.current = openNav;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !e.defaultPrevented) {
+      if (e.key === "Escape" && !e.defaultPrevented && !document.querySelector("[data-modal]")) {
         // Esc opens the menu; pressing it again closes it
         if (stateRef.current.isOpen && !stateRef.current.closing) closeRef.current();
         else openRef.current();
@@ -154,7 +158,7 @@ export const QuarterCircleNav: React.FC = () => {
       {open && (
         <div className={`qn-backdrop${closing ? " closing" : ""}`} onClick={closeNav}>
           <div className="qn-stage" onClick={(e) => e.stopPropagation()}>
-            <svg className="qn-svg" viewBox="0 0 440 440" aria-hidden="true">
+            <svg className="qn-svg" viewBox={`0 0 ${STAGE} ${STAGE}`} aria-hidden="true">
               {RINGS.map((ring, i) => {
                 const r = R_INNER + i * (THICKNESS + GAP) + THICKNESS / 2;
                 // Arc from the top edge (angle 0) to the left edge (angle 90), or backwards.
@@ -165,9 +169,8 @@ export const QuarterCircleNav: React.FC = () => {
                     className="qn-arc"
                     d={d}
                     pathLength={100}
-                    stroke={ring.stroke}
+                    style={{ stroke: ring.fill, ["--qn-delay" as string]: `${i * RING_STAGGER_MS}ms`, ["--qn-dur" as string]: `${SWEEP_MS}ms` }}
                     strokeWidth={THICKNESS}
-                    style={{ ["--qn-delay" as string]: `${i * RING_STAGGER_MS}ms`, ["--qn-dur" as string]: `${SWEEP_MS}ms` }}
                   />
                 );
               })}
@@ -176,12 +179,14 @@ export const QuarterCircleNav: React.FC = () => {
             {RINGS.map((ring, i) => {
               const r = R_INNER + i * (THICKNESS + GAP) + THICKNESS / 2;
               const n = ring.ids.length;
-              const arc = ((A_MAX - A_MIN) / 180) * Math.PI * r; // length of the usable arc
-              const width = Math.max(46, Math.min(70, arc / n - 4));
+              // keep the whole item box inside the screen edges
+              const aMin = (Math.asin(Math.min(1, (ITEM_H / 2 + 6) / r)) * 180) / Math.PI;
+              const aMax = (Math.acos(Math.min(1, (ITEM_W / 2 + 6) / r)) * 180) / Math.PI;
+              const width = ITEM_W;
               return ring.ids.map((id, k) => {
                 const a = NAV[id];
                 const frac = (k + 0.5) / n; // 0 = top edge, 1 = left edge
-                const angle = A_MIN + (A_MAX - A_MIN) * frac;
+                const angle = aMin + (aMax - aMin) * frac;
                 const x = r * Math.cos(rad(angle));
                 const y = r * Math.sin(rad(angle));
                 // pop in as the sweep reaches the item
