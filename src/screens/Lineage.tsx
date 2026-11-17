@@ -201,9 +201,9 @@ export const Lineage: React.FC = () => {
   };
 
   const stanceColors = {
-    supports: { bg: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", color: "var(--success-ink)", border: "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))", label: "Supports" },
-    contradicts: { bg: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", color: "var(--danger-ink)", border: "color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))", label: "Contradicts" },
-    qualifies: { bg: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", border: "color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))", label: "Qualifies" },
+    supports: { bg: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", color: "var(--success-ink)", border: "color-mix(in srgb, var(--success-ink) 80%, var(--panel-dark))", label: "Supports" },
+    contradicts: { bg: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", color: "var(--danger-ink)", border: "color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))", label: "Contradicts" },
+    qualifies: { bg: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", border: "color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))", label: "Qualifies" },
   };
 
 
@@ -445,7 +445,7 @@ export const Lineage: React.FC = () => {
                       <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
                         <button onClick={() => { setRevisingClaim(claim); setRevisedText(claim.text); setRevisionReason(""); }} style={smallBtn}>✏ Revise</button>
                         <button onClick={() => handleOpenEvidenceModal(claim)} style={{ ...smallBtn, background: "var(--accent)", color: "var(--on-accent)", border: "1px solid var(--accent)" }}>+ Evidence</button>
-                        <button onClick={() => handleDeleteClaim(claim.id)} title="Delete claim" style={{ ...smallBtn, background: tint("var(--danger-ink)"), color: "var(--danger-ink)", border: `1px solid ${tint("var(--danger-ink)", 35)}` }}>✕</button>
+                        <button onClick={() => handleDeleteClaim(claim.id)} title="Delete claim" style={{ ...smallBtn, background: tint("var(--danger-ink)"), color: "var(--danger-ink)", border: `1px solid ${tint("var(--danger-ink)", 75)}` }}>✕</button>
                       </div>
                     </div>
 

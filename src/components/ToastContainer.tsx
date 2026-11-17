@@ -3,8 +3,8 @@ import { subscribeToToasts, toast as toastApi } from "../lib/toast";
 import type { ToastItem } from "../lib/toast";
 
 const typeStyles: Record<string, { bg: string; border: string; color: string; icon: string }> = {
-  success: { bg: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))", color: "var(--success-ink)", icon: "✓" },
-  error:   { bg: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))", color: "var(--danger-ink)", icon: "⚠" },
+  success: { bg: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--success-ink) 80%, var(--panel-dark))", color: "var(--success-ink)", icon: "✓" },
+  error:   { bg: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", border: "color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))", color: "var(--danger-ink)", icon: "⚠" },
   info:    { bg: "var(--panel-dark)", border: "var(--border)", color: "var(--accent-ink)", icon: "ℹ" },
 };
 

@@ -7,7 +7,7 @@ export type Book = {
   fileName: string;
   addedAt: number;
   lastOpenedAt?: number;
-  progress?: { chapterIndex: number };
+  progress?: { chapterIndex: number; percent?: number };
   coverDataUrl?: string;
   shelf?: string;
 };

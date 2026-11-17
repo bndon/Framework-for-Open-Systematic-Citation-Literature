@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { AppTheme } from "../lib/settings";
-import { saveAppTheme } from "../lib/settings";
+import { saveAppTheme, loadMenuAnim, saveMenuAnim, type MenuAnim } from "../lib/settings";
 
 interface ThemeOption {
   id: AppTheme;
@@ -165,6 +165,12 @@ interface SettingsProps {
 
 export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange }) => {
   const [hovered, setHovered] = useState<AppTheme | null>(null);
+  const [menuAnim, setMenuAnim] = useState<MenuAnim>(loadMenuAnim);
+
+  const handleMenuAnim = (m: MenuAnim) => {
+    setMenuAnim(m);
+    saveMenuAnim(m);
+  };
 
   const handleThemeSelect = (theme: AppTheme) => {
     saveAppTheme(theme);
@@ -354,6 +360,48 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
           </div>
         </section>
 
+        {/* Navigation menu */}
+        <section style={{ marginTop: "48px" }}>
+          <div style={{ marginBottom: "20px", paddingBottom: "12px", borderBottom: "1px solid var(--border)" }}>
+            <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-main)", marginBottom: "4px" }}>
+              🧭 Navigation menu
+            </div>
+            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+              Open it with Esc or Ctrl+K. Alt+1–9 jumps straight to a screen without opening it.
+            </div>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center" }}>
+            <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-main)", marginRight: "6px" }}>Animation</span>
+            {([
+              ["fast", "Fast", "Quick sweep (default)"],
+              ["full", "Full", "The slow, ring-by-ring sweep"],
+              ["off", "Off", "Appears instantly"],
+            ] as [MenuAnim, string, string][]).map(([id, label, hint]) => (
+              <button
+                key={id}
+                onClick={() => handleMenuAnim(id)}
+                title={hint}
+                aria-pressed={menuAnim === id}
+                style={{
+                  padding: "7px 16px",
+                  borderRadius: "6px",
+                  border: "1px solid var(--border)",
+                  background: menuAnim === id ? "var(--accent)" : "var(--panel-dark)",
+                  color: menuAnim === id ? "var(--on-accent)" : "var(--text-main)",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "10px" }}>
+            Menu items can be clicked from the first frame in every mode, so the animation never makes you wait.
+          </div>
+        </section>
+
         {/* More settings sections can go here */}
         <section style={{ marginTop: "48px" }}>
           <div style={{ marginBottom: "20px", paddingBottom: "12px", borderBottom: "1px solid var(--border)" }}>
@@ -371,7 +419,7 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
             lineHeight: 1.7,
           }}>
             <div style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-main)", marginBottom: "6px" }}>FOSCL v0.2.0</div>
-            <div>Free & Open Source Citations & Literature manager</div>
+            <div>Framework for Open Systematic Citation & Literature</div>
             <div>Built with Tauri + React + TypeScript</div>
           </div>
         </section>

@@ -5,6 +5,9 @@ import { ForceGraphView, type GraphNode, type GraphLink } from "../components/Fo
 import { toast } from "../lib/toast";
 import type { CitationGraph as CitationGraphType, CitationNode, Paper } from "../types";
 
+/** ids and DOIs compare equal whether or not they come as full URLs */
+const normKey = (v: string) => v.trim().toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, "").replace(/^https?:\/\/openalex\.org\//, "");
+
 export const CitationGraph: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -29,6 +32,22 @@ export const CitationGraph: React.FC = () => {
 
   // Empty state helper: library papers
   const [libraryPapers, setLibraryPapers] = useState<Paper[]>([]);
+  // ids / DOIs of everything already in the library (used for the "By status" colour view)
+  const [libraryKeys, setLibraryKeys] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    getPapers()
+      .then((papers) => {
+        const keys = new Set<string>();
+        papers.forEach((p) => {
+          if (p.openalex_id) keys.add(normKey(p.openalex_id));
+          if (p.doi) keys.add(normKey(p.doi));
+        });
+        setLibraryKeys(keys);
+      })
+      .catch(() => {});
+  }, []);
+  const inLibrary = (n: { openalex_id?: string | null; doi?: string | null }) =>
+    (!!n.openalex_id && libraryKeys.has(normKey(n.openalex_id))) || (!!n.doi && libraryKeys.has(normKey(n.doi)));
   const [customIdInput, setCustomIdInput] = useState("");
 
   useEffect(() => {
@@ -87,8 +106,9 @@ export const CitationGraph: React.FC = () => {
         id: centerId,
         label: graph.center.title,
         type: "center",
-        color: "#d9a441",
         radius: 24,
+        status: inLibrary(graph.center) ? "ok" : "warn",
+        statusNote: inLibrary(graph.center) ? undefined : "Not in your library",
         data: { ...graph.center, category: "Center Work" },
       });
 
@@ -100,8 +120,9 @@ export const CitationGraph: React.FC = () => {
             id: refId,
             label: ref.title,
             type: "reference",
-            color: "#a98bb8",
             radius: 15,
+            status: inLibrary(ref) ? "ok" : "warn",
+            statusNote: inLibrary(ref) ? undefined : "Not in your library",
             data: { ...ref, category: "Reference (Cited by this work)" },
           });
 
@@ -109,7 +130,7 @@ export const CitationGraph: React.FC = () => {
             source: refId,
             target: centerId,
             label: "cites",
-            color: "rgba(169, 139, 184, 0.55)",
+            color: "#a98bb8",
           });
         });
       }
@@ -122,8 +143,9 @@ export const CitationGraph: React.FC = () => {
             id: citeId,
             label: cite.title,
             type: "cited_by",
-            color: "#c97a86",
             radius: 15,
+            status: inLibrary(cite) ? "ok" : "warn",
+            statusNote: inLibrary(cite) ? undefined : "Not in your library",
             data: { ...cite, category: "Citation (Cites this work)" },
           });
 
@@ -131,14 +153,14 @@ export const CitationGraph: React.FC = () => {
             source: centerId,
             target: citeId,
             label: "cited by",
-            color: "rgba(201, 122, 134, 0.55)",
+            color: "#c97a86",
           });
         });
       }
     }
 
     return { graphNodes: nodes, graphLinks: links };
-  }, [graph, graphFilter]);
+  }, [graph, graphFilter, libraryKeys]);
 
   const activeList = graph ? (activeTab === "references" ? graph.references : graph.cited_by) : [];
 
@@ -338,7 +360,7 @@ export const CitationGraph: React.FC = () => {
             padding: "20px",
             backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
             color: "var(--danger-ink)",
-            border: "1px solid color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))",
+            border: "1px solid color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))",
             borderRadius: "8px",
             margin: "20px 0",
           }}
@@ -477,21 +499,6 @@ export const CitationGraph: React.FC = () => {
                   ))}
                 </div>
 
-                {/* Graph Legend */}
-                <div style={{ display: "flex", gap: "14px", alignItems: "center", fontSize: "11px", color: "var(--text-muted)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "var(--accent)" }} />
-                    <span style={{ fontWeight: 600 }}>Center Work</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#7a5a8e" }} />
-                    <span>References (Cites)</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: "#a8546a" }} />
-                    <span>Cited By (Citations)</span>
-                  </div>
-                </div>
               </div>
 
               {/* Force Canvas Container */}
@@ -512,6 +519,7 @@ export const CitationGraph: React.FC = () => {
                   selectedNodeId={selectedNode?.id}
                   height={560}
                   onNodeClick={(node) => setSelectedNode(node)}
+                  statusLabels={{ alert: "Problem", warn: "Not in your library", ok: "In your library" }}
                 />
 
                 {/* Selected Node Popover Inspector */}
@@ -538,13 +546,8 @@ export const CitationGraph: React.FC = () => {
                           fontWeight: 700,
                           padding: "2px 8px",
                           borderRadius: "4px",
-                          backgroundColor:
-                            selectedNode.type === "center"
-                              ? "var(--accent)"
-                              : selectedNode.type === "reference"
-                              ? "#7a5a8e"
-                              : "#a8546a",
-                          color: "#fff",
+                          backgroundColor: "var(--accent)",
+                          color: "var(--on-accent)",
                         }}
                       >
                         {selectedNode.data?.category || selectedNode.type}

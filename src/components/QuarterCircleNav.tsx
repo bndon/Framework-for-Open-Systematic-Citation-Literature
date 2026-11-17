@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { loadMenuAnim, saveMenuAnim, loadRecentRoutes, pushRecentRoute, type MenuAnim } from "../lib/settings";
 import "./quarterNav.css";
 
 type Category = "research" | "synthesis" | "tools";
@@ -41,17 +42,30 @@ const RINGS: { ids: string[]; reverse: boolean; fill: string; fg: string }[] = [
   { ids: ["templates", "export", "hub", "converter", "settings"], reverse: true, fill: "var(--qn-r4)", fg: "var(--qn-r4-fg)" },
 ];
 
+/** Reading order of the menu (inner ring first). Also decides the Alt+1..9 shortcuts. */
+const FLAT: NavAction[] = RINGS.flatMap((r) => r.ids).map((id) => NAV[id]);
+const ROUTE_TO_NAV = new Map(FLAT.map((a) => [a.route, a]));
+
 const R_INNER = 84; // radius where the first ring starts (button is 68px)
 const THICKNESS = 88;
 const GAP = 6;
-const SWEEP_MS = 480;
-const RING_STAGGER_MS = 200;
 // Every item is a box of ITEM_W x ITEM_H (dot + two label lines). Positions are chosen so that
 // boxes never overlap each other, the corner button, or the screen edge (checked by script).
 const ITEM_W = 56;
 const ITEM_H = 58;
 const STAGE = 470;
-const CLOSE_MS = 160;
+
+/**
+ * Animation presets. In every mode the items are clickable from the very first frame;
+ * the animation is only decoration. "fast" is roughly four times quicker than "full".
+ */
+const TIMING: Record<MenuAnim, { sweep: number; stagger: number; itemBase: number; pop: number; close: number }> = {
+  full: { sweep: 480, stagger: 200, itemBase: 120, pop: 320, close: 160 },
+  fast: { sweep: 150, stagger: 35, itemBase: 0, pop: 170, close: 90 },
+  off: { sweep: 0, stagger: 0, itemBase: 0, pop: 0, close: 0 },
+};
+const ANIM_LABEL: Record<MenuAnim, string> = { full: "Full", fast: "Fast", off: "Off" };
+const ANIM_NEXT: Record<MenuAnim, MenuAnim> = { fast: "full", full: "off", off: "fast" };
 
 const CATEGORIES: { id: "all" | Category; label: string }[] = [
   { id: "all", label: "All Modules" },
@@ -67,9 +81,21 @@ export const QuarterCircleNav: React.FC = () => {
   const [closing, setClosing] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"all" | Category>("all");
   const [search, setSearch] = useState("");
+  const [anim, setAnim] = useState<MenuAnim>(loadMenuAnim);
+  const [sel, setSel] = useState(0); // highlighted match (arrow keys / typing)
+  const [arrowed, setArrowed] = useState(false); // has the user moved the highlight yet?
+  const [altHeld, setAltHeld] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const closeTimer = useRef<number | undefined>(undefined);
+  const t = TIMING[anim];
+
+  const resetBar = () => {
+    setSearch("");
+    setSel(0);
+    setArrowed(false);
+    setAltHeld(false);
+  };
 
   const openNav = () => {
     window.clearTimeout(closeTimer.current);
@@ -78,26 +104,47 @@ export const QuarterCircleNav: React.FC = () => {
   };
   const closeNav = () => {
     if (!isOpen || closing) return;
+    if (t.close === 0) {
+      setIsOpen(false);
+      resetBar();
+      return;
+    }
     setClosing(true);
     closeTimer.current = window.setTimeout(() => {
       setIsOpen(false);
       setClosing(false);
-      setSearch("");
-    }, CLOSE_MS);
+      resetBar();
+    }, t.close);
   };
   const toggleNav = () => (isOpen && !closing ? closeNav() : openNav());
 
-  // Close immediately on route change
+  // Close immediately on route change, and remember the screen for the "recent" shortcuts
   useEffect(() => {
     window.clearTimeout(closeTimer.current);
     setIsOpen(false);
     setClosing(false);
-    setSearch("");
+    resetBar();
+    if (ROUTE_TO_NAV.has(location.pathname)) pushRecentRoute(location.pathname);
   }, [location.pathname]);
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
-  // Escape closes; Ctrl/Cmd + K or P toggles
+  // Keep in sync if the animation setting is changed from the Settings screen
+  useEffect(() => {
+    const onChange = (e: Event) => setAnim((e as CustomEvent<MenuAnim>).detail);
+    window.addEventListener("foscl:menu_anim", onChange);
+    return () => window.removeEventListener("foscl:menu_anim", onChange);
+  }, []);
+
+  const go = (route: string) => {
+    window.clearTimeout(closeTimer.current);
+    setIsOpen(false);
+    setClosing(false);
+    resetBar();
+    if (route !== location.pathname) navigate(route);
+  };
+
+  // Global keys: Esc toggles, Ctrl/Cmd+K or P toggles, Alt+1..9 jumps straight to a screen
   const stateRef = useRef({ isOpen, closing });
   stateRef.current = { isOpen, closing };
   const toggleRef = useRef(toggleNav);
@@ -106,6 +153,8 @@ export const QuarterCircleNav: React.FC = () => {
   closeRef.current = closeNav;
   const openRef = useRef(openNav);
   openRef.current = openNav;
+  const goRef = useRef(go);
+  goRef.current = go;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !e.defaultPrevented && !document.querySelector("[data-modal]")) {
@@ -117,25 +166,56 @@ export const QuarterCircleNav: React.FC = () => {
         e.preventDefault();
         toggleRef.current();
       }
+      if (e.altKey && !e.ctrlKey && !e.metaKey && /^Digit[1-9]$/.test(e.code) && !document.querySelector("[data-modal]")) {
+        const target = FLAT[Number(e.code.slice(5)) - 1];
+        if (target) {
+          e.preventDefault();
+          goRef.current(target.route);
+        }
+      }
+      if (e.key === "Alt") setAltHeld(true);
+    };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Alt") setAltHeld(false);
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKeyUp);
+    const onBlur = () => setAltHeld(false);
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
   }, []);
 
   const q = search.trim().toLowerCase();
   const matches = (a: NavAction) =>
     (activeCategory === "all" || a.category === activeCategory) &&
     (!q || a.label.toLowerCase().includes(q) || a.sublabel.toLowerCase().includes(q));
+  const matchList = FLAT.filter(matches);
+  const selIdx = matchList.length ? Math.min(sel, matchList.length - 1) : -1;
+  // Enter opens the highlighted match, but only once the user has typed or used the arrows
+  const hlId = selIdx >= 0 && (q || arrowed) ? matchList[selIdx].id : null;
 
-  const go = (route: string) => {
-    window.clearTimeout(closeTimer.current);
-    setIsOpen(false);
-    setClosing(false);
-    setSearch("");
-    navigate(route);
+  const recent = useMemo(
+    () =>
+      isOpen
+        ? loadRecentRoutes()
+            .filter((r) => r !== location.pathname)
+            .map((r) => ROUTE_TO_NAV.get(r))
+            .filter((a): a is NavAction => !!a)
+            .slice(0, 3)
+        : [],
+    [isOpen, location.pathname]
+  );
+
+  const cycleAnim = () => {
+    const next = ANIM_NEXT[anim];
+    setAnim(next);
+    saveMenuAnim(next);
   };
 
-  const firstMatch = RINGS.flatMap((r) => r.ids).map((id) => NAV[id]).find(matches);
   const open = isOpen;
 
   return (
@@ -156,8 +236,8 @@ export const QuarterCircleNav: React.FC = () => {
       </div>
 
       {open && (
-        <div className={`qn-backdrop${closing ? " closing" : ""}`} onClick={closeNav}>
-          <div className="qn-stage" onClick={(e) => e.stopPropagation()}>
+        <div className={`qn-backdrop qn-anim-${anim}${closing ? " closing" : ""}`} onClick={closeNav}>
+          <div className={`qn-stage${altHeld ? " show-num" : ""}`} onClick={(e) => e.stopPropagation()}>
             <svg className="qn-svg" viewBox={`0 0 ${STAGE} ${STAGE}`} aria-hidden="true">
               {RINGS.map((ring, i) => {
                 const r = R_INNER + i * (THICKNESS + GAP) + THICKNESS / 2;
@@ -169,7 +249,7 @@ export const QuarterCircleNav: React.FC = () => {
                     className="qn-arc"
                     d={d}
                     pathLength={100}
-                    style={{ stroke: ring.fill, ["--qn-delay" as string]: `${i * RING_STAGGER_MS}ms`, ["--qn-dur" as string]: `${SWEEP_MS}ms` }}
+                    style={{ stroke: ring.fill, ["--qn-delay" as string]: `${i * t.stagger}ms`, ["--qn-dur" as string]: `${t.sweep}ms` }}
                     strokeWidth={THICKNESS}
                   />
                 );
@@ -182,7 +262,6 @@ export const QuarterCircleNav: React.FC = () => {
               // keep the whole item box inside the screen edges
               const aMin = (Math.asin(Math.min(1, (ITEM_H / 2 + 6) / r)) * 180) / Math.PI;
               const aMax = (Math.acos(Math.min(1, (ITEM_W / 2 + 6) / r)) * 180) / Math.PI;
-              const width = ITEM_W;
               return ring.ids.map((id, k) => {
                 const a = NAV[id];
                 const frac = (k + 0.5) / n; // 0 = top edge, 1 = left edge
@@ -191,24 +270,29 @@ export const QuarterCircleNav: React.FC = () => {
                 const y = r * Math.sin(rad(angle));
                 // pop in as the sweep reaches the item
                 const progress = ring.reverse ? 1 - frac : frac;
-                const delay = i * RING_STAGGER_MS + SWEEP_MS * 0.55 * progress + 120;
+                const delay = i * t.stagger + t.sweep * 0.55 * progress + t.itemBase;
                 const current = location.pathname === a.route;
                 const dim = !matches(a);
+                const number = FLAT.indexOf(a) + 1;
                 return (
                   <button
                     key={id}
-                    className={`qn-item${current ? " current" : ""}${dim ? " dim" : ""}`}
-                    title={`${a.label} — ${a.sublabel}`}
+                    className={`qn-item${current ? " current" : ""}${dim ? " dim" : ""}${hlId === id ? " hl" : ""}`}
+                    title={`${a.label} — ${a.sublabel}${number <= 9 ? `  (Alt+${number})` : ""}`}
                     onClick={() => go(a.route)}
                     style={{
                       left: x,
                       top: y,
-                      width,
+                      width: ITEM_W,
                       ["--qn-fg" as string]: ring.fg,
                       ["--qn-delay" as string]: `${delay}ms`,
+                      ["--qn-pop" as string]: `${t.pop}ms`,
                     }}
                   >
-                    <span className="qn-dot">{a.icon}</span>
+                    <span className="qn-dot">
+                      {a.icon}
+                      {number <= 9 && <span className="qn-num">{number}</span>}
+                    </span>
                     <span className="qn-label">{a.label}</span>
                   </button>
                 );
@@ -223,27 +307,60 @@ export const QuarterCircleNav: React.FC = () => {
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && firstMatch) go(firstMatch.route);
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setSel(0);
                 }}
-                placeholder="Jump to workspace module..."
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+                    e.preventDefault();
+                    if (!matchList.length) return;
+                    const step = e.key === "ArrowDown" ? 1 : -1;
+                    // the first arrow press just reveals the highlight; later presses move it
+                    setSel(arrowed || q ? (selIdx + step + matchList.length) % matchList.length : 0);
+                    setArrowed(true);
+                  } else if (e.key === "Enter" && hlId) {
+                    go(NAV[hlId].route);
+                  }
+                }}
+                placeholder="Jump to a screen…  (type, ↑↓, Enter)"
                 autoFocus
               />
               <span className="qn-kbd">ESC</span>
             </div>
+
+            {recent.length > 0 && !q && (
+              <div className="qn-recent">
+                <span className="qn-recent-label">Recent</span>
+                {recent.map((a) => (
+                  <button key={a.id} className="qn-chip" onClick={() => go(a.route)}>
+                    <span aria-hidden="true">{a.icon}</span> {a.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="qn-pills">
               {CATEGORIES.map((c) => (
-                <button key={c.id} className={`qn-pill${activeCategory === c.id ? " active" : ""}`} onClick={() => setActiveCategory(c.id)}>
+                <button
+                  key={c.id}
+                  className={`qn-pill${activeCategory === c.id ? " active" : ""}`}
+                  onClick={() => {
+                    setActiveCategory(c.id);
+                    setSel(0);
+                  }}
+                >
                   {c.label}
                 </button>
               ))}
             </div>
             <div className="qn-foot">
-              <span>FOSCL Research Workspace</span>
               <span>
-                <strong>↵</strong> open {firstMatch ? firstMatch.label : "—"} · <strong>ESC</strong> close
+                <strong>↵</strong> {hlId ? NAV[hlId].label : "open"} · <strong>Alt+1–9</strong> jump
               </span>
+              <button className="qn-anim-btn" onClick={cycleAnim} title="Menu animation: Full / Fast / Off (also in Settings)">
+                Animation: <strong>{ANIM_LABEL[anim]}</strong>
+              </button>
             </div>
           </div>
         </div>

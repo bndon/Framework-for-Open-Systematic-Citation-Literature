@@ -2368,3 +2368,15 @@ h1 {
   border-color: var(--accent);
   color: var(--text-main);
 }
+/* ── Control outlines ─────────────────────────────────────────────
+   Buttons, inputs and dashed "drop / add" boxes that draw their outline with --border get the
+   stronger --border-strong token (3:1 against every surface), so they stay findable on all themes.
+   Dividers and card edges keep the lighter --border. */
+button[style*="var(--border)"],
+input[style*="var(--border)"],
+select[style*="var(--border)"],
+a[style*="solid var(--border)"],
+textarea[style*="var(--border)"],
+[style*="dashed var(--border)"] {
+  border-color: var(--border-strong) !important;
+}

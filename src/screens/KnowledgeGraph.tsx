@@ -69,15 +69,31 @@ export const KnowledgeGraph: React.FC = () => {
     const nodes: GraphNode[] = [];
     const links: GraphLink[] = [];
 
+    // What needs attention (used by the "By status" colour mode):
+    //   claims: contradicted / contested -> alert, no evidence yet -> warn
+    //   papers: contradict a claim -> alert, in no collection and not used as evidence -> warn
+    //   collections: empty -> warn
+    const contradicts = new Map<string, number>(); // paper id -> claims it contradicts
+    const usedAsEvidence = new Set<string>();
+    claims.forEach((c) =>
+      (c.evidence || []).forEach((ev) => {
+        usedAsEvidence.add(ev.paper_id);
+        if (ev.stance === "contradicts") contradicts.set(ev.paper_id, (contradicts.get(ev.paper_id) || 0) + 1);
+      })
+    );
+    const inACollection = new Set<string>(Object.values(collPaperMap).flat());
+
     // 1. Collections as major cluster hubs
     if (filterType === "all" || filterType === "collections") {
       collections.forEach((c) => {
+        const empty = (collPaperMap[c.id] || []).length === 0;
         nodes.push({
           id: `coll_${c.id}`,
           label: `📁 ${c.name}`,
           type: "collection",
-          color: "#845177",
           radius: 22,
+          status: empty ? "warn" : "ok",
+          statusNote: empty ? "Empty collection" : undefined,
           data: { type: "collection", entity: c },
         });
       });
@@ -86,12 +102,15 @@ export const KnowledgeGraph: React.FC = () => {
     // 2. Papers as nodes
     if (filterType === "all" || filterType === "papers") {
       papers.forEach((p) => {
+        const against = contradicts.get(p.id) || 0;
+        const orphan = !inACollection.has(p.id) && !usedAsEvidence.has(p.id);
         nodes.push({
           id: `paper_${p.id}`,
           label: p.title,
           type: "paper",
-          color: "#a98bb8",
           radius: 16,
+          status: against ? "alert" : orphan ? "warn" : "ok",
+          statusNote: against ? `Contradicts ${against} claim${against > 1 ? "s" : ""}` : orphan ? "Not in any collection" : undefined,
           data: { type: "paper", entity: p },
         });
       });
@@ -100,12 +119,16 @@ export const KnowledgeGraph: React.FC = () => {
     // 3. Claims as hypotheses nodes
     if (filterType === "all" || filterType === "claims") {
       claims.forEach((c) => {
+        const ev = c.evidence || [];
+        const sup = ev.filter((e) => e.stance === "supports").length;
+        const con = ev.filter((e) => e.stance === "contradicts").length;
         nodes.push({
           id: `claim_${c.id}`,
           label: `🧬 "${c.text.slice(0, 35)}…"`,
           type: "claim",
-          color: "#7f9a78",
           radius: 14,
+          status: con ? "alert" : ev.length === 0 ? "warn" : "ok",
+          statusNote: con ? (sup ? "Contested: sources disagree" : "Challenged by evidence") : ev.length === 0 ? "No evidence yet" : undefined,
           data: { type: "claim", entity: c },
         });
 
@@ -115,7 +138,6 @@ export const KnowledgeGraph: React.FC = () => {
             source: `claim_${c.id}`,
             target: `coll_${c.collection_id}`,
             dashed: true,
-            color: "rgba(16, 185, 129, 0.4)",
           });
         }
 
@@ -124,9 +146,9 @@ export const KnowledgeGraph: React.FC = () => {
           c.evidence.forEach((ev) => {
             const stanceColor =
               ev.stance === "supports"
-                ? "#7f9a78"
+                ? "#6f9a66"
                 : ev.stance === "contradicts"
-                ? "#c97a86"
+                ? "#d4505f"
                 : "#d9a441";
 
             links.push({
@@ -148,7 +170,6 @@ export const KnowledgeGraph: React.FC = () => {
             source: `coll_${collId}`,
             target: `paper_${pId}`,
             label: "contains",
-            color: "rgba(168, 85, 247, 0.45)",
           });
         });
       });
@@ -260,6 +281,7 @@ export const KnowledgeGraph: React.FC = () => {
                 selectedNodeId={selectedNode?.id}
                 onNodeClick={handleNodeClick}
                 height="100%"
+                statusLabels={{ alert: "Contradicted / contested", warn: "Needs attention", ok: "No issues" }}
               />
             </div>
 
@@ -287,17 +309,10 @@ export const KnowledgeGraph: React.FC = () => {
                       padding: "2px 8px",
                       borderRadius: "4px",
                       backgroundColor:
-                        selectedNode.type === "paper"
-                          ? "#F1E8F4"
-                          : selectedNode.type === "claim"
-                          ? "#EAF0E6"
-                          : "var(--panel-dark)",
-                      color:
-                        selectedNode.type === "paper"
-                          ? "#6b3f5f"
-                          : selectedNode.type === "claim"
-                          ? "#4f6b49"
-                          : "var(--accent-ink)",
+                        selectedNode.type === "claim"
+                          ? "color-mix(in srgb, var(--success-ink) 16%, var(--panel-dark))"
+                          : "color-mix(in srgb, var(--accent) 16%, var(--panel-dark))",
+                      color: selectedNode.type === "claim" ? "var(--success-ink)" : "var(--accent-ink)",
                     }}
                   >
                     {selectedNode.type}
@@ -313,6 +328,24 @@ export const KnowledgeGraph: React.FC = () => {
                 <h3 style={{ margin: "0 0 10px 0", fontSize: "16px", color: "var(--text-main)", lineHeight: 1.35 }}>
                   {selectedNode.label}
                 </h3>
+
+                {selectedNode.status && selectedNode.status !== "ok" && selectedNode.statusNote && (
+                  <div
+                    style={{
+                      margin: "0 0 12px 0",
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      color: selectedNode.status === "alert" ? "var(--danger-ink)" : "var(--warn-ink)",
+                      backgroundColor: `color-mix(in srgb, ${selectedNode.status === "alert" ? "var(--danger-ink)" : "var(--warn-ink)"} 14%, var(--panel-dark))`,
+                      border: `1px solid color-mix(in srgb, ${selectedNode.status === "alert" ? "var(--danger-ink)" : "var(--warn-ink)"} 80%, var(--panel-dark))`,
+                    }}
+                  >
+                    {selectedNode.status === "alert" ? "⚠ " : "● "}
+                    {selectedNode.statusNote}
+                  </div>
+                )}
 
                 {selectedNode.data?.type === "paper" && (
                   <div>

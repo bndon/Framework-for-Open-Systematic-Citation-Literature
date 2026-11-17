@@ -374,7 +374,7 @@ export const Reader: React.FC = () => {
               style={{
                 padding: "16px",
                 backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))",
-                borderBottom: "2px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))",
+                borderBottom: "2px solid color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))",
               }}
             >
               <div style={{ fontSize: "12px", fontWeight: 700, color: "#7D6608", marginBottom: "6px" }}>
@@ -390,7 +390,7 @@ export const Reader: React.FC = () => {
                   backgroundColor: "var(--panel-dark)",
                   padding: "6px 8px",
                   borderRadius: "4px",
-                  border: "1px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))",
+                  border: "1px solid color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))",
                   marginBottom: "10px",
                 }}
               >

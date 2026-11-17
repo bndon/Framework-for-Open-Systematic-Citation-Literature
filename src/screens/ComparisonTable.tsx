@@ -343,7 +343,7 @@ export const ComparisonTable: React.FC = () => {
         </div>
         <button
           onClick={() => handleRunAiMock(paper)}
-          style={{ marginLeft: "16px", padding: "4px 8px", fontSize: "11px", fontWeight: 600, backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", border: "1px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))", borderRadius: "4px", cursor: "pointer" }}
+          style={{ marginLeft: "16px", padding: "4px 8px", fontSize: "11px", fontWeight: 600, backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", border: "1px solid color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))", borderRadius: "4px", cursor: "pointer" }}
         >
           ⚡ Mock AI Suggestions
         </button>
@@ -600,7 +600,7 @@ export const ComparisonTable: React.FC = () => {
               style={{
                 padding: "12px 14px",
                 backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))",
-                border: "1px solid color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))",
+                border: "1px solid color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))",
                 borderRadius: "6px",
               }}
             >

@@ -17,12 +17,12 @@ const STYLES: Record<ToastType, React.CSSProperties> = {
   success: {
     backgroundColor: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))",
     color: "var(--success-ink)",
-    border: "1px solid color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))",
+    border: "1px solid color-mix(in srgb, var(--success-ink) 80%, var(--panel-dark))",
   },
   error: {
     backgroundColor: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))",
     color: "var(--danger-ink)",
-    border: "1px solid color-mix(in srgb, var(--danger-ink) 35%, var(--panel-dark))",
+    border: "1px solid color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))",
   },
   info: {
     backgroundColor: "var(--panel-dark)",

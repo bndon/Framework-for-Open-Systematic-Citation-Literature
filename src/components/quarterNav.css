@@ -28,7 +28,7 @@
 .qn-button {
   width: 68px;
   height: 68px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong, var(--border));
   border-top: none;
   border-left: none;
   border-bottom-right-radius: 68px;
@@ -94,9 +94,10 @@
   color: var(--qn-fg);
   font: inherit;
   opacity: 0;
-  animation: qn-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) var(--qn-delay, 0ms) forwards;
+  animation: qn-pop var(--qn-pop, 320ms) cubic-bezier(0.34, 1.56, 0.64, 1) var(--qn-delay, 0ms) forwards;
 }
 .qn-item .qn-dot {
+  position: relative;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -121,6 +122,29 @@
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+.qn-item.hl .qn-dot { transform: scale(1.18); box-shadow: 0 0 0 3px var(--qn-fg), 0 2px 6px rgba(0, 0, 0, 0.22); }
+.qn-num {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  border-radius: 7px;
+  background: var(--text-main);
+  color: var(--bg);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.12s;
+  pointer-events: none;
+}
+.qn-stage.show-num .qn-num,
+.qn-item:hover .qn-num,
+.qn-item:focus-visible .qn-num { opacity: 1; }
 .qn-item.current .qn-dot { box-shadow: 0 0 0 3px var(--signal), 0 2px 6px rgba(0, 0, 0, 0.22); }
 .qn-item.dim { filter: grayscale(1); }
 .qn-item.dim { animation-name: qn-pop-dim; }
@@ -144,7 +168,23 @@
 .qn-pills { display: flex; flex-wrap: wrap; gap: 6px; padding: 9px 14px; }
 .qn-pill { padding: 4px 12px; border-radius: 14px; border: none; font-size: 11px; font-weight: 600; background: var(--nav-active-bg); color: var(--text-muted); cursor: pointer; }
 .qn-pill.active { background: var(--accent); color: var(--on-accent); }
-.qn-foot { padding: 8px 16px; border-top: 1px solid var(--border); background: var(--panel-dark); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; gap: 10px; }
+.qn-recent { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 9px 14px 0; }
+.qn-recent-label { font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--text-muted); margin-right: 2px; }
+.qn-chip { padding: 4px 11px; border-radius: 14px; border: 1px solid var(--border-strong, var(--border)); background: var(--panel-dark); color: var(--text-main); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+.qn-chip:hover { border-color: var(--accent); }
+.qn-anim-btn { border: 1px solid var(--border-strong, var(--border)); background: var(--panel); color: var(--text-muted); border-radius: 6px; padding: 2px 8px; font-size: 11px; cursor: pointer; }
+.qn-anim-btn strong { color: var(--text-main); }
+.qn-anim-btn:hover { border-color: var(--accent); }
+.qn-foot { align-items: center; padding: 8px 16px; border-top: 1px solid var(--border); background: var(--panel-dark); font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; gap: 10px; }
+
+/* animation presets (the timings themselves come from the component) */
+.qn-anim-fast { animation-duration: 0.12s; }
+.qn-anim-fast .qn-bar { animation-duration: 0.18s; animation-delay: 0.04s; }
+.qn-anim-off,
+.qn-anim-off .qn-bar { animation: none; }
+.qn-anim-off .qn-arc { animation: none; stroke-dashoffset: 0; }
+.qn-anim-off .qn-item { animation: none; opacity: 1; }
+.qn-anim-off .qn-item.dim { opacity: 0.28; }
 
 @keyframes qn-sweep { to { stroke-dashoffset: 0; } }
 @keyframes qn-pop { from { opacity: 0; transform: translate(-50%, -50%) scale(0.35); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }

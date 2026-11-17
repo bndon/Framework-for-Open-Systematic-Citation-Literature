@@ -6,8 +6,24 @@
 // ---------------------------------------------------------------------------
 // 1. Graph / Tree Visualization Settings
 // ---------------------------------------------------------------------------
+export type GraphBackground = "app" | "dark" | "light";
+export type GraphColorMode = "type" | "status" | "mono";
+export interface StatusColors {
+  alert: string;
+  warn: string;
+  ok: string;
+}
+
 export interface GraphSettings {
-  theme: "dark" | "light";
+  /** canvas background: follow the app theme, or force the dark / cream look */
+  background: GraphBackground;
+  /** what decides a node's colour: its type, its status (like the alert view), or one colour */
+  colorMode: GraphColorMode;
+  /** per-type colour overrides (hex); types not listed use the built-in palette */
+  typeColors: Record<string, string>;
+  statusColors: StatusColors;
+  /** colour links by relationship (supports / contradicts / cites…) instead of one neutral tone */
+  colorLinks: boolean;
   showArrows: boolean;
   textFadeThreshold: number;
   nodeSize: number;
@@ -20,8 +36,14 @@ export interface GraphSettings {
   enabledTypes: Record<string, boolean>;
 }
 
+export const DEFAULT_STATUS_COLORS: StatusColors = { alert: "#e5484d", warn: "#f2b705", ok: "#8b9099" };
+
 export const DEFAULT_GRAPH_SETTINGS: GraphSettings = {
-  theme: "dark",
+  background: "app",
+  colorMode: "type",
+  typeColors: {},
+  statusColors: { ...DEFAULT_STATUS_COLORS },
+  colorLinks: true,
   showArrows: true,
   textFadeThreshold: 0.0,
   nodeSize: 1.0,
@@ -51,6 +73,8 @@ export function loadGraphSettings(): GraphSettings {
     return {
       ...DEFAULT_GRAPH_SETTINGS,
       ...parsed,
+      typeColors: { ...(parsed.typeColors || {}) },
+      statusColors: { ...DEFAULT_STATUS_COLORS, ...(parsed.statusColors || {}) },
       enabledTypes: {
         ...DEFAULT_GRAPH_SETTINGS.enabledTypes,
         ...(parsed.enabledTypes || {}),
@@ -67,6 +91,8 @@ export function saveGraphSettings(settings: Partial<GraphSettings>): GraphSettin
     const updated: GraphSettings = {
       ...current,
       ...settings,
+      typeColors: settings.typeColors ?? current.typeColors,
+      statusColors: settings.statusColors ?? current.statusColors,
       enabledTypes: {
         ...current.enabledTypes,
         ...(settings.enabledTypes || {}),
@@ -182,7 +208,7 @@ export function saveAppTheme(theme: AppTheme): void {
 // ---------------------------------------------------------------------------
 type RGB = [number, number, number];
 
-function parseColor(value: string): RGB | null {
+export function parseColor(value: string): RGB | null {
   const v = value.trim();
   let m = /^#([0-9a-f]{3})$/i.exec(v);
   if (m) return [...m[1]].map((c) => parseInt(c + c, 16)) as RGB;
@@ -243,10 +269,11 @@ function ensureFill(fill: RGB, white: RGB, ink: RGB, min: number): RGB {
  *   --on-accent   readable text/icon colour for anything filled with --accent
  *   --accent-ink  the accent, adjusted so it is readable as TEXT on every surface
  *   --text-muted  nudged (only if needed) to reach 4.5:1 on every surface
+ *   --border / --border-strong  outlines that stay visible on every theme (1.8:1 / 3:1)
  */
 export function applyAppTheme(theme: AppTheme): void {
   const root = document.documentElement;
-  ["--on-accent", "--accent", "--accent-ink", "--text-muted", "--signal", "--on-signal", "--deep", "--on-deep", "--danger-ink", "--success-ink", "--warn-ink"].forEach((k) => root.style.removeProperty(k));
+  ["--on-accent", "--accent", "--accent-ink", "--text-muted", "--signal", "--on-signal", "--deep", "--on-deep", "--danger-ink", "--success-ink", "--warn-ink", "--border", "--border-strong"].forEach((k) => root.style.removeProperty(k));
   root.setAttribute("data-theme", theme);
 
   const cs = getComputedStyle(root);
@@ -286,6 +313,15 @@ export function applyAppTheme(theme: AppTheme): void {
   root.style.setProperty("--deep", toHex(ensureContrast(deepBase, black, [white], 8)));
   root.style.setProperty("--on-deep", "#ffffff");
 
+  // Outlines. --border is for dividers and card edges (clearly present, never loud);
+  // --border-strong is for anything you have to find and click (buttons, inputs, "+ Add" boxes) and
+  // meets the 3:1 non-text contrast guideline on every surface it can sit on.
+  const border = get("--border");
+  if (border) {
+    root.style.setProperty("--border", toHex(ensureContrast(border, text, surfaces.slice(0, 3), 1.8)));
+    root.style.setProperty("--border-strong", toHex(ensureContrast(border, text, surfaces.slice(0, 3), 3.0)));
+  }
+
   // Status colours: keep their hue, but make them readable as text AND as chip text on this theme's surfaces.
   const status: [string, RGB][] = [
     ["--danger-ink", [192, 57, 43]],
@@ -293,4 +329,80 @@ export function applyAppTheme(theme: AppTheme): void {
     ["--warn-ink", [183, 149, 11]],
   ];
   for (const [name, rgb] of status) root.style.setProperty(name, toHex(ensureContrast(rgb, text, surfaces, 4.5, 0.16)));
+}
+
+// ---------------------------------------------------------------------------
+// 7. Navigation menu animation
+// ---------------------------------------------------------------------------
+export type MenuAnim = "full" | "fast" | "off";
+
+const MENU_ANIM_KEY = "foscl:menu_anim";
+
+export function loadMenuAnim(): MenuAnim {
+  try {
+    const raw = localStorage.getItem(MENU_ANIM_KEY);
+    if (raw === "full" || raw === "fast" || raw === "off") return raw;
+    // no choice made yet: respect the OS "reduce motion" setting, otherwise use the quick version
+    if (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return "off";
+  } catch {}
+  return "fast";
+}
+
+export function saveMenuAnim(mode: MenuAnim): void {
+  try {
+    localStorage.setItem(MENU_ANIM_KEY, mode);
+    window.dispatchEvent(new CustomEvent("foscl:menu_anim", { detail: mode }));
+  } catch (err) {
+    console.error("Failed to save menu animation:", err);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Recently visited screens (shown as shortcuts in the menu)
+// ---------------------------------------------------------------------------
+const RECENT_KEY = "foscl:recent_routes";
+
+export function loadRecentRoutes(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+    return Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+export function pushRecentRoute(route: string, max = 6): void {
+  try {
+    const next = [route, ...loadRecentRoutes().filter((r) => r !== route)].slice(0, max);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch {}
+}
+
+
+// ---------------------------------------------------------------------------
+// Colour helpers shared by the graph views
+// ---------------------------------------------------------------------------
+/** "#161210" or "#ffffff", whichever reads better on `color`. */
+export function inkOn(color: string): string {
+  const c = parseColor(color);
+  if (!c) return "#161210";
+  return contrastRatio([255, 255, 255], c) >= contrastRatio([22, 18, 16], c) ? "#ffffff" : "#161210";
+}
+
+/** `color` with an alpha channel, as an rgba() string (falls back to the input when it can't be parsed). */
+export function withAlpha(color: string, alpha: number): string {
+  const c = parseColor(color);
+  return c ? `rgba(${Math.round(c[0])}, ${Math.round(c[1])}, ${Math.round(c[2])}, ${alpha})` : color;
+}
+
+/** Lighten (amount > 0) or darken (amount < 0) a colour. */
+export function shadeColor(color: string, amount: number): string {
+  const c = parseColor(color);
+  if (!c) return color;
+  return toHex(amount >= 0 ? mix(c, [255, 255, 255], amount) : mix(c, [0, 0, 0], -amount));
+}
+
+export function isDarkColor(color: string): boolean {
+  const c = parseColor(color);
+  return c ? luminance(c) < 0.25 : false;
 }
