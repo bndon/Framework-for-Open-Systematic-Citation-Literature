@@ -1,6 +1,7 @@
 pub mod commands;
 pub mod db;
 pub mod models;
+pub mod review_core;
 
 use tauri::Manager;
 
@@ -49,6 +50,16 @@ pub fn run() {
             commands::pdf::upload_pdf,
             commands::pdf::load_pdf_bytes,
             commands::files::write_export_file,
+            commands::openalex::fetch_work_meta,
+            commands::review::get_screening,
+            commands::review::set_screening,
+            commands::review::log_search,
+            commands::review::get_search_log,
+            commands::review::update_search,
+            commands::review::update_search_counts,
+            commands::review::delete_search,
+            commands::review::get_paper_metas,
+            commands::review::set_paper_meta,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -3,14 +3,21 @@ import { useNavigate } from "react-router-dom";
 import {
   searchOpenAlex,
   getCollections,
+  getPapers,
   upsertPaper,
   addPaperToCollection,
   createCollection,
+  logSearch,
+  getSearchLog,
+  updateSearch,
+  updateSearchCounts,
+  deleteSearch,
+  setPaperMeta,
 } from "../lib/api";
 import { Modal } from "../components/Modal";
 import { toast } from "../lib/toast";
-import type { Collection, PaperResult } from "../types";
-import { mergeResults, applyFilters, countActiveFilters, DEFAULT_FILTERS } from "../lib/papers";
+import type { Collection, Paper, PaperResult, SearchLogEntry } from "../types";
+import { mergeResults, applyFilters, countActiveFilters, DEFAULT_FILTERS, paperKeys, citationLinks } from "../lib/papers";
 import type { DiscoverFilters, SortMode } from "../lib/papers";
 
 export interface DiscoverPaper extends PaperResult {
@@ -33,6 +40,8 @@ const session: {
   filters: DiscoverFilters;
   tab: Tab;
   readerId: string | null;
+  searchId: string | null; // log entry for the current results
+  rawFound: number; // records returned so far for the current search, before merging duplicates
 } = {
   query: "",
   results: [],
@@ -44,6 +53,8 @@ const session: {
   filters: DEFAULT_FILTERS,
   tab: "reader",
   readerId: null,
+  searchId: null,
+  rawFound: 0,
 };
 
 const ctl: React.CSSProperties = {
@@ -80,6 +91,20 @@ const EmptyState: React.FC<{ icon: string; title: string; text: string }> = ({ i
 const surname = (p: DiscoverPaper) => (p.authors[0] || "Unknown").split(" ").pop() as string;
 const shortLabel = (p: DiscoverPaper) => `${surname(p)} ${p.year ?? "n.d."}`;
 
+const toResult = (p: Paper): PaperResult => {
+  let authors: string[] = [];
+  try {
+    const a = JSON.parse(p.authors_json || "[]");
+    if (Array.isArray(a)) authors = a;
+  } catch {}
+  return { openalex_id: p.openalex_id ?? "", doi: p.doi, title: p.title, year: p.year, venue: p.venue, authors };
+};
+
+const fmtWhen = (iso: string) => {
+  const d = new Date(iso.includes("T") ? iso : iso.replace(" ", "T") + "Z");
+  return isNaN(d.getTime()) ? iso : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+};
+
 /** 1, 2, 5, 10, 25 ... year steps so the axis never gets crowded. */
 function yearStep(span: number): number {
   for (const s of [1, 2, 5, 10, 25, 50]) if (span / s <= 8) return s;
@@ -102,6 +127,15 @@ export const Discover: React.FC = () => {
   const [page, setPage] = useState(session.page);
   const [canLoadMore, setCanLoadMore] = useState(session.canLoadMore);
   const requestId = useRef(0);
+  const searchIdRef = useRef<string | null>(session.searchId);
+  const rawFoundRef = useRef(session.rawFound);
+
+  // papers already in the library, and the search history
+  const [libKeys, setLibKeys] = useState<Set<string>>(new Set());
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyTab, setHistoryTab] = useState<"all" | "saved">("all");
+  const [log, setLog] = useState<SearchLogEntry[]>([]);
+  const [renaming, setRenaming] = useState<{ id: string; value: string } | null>(null);
 
   // "Add selected to collection" dialog
   const [showCollModal, setShowCollModal] = useState(false);
@@ -111,12 +145,22 @@ export const Discover: React.FC = () => {
 
   // keep the session cache in step with the screen
   useEffect(() => {
-    Object.assign(session, { query, results, selected, activeQuery, searched, page, canLoadMore, filters, tab: activeTab, readerId });
+    Object.assign(session, { query, results, selected, activeQuery, searched, page, canLoadMore, filters, tab: activeTab, readerId, searchId: searchIdRef.current, rawFound: rawFoundRef.current });
   });
+
+  const refreshLibrary = () =>
+    getPapers()
+      .then((ps) => setLibKeys(new Set(ps.flatMap((p) => paperKeys(toResult(p))))))
+      .catch(() => {});
+  const refreshLog = () => getSearchLog(300).then(setLog).catch(() => {});
 
   useEffect(() => {
     getCollections().then(setCollections).catch(() => {});
+    refreshLibrary();
+    refreshLog();
   }, []);
+
+  const inLibrary = (p: PaperResult) => paperKeys(p).some((k) => libKeys.has(k));
 
   const runSearch = async (q: string, pageNo: number, append: boolean) => {
     const id = ++requestId.current;
@@ -125,7 +169,7 @@ export const Discover: React.FC = () => {
       const res = await searchOpenAlex(q, pageNo);
       if (id !== requestId.current) return; // a newer search superseded this one
       const base = append ? results : [];
-      const { papers, merged } = mergeResults(base, res.map((p) => ({ ...p, is_open_access: !!p.oa_url })));
+      const { papers, merged } = mergeResults(base, res.map((p) => ({ ...p, is_open_access: !!p.oa_url, citation_count: p.cited_by_count })));
       setResults(papers as DiscoverPaper[]);
       setActiveQuery(q);
       setSearched(true);
@@ -135,6 +179,18 @@ export const Discover: React.FC = () => {
         setSelected([]);
         setReaderId(null);
       }
+      // keep a record of what was searched, when, and how much came back (never blocks the search)
+      try {
+        if (!append) {
+          rawFoundRef.current = res.length;
+          const entry = await logSearch(q, JSON.stringify(filters), res.length, papers.length);
+          searchIdRef.current = entry.id;
+        } else if (searchIdRef.current) {
+          rawFoundRef.current += res.length;
+          await updateSearchCounts(searchIdRef.current, rawFoundRef.current, papers.length);
+        }
+        refreshLog();
+      } catch {}
       if (res.length === 0 && !append) toast.info("No papers found");
       if (merged > 0) toast.info(`Merged ${merged} duplicate record${merged === 1 ? "" : "s"}`);
     } catch {
@@ -189,6 +245,12 @@ export const Discover: React.FC = () => {
     }
   };
 
+  /** Keep the citation count and reference list with the saved paper (best effort). */
+  const storeMeta = (paperId: string, p: DiscoverPaper) => {
+    if (p.cited_by_count == null && !(p.referenced_works && p.referenced_works.length)) return;
+    setPaperMeta(paperId, p.cited_by_count, p.referenced_works && p.referenced_works.length ? p.referenced_works : undefined).catch(() => {});
+  };
+
   const handleSaveToReview = async (paper: DiscoverPaper) => {
     try {
       const myReviewColl = collections.find((c) => c.name.toLowerCase().includes("review")) || collections[0];
@@ -200,7 +262,9 @@ export const Discover: React.FC = () => {
         abstract: paper.abstract,
         doi: paper.doi,
         oa_url: paper.oa_url,
+        openalex_id: paper.openalex_id,
       });
+      storeMeta(paperRecord.id, paper);
       if (myReviewColl) {
         await addPaperToCollection(myReviewColl.id, paperRecord.id);
         toast.success(`Saved "${paper.title.slice(0, 30)}…" to ${myReviewColl.name}`);
@@ -250,12 +314,19 @@ export const Discover: React.FC = () => {
             oa_url: p.oa_url,
           });
           await addPaperToCollection(target.id, record.id);
+          storeMeta(record.id, p);
           added += 1;
         } catch {
           failed += 1;
         }
       }
       if (added > 0) {
+        refreshLibrary();
+        // tie this search to the collection, so Screening can count it in the PRISMA diagram
+        const entry = log.find((l) => l.id === searchIdRef.current);
+        if (entry && !entry.collection_id) {
+          updateSearch(entry.id, entry.name, entry.saved, target.id).then(refreshLog).catch(() => {});
+        }
         toast.success(`${created ? "Created “" + target.name + "” and added" : "Added"} ${added} paper${added === 1 ? "" : "s"}${created ? "" : " to “" + target.name + "”"}`);
         setShowCollModal(false);
       }
@@ -292,7 +363,11 @@ export const Discover: React.FC = () => {
       y: i % 2 === 0 ? 150 : 100,
       r: p.citation_count !== undefined ? 11 + 12 * Math.sqrt((p.citation_count ?? 0) / maxCites) : 15,
     }));
-    return { nodes, ticks, xOf, undated: selectedPapers.length - dated.length };
+    const byId = new Map(nodes.map((n) => [n.paper.openalex_id, n]));
+    const links = citationLinks(dated)
+      .map((l) => ({ from: byId.get(l.from), to: byId.get(l.to) }))
+      .filter((l): l is { from: (typeof nodes)[number]; to: (typeof nodes)[number] } => !!l.from && !!l.to);
+    return { nodes, ticks, xOf, links, undated: selectedPapers.length - dated.length };
   }, [selectedPapers]);
 
   return (
@@ -344,6 +419,7 @@ export const Discover: React.FC = () => {
             <option value="relevance">Sort: Relevance</option>
             <option value="newest">Sort: Newest</option>
             <option value="oldest">Sort: Oldest</option>
+            <option value="cited">Sort: Most cited</option>
             <option value="title">Sort: Title A–Z</option>
           </select>
           <label style={{ ...lbl, display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }}>
@@ -359,6 +435,13 @@ export const Discover: React.FC = () => {
               Reset ({activeFilterCount})
             </button>
           )}
+          <button
+            onClick={() => { refreshLog(); setShowHistory(true); }}
+            style={{ ...ctl, cursor: "pointer", fontWeight: 600 }}
+            title="Every search you ran, and the ones you saved"
+          >
+            🕘 Search history{log.length ? ` (${log.length})` : ""}
+          </button>
           <span style={{ ...lbl, marginLeft: "auto" }}>
             {visible.length === results.length ? `${results.length} papers` : `${visible.length} of ${results.length} papers`}
           </span>
@@ -404,6 +487,7 @@ export const Discover: React.FC = () => {
           {visible.map((paper) => {
             const isSelected = selected.includes(paper.openalex_id);
             const count = paper.citation_count;
+            const known = inLibrary(paper);
             return (
               <div
                 key={paper.openalex_id}
@@ -427,14 +511,24 @@ export const Discover: React.FC = () => {
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, fontSize: "16px", color: "var(--text-main)", marginBottom: "4px" }}>{paper.title}</div>
-                    <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: count !== undefined ? "8px" : 0 }}>
+                    <div style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: count !== undefined || known ? "8px" : 0 }}>
                       {paper.authors.join(", ")} • {paper.year ?? "n.d."}{paper.oa_url ? " • 🔓" : ""}
                     </div>
-                    {count !== undefined && (
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--nav-active-bg)", color: "var(--accent-ink)", padding: "3px 8px", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
-                        ★ {count.toLocaleString()} Citations
-                      </span>
-                    )}
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                      {count !== undefined && (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--nav-active-bg)", color: "var(--accent-ink)", padding: "3px 8px", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
+                          ★ {count.toLocaleString()} {count === 1 ? "citation" : "citations"}
+                        </span>
+                      )}
+                      {known && (
+                        <span
+                          title="A paper with the same DOI, OpenAlex id or title is already in your library"
+                          style={{ display: "inline-flex", alignItems: "center", gap: "4px", color: "var(--success-ink)", background: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", border: "1px solid color-mix(in srgb, var(--success-ink) 80%, var(--panel-dark))", padding: "2px 8px", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}
+                        >
+                          ✓ In library
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -501,12 +595,33 @@ export const Discover: React.FC = () => {
                       </g>
                     ))}
 
-                    {/* chronological chain between neighbours */}
+                    <defs>
+                      <marker id="cite-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--deep)" />
+                      </marker>
+                    </defs>
+
+                    {/* order in time between neighbours (faint) */}
                     {timeline.nodes.slice(1).map((n, i) => {
                       const a = timeline.nodes[i];
                       const midY = Math.min(a.y, n.y) - 40;
                       return (
-                        <path key={n.paper.openalex_id} d={`M ${a.x},${a.y} Q ${(a.x + n.x) / 2},${midY} ${n.x},${n.y}`} fill="none" stroke="var(--accent)" strokeWidth="2" strokeDasharray="5 4" opacity="0.7" />
+                        <path key={n.paper.openalex_id} d={`M ${a.x},${a.y} Q ${(a.x + n.x) / 2},${midY} ${n.x},${n.y}`} fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.45" />
+                      );
+                    })}
+
+                    {/* real citations: the arrow points from the citing paper to the paper it cites */}
+                    {timeline.links.map((l, i) => {
+                      const dx = l.to.x - l.from.x;
+                      const dir = dx === 0 ? 1 : Math.sign(dx);
+                      const x1 = l.from.x + dir * l.from.r;
+                      const x2 = l.to.x - dir * (l.to.r + 4);
+                      const lift = 30 + (i % 3) * 14;
+                      const midY = Math.min(l.from.y, l.to.y) - lift;
+                      return (
+                        <path key={`${l.from.paper.openalex_id}>${l.to.paper.openalex_id}`} d={`M ${x1},${l.from.y} Q ${(x1 + x2) / 2},${midY} ${x2},${l.to.y}`} fill="none" stroke="var(--deep)" strokeWidth="2.2" markerEnd="url(#cite-arrow)">
+                          <title>{`${shortLabel(l.from.paper)} cites ${shortLabel(l.to.paper)}`}</title>
+                        </path>
                       );
                     })}
 
@@ -521,7 +636,11 @@ export const Discover: React.FC = () => {
                   </svg>
                 </div>
                 <div style={{ fontSize: "11.5px", color: "var(--text-muted)", marginBottom: "12px", lineHeight: 1.5 }}>
-                  Papers placed by publication year; dashed lines join neighbours in time, not citations. Node size follows citation count when known. Click a node to read it.
+                  Papers are placed by publication year and sized by citation count.{" "}
+                  {timeline.links.length > 0
+                    ? `Solid arrows are real citations from OpenAlex's reference lists (${timeline.links.length} among these papers): the arrow points to the paper being cited.`
+                    : "No selected paper cites another selected paper according to OpenAlex, so there are no citation arrows."}{" "}
+                  Faint dashed lines only show the order in time. Click a node to read it.
                   {timeline.undated > 0 && ` ${timeline.undated} selected paper${timeline.undated === 1 ? " has" : "s have"} no year and ${timeline.undated === 1 ? "is" : "are"} not shown.`}
                 </div>
                 <button onClick={() => navigate("/lineage")} style={primaryBtn}>Open in Full Research Lineage View</button>
@@ -636,7 +755,7 @@ export const Discover: React.FC = () => {
                   <span style={{ padding: "4px 10px", background: "var(--nav-active-bg)", color: "var(--accent-ink)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
                     {readerPaper.doi ? `DOI ${readerPaper.doi}` : "No DOI"}
                   </span>
-                  <span style={{ padding: "4px 10px", background: readerPaper.oa_url ? "#D1FAE5" : "var(--nav-active-bg)", color: readerPaper.oa_url ? "#065F46" : "var(--text-muted)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
+                  <span style={{ padding: "4px 10px", background: readerPaper.oa_url ? "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))" : "var(--nav-active-bg)", color: readerPaper.oa_url ? "var(--success-ink)" : "var(--text-muted)", borderRadius: "4px", fontSize: "12px", fontWeight: 700 }}>
                     {readerPaper.oa_url ? "🔓 Open Access PDF" : "🔒 No open copy found"}
                   </span>
                 </div>
@@ -692,6 +811,104 @@ export const Discover: React.FC = () => {
           )}
         </div>
       </div>
+
+      <Modal isOpen={showHistory} onClose={() => setShowHistory(false)} title="Search history" width="640px">
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
+            {(["all", "saved"] as const).map((t) => (
+              <button key={t} onClick={() => setHistoryTab(t)} aria-pressed={historyTab === t} style={{ ...ctl, cursor: "pointer", fontWeight: 700, background: historyTab === t ? "var(--accent)" : "var(--panel-dark)", color: historyTab === t ? "var(--on-accent)" : "var(--text-main)", border: historyTab === t ? "1px solid var(--accent)" : "1px solid var(--border)" }}>
+                {t === "all" ? `All searches (${log.length})` : `Saved (${log.filter((l) => l.saved).length})`}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+            Every search is recorded with its date and result counts, so you can report exactly what you searched. Save one to keep it with a name; “Run again” repeats it with the same filters.
+          </div>
+          <div style={{ maxHeight: "50vh", overflowY: "auto", display: "flex", flexDirection: "column", gap: "8px" }}>
+            {log.filter((l) => historyTab === "all" || l.saved).length === 0 && (
+              <div style={{ padding: "24px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px", border: "1px dashed var(--border)", borderRadius: "8px" }}>
+                {historyTab === "saved" ? "No saved searches yet. Use ☆ Save on a search in the All list." : "No searches yet."}
+              </div>
+            )}
+            {log.filter((l) => historyTab === "all" || l.saved).map((l) => {
+              const coll = collections.find((c) => c.id === l.collection_id);
+              return (
+                <div key={l.id} style={{ border: "1px solid var(--border)", borderRadius: "8px", padding: "10px 12px", background: "var(--panel)" }}>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "baseline", flexWrap: "wrap" }}>
+                    {l.saved && <span aria-label="saved" style={{ color: "var(--warn-ink)" }}>★</span>}
+                    <span style={{ fontWeight: 700, fontSize: "14px", color: "var(--text-main)" }}>{l.name || l.query}</span>
+                    {l.name && <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>“{l.query}”</span>}
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "3px" }}>
+                    {fmtWhen(l.ran_at)} · {l.found} found{l.found !== l.unique_count ? ` · ${l.found - l.unique_count} duplicates merged` : ""}
+                    {coll ? ` · linked to “${coll.name}”` : ""}
+                  </div>
+                  {renaming?.id === l.id && (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        updateSearch(l.id, renaming.value, l.saved, l.collection_id).then(refreshLog);
+                        setRenaming(null);
+                      }}
+                      style={{ display: "flex", gap: "6px", marginTop: "8px" }}
+                    >
+                      <input
+                        autoFocus
+                        value={renaming.value}
+                        onChange={(e) => setRenaming({ id: l.id, value: e.target.value })}
+                        placeholder="A name for this search"
+                        aria-label="Search name"
+                        style={{ ...ctl, flex: 1, height: "28px" }}
+                      />
+                      <button type="submit" style={{ ...ctl, height: "28px", cursor: "pointer", fontWeight: 700 }}>OK</button>
+                      <button type="button" onClick={() => setRenaming(null)} style={{ ...ctl, height: "28px", cursor: "pointer" }}>Cancel</button>
+                    </form>
+                  )}
+                  <div style={{ display: "flex", gap: "6px", marginTop: "8px", flexWrap: "wrap" }}>
+                    <button
+                      onClick={() => {
+                        try {
+                          const f = l.filters_json ? JSON.parse(l.filters_json) : null;
+                          if (f) setFilters({ ...DEFAULT_FILTERS, ...f });
+                        } catch {}
+                        setQuery(l.query);
+                        setShowHistory(false);
+                        runSearch(l.query, 1, false);
+                      }}
+                      style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 700, background: "var(--accent)", color: "var(--on-accent)", border: "1px solid var(--accent)" }}
+                    >
+                      Run again
+                    </button>
+                    <button
+                      onClick={() => updateSearch(l.id, l.saved ? undefined : l.name, !l.saved, l.collection_id).then(refreshLog)}
+                      style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 600 }}
+                    >
+                      {l.saved ? "★ Unsave" : "☆ Save"}
+                    </button>
+                    {l.saved && (
+                      <button
+                        onClick={() => setRenaming({ id: l.id, value: l.name || "" })}
+                        style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 600 }}
+                      >
+                        Rename
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (searchIdRef.current === l.id) searchIdRef.current = null;
+                        deleteSearch(l.id).then(refreshLog);
+                      }}
+                      style={{ ...ctl, height: "26px", cursor: "pointer", fontWeight: 600, color: "var(--danger-ink)", border: "1px solid color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))" }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </Modal>
 
       <Modal isOpen={showCollModal} onClose={() => setShowCollModal(false)} title={`Add ${selectedPapers.length} paper${selectedPapers.length === 1 ? "" : "s"} to a collection`} width="460px">
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

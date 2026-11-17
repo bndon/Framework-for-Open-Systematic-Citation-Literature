@@ -8,10 +8,16 @@ import {
   getCollectionPapers,
   removePaperFromCollection,
   deletePaper,
+  getPaperMetas,
+  setPaperMeta,
+  fetchWorkMeta,
+  lookupDoi,
+  upsertPaper,
 } from "../lib/api";
 import { Modal } from "../components/Modal";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { toast } from "../lib/toast";
+import { ImportReferencesModal, ExportReferencesModal } from "../components/ReferenceTransfer";
 import type { Collection, Paper } from "../types";
 
 export const Library: React.FC = () => {
@@ -23,10 +29,14 @@ export const Library: React.FC = () => {
 
   // Search & sort state
   const [filterQuery, setFilterQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState<"year-desc" | "year-asc" | "title-asc" | "title-desc">("year-desc");
+  const [sortOrder, setSortOrder] = useState<"year-desc" | "year-asc" | "title-asc" | "title-desc" | "cited-desc">("year-desc");
+  const [cites, setCites] = useState<Record<string, number>>({});
+  const [fetching, setFetching] = useState<{ done: number; total: number } | null>(null);
 
   // Modals & form state
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState("");
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [renameValue, setRenameValue] = useState("");
@@ -48,7 +58,48 @@ export const Library: React.FC = () => {
 
   useEffect(() => {
     loadAll();
+    loadCites();
   }, []);
+
+  const loadCites = async () => {
+    try {
+      const ms = await getPaperMetas();
+      const m: Record<string, number> = {};
+      ms.forEach((x) => {
+        if (x.cited_by_count != null) m[x.paper_id] = x.cited_by_count;
+      });
+      setCites(m);
+    } catch {}
+  };
+
+  /** Papers saved before citation data was kept: look their counts up on OpenAlex. */
+  const missingCites = papers.filter((p) => cites[p.id] == null && (p.openalex_id || p.doi));
+  const fetchCites = async () => {
+    const todo = missingCites;
+    if (!todo.length || fetching) return;
+    setFetching({ done: 0, total: todo.length });
+    let ok = 0;
+    for (let i = 0; i < todo.length; i++) {
+      const p = todo[i];
+      try {
+        if (p.openalex_id) {
+          const m = await fetchWorkMeta(p.openalex_id);
+          await setPaperMeta(p.id, m.cited_by_count, m.referenced_works.length ? m.referenced_works : undefined);
+        } else if (p.doi) {
+          const r = await lookupDoi(p.doi);
+          if (r.openalex_id) await upsertPaper({ ...p, openalex_id: r.openalex_id });
+          await setPaperMeta(p.id, r.cited_by_count, r.referenced_works && r.referenced_works.length ? r.referenced_works : undefined);
+        }
+        ok++;
+      } catch {}
+      setFetching({ done: i + 1, total: todo.length });
+    }
+    setFetching(null);
+    await loadCites();
+    if (activeCollectionId) loadPapers(activeCollectionId);
+    if (ok === todo.length) toast.success(`Citation counts updated for ${ok} paper${ok === 1 ? "" : "s"}`);
+    else toast.error(`Updated ${ok} of ${todo.length}. The others could not be found on OpenAlex (or you are offline).`);
+  };
 
   useEffect(() => {
     if (activeCollectionId) {
@@ -180,6 +231,7 @@ export const Library: React.FC = () => {
       if (sortOrder === "year-asc") return (a.year || 0) - (b.year || 0);
       if (sortOrder === "title-asc") return a.title.localeCompare(b.title);
       if (sortOrder === "title-desc") return b.title.localeCompare(a.title);
+      if (sortOrder === "cited-desc") return (cites[b.id] ?? -1) - (cites[a.id] ?? -1);
       return 0;
     });
 
@@ -230,7 +282,15 @@ export const Library: React.FC = () => {
         <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>
           {collections.length === 0 ? (
             <div style={{ padding: "20px 10px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>
-              No collections yet.<br />Click "+ New" to create one.
+              No collections yet.<br />Click "+ New" to create one,
+              <br />or{" "}
+              <button
+                onClick={() => setShowImport(true)}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--accent-ink)", fontWeight: 700, cursor: "pointer", fontSize: "13px", textDecoration: "underline" }}
+              >
+                import references
+              </button>
+              .
             </div>
           ) : (
             collections.map((coll) => {
@@ -318,7 +378,25 @@ export const Library: React.FC = () => {
                 </p>
               </div>
 
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowImport(true)}
+                  style={{ padding: "8px 14px", backgroundColor: "var(--panel-dark)", color: "var(--accent-ink)", border: "1px solid var(--border)", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  ⬆ Import references
+                </button>
+                <button
+                  onClick={() => setShowExport(true)}
+                  style={{ padding: "8px 14px", backgroundColor: "var(--panel-dark)", color: "var(--accent-ink)", border: "1px solid var(--border)", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  ⬇ Export BibTeX / RIS
+                </button>
+                <Link
+                  to={`/screening`}
+                  style={{ padding: "8px 14px", backgroundColor: "var(--panel-dark)", color: "var(--accent-ink)", border: "1px solid var(--border)", borderRadius: "6px", textDecoration: "none", fontSize: "12px", fontWeight: 600 }}
+                >
+                  🧪 Screen papers
+                </Link>
                 <Link
                   to={`/compare?collectionId=${activeCollection.id}`}
                   style={{
@@ -396,7 +474,18 @@ export const Library: React.FC = () => {
                   <option value="year-asc">Year (Oldest first)</option>
                   <option value="title-asc">Title (A to Z)</option>
                   <option value="title-desc">Title (Z to A)</option>
+                  <option value="cited-desc">Most cited first</option>
                 </select>
+                {missingCites.length > 0 && (
+                  <button
+                    onClick={fetchCites}
+                    disabled={!!fetching}
+                    title="Look up how often each paper is cited, from OpenAlex"
+                    style={{ padding: "6px 10px", borderRadius: "4px", border: "1px solid var(--border)", fontSize: "12px", fontWeight: 600, backgroundColor: "var(--panel-dark)", color: "var(--accent-ink)", cursor: fetching ? "wait" : "pointer", whiteSpace: "nowrap" }}
+                  >
+                    {fetching ? `Fetching ${fetching.done}/${fetching.total}…` : `↻ Get citation counts (${missingCites.length})`}
+                  </button>
+                )}
               </div>
             )}
 
@@ -493,6 +582,11 @@ export const Library: React.FC = () => {
                               DOI: {paper.doi}
                             </span>
                           )}
+                          {cites[paper.id] != null && (
+                            <span style={{ fontSize: "11px", backgroundColor: "var(--nav-active-bg)", color: "var(--accent-ink)", padding: "2px 8px", borderRadius: "4px", fontWeight: 700 }}>
+                              ★ {cites[paper.id].toLocaleString()} {cites[paper.id] === 1 ? "citation" : "citations"}
+                            </span>
+                          )}
                           {hasPdf ? (
                             <span style={{ fontSize: "11px", backgroundColor: "color-mix(in srgb, var(--success-ink) 13%, var(--panel-dark))", color: "var(--success-ink)", padding: "2px 8px", borderRadius: "4px", fontWeight: 600 }}>
                               ✓ PDF Uploaded
@@ -582,6 +676,19 @@ export const Library: React.FC = () => {
       </div>
 
       {/* New Collection Modal */}
+      <ImportReferencesModal
+        isOpen={showImport}
+        onClose={() => setShowImport(false)}
+        collections={collections}
+        defaultCollectionId={activeCollectionId}
+        onImported={async (collId, created) => {
+          if (created) setCollections((cs) => [...cs, created]);
+          setActiveCollectionId(collId);
+          loadPapers(collId);
+        }}
+      />
+      <ExportReferencesModal isOpen={showExport} onClose={() => setShowExport(false)} name={activeCollection?.name ?? "references"} papers={papers} />
+
       <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create New Collection">
         <form onSubmit={handleCreateCollection}>
           <div style={{ marginBottom: "16px" }}>

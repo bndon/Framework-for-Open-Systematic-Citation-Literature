@@ -101,6 +101,18 @@ pub struct PaperResult {
     #[serde(rename = "abstract")]
     pub abstract_text: Option<String>,
     pub oa_url: Option<String>,
+    /// How many works cite this one (OpenAlex). Missing in results cached by older versions.
+    #[serde(default)]
+    pub cited_by_count: Option<i64>,
+    /// OpenAlex ids of the works this one cites.
+    #[serde(default)]
+    pub referenced_works: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct WorkMeta {
+    pub cited_by_count: Option<i64>,
+    pub referenced_works: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

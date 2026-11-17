@@ -3,6 +3,22 @@ import { loadBooks, saveBooks, loadShelves } from "../bookStorage";
 import { saveEpub, loadEpub, deleteEpub } from "../db";
 import { parseEpub, importEpubFile, loadFullBookHtml, type ParsedEpub } from "../epub";
 import { isDarkColor } from "../lib/settings";
+import {
+  HL_COLORS,
+  type HlColor,
+  type Highlight,
+  loadHighlights,
+  saveHighlights,
+  deleteHighlightsFor,
+  selectionToDraft,
+  paintHighlight,
+  clearMarks,
+  recolorMarks,
+  highlightCss,
+  highlightsMarkdown,
+} from "../lib/highlights";
+import { saveTextFile } from "../lib/saveFile";
+import { toast } from "../lib/toast";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import type { Book, ReadingMode } from "../types";
 
@@ -155,6 +171,14 @@ export const EpubLibrary: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [prefs, setPrefs] = useState<ReaderPrefs>(loadPrefs);
   const [tocOpen, setTocOpen] = useState(false);
+
+  // highlights and notes
+  const [highlights, setHighlights] = useState<Highlight[]>([]);
+  const highlightsRef = useRef<Highlight[]>([]);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [activeHl, setActiveHl] = useState<string | null>(null);
+  const [orphans, setOrphans] = useState<Set<string>>(new Set());
+  const [pop, setPop] = useState<{ left: number; top: number; draft: NonNullable<ReturnType<typeof selectionToDraft>> extends infer T ? (T extends { draft: infer D } ? D : never) : never } | null>(null);
   const [chapterIdx, setChapterIdx] = useState(0);
   const [percent, setPercent] = useState(0);
   const parsedRef = useRef<ParsedEpub | null>(null);
@@ -230,8 +254,9 @@ export const EpubLibrary: React.FC = () => {
     try {
       await deleteEpub(b.id);
     } catch {}
+    deleteHighlightsFor(b.id);
     commit(booksRef.current.filter((x) => x.id !== b.id));
-    setNotice({ kind: "ok", text: `Removed "${b.title}".` });
+    setNotice({ kind: "ok", text: `Removed "${b.title}" and its highlights.` });
   };
 
   // ----- reader -------------------------------------------------------------
@@ -252,6 +277,12 @@ export const EpubLibrary: React.FC = () => {
     setReading(b);
     setHtml(null);
     setTocOpen(false);
+    setNotesOpen(false);
+    setPop(null);
+    setActiveHl(null);
+    const saved = loadHighlights(b.id);
+    highlightsRef.current = saved;
+    setHighlights(saved);
     setLoading(true);
     setPercent(b.progress?.percent ?? 0);
     try {
@@ -328,9 +359,9 @@ export const EpubLibrary: React.FC = () => {
       pct = max > 0 ? se.scrollTop / max : 0;
     }
     let current = 0;
-    doc.querySelectorAll<HTMLElement>(".foscl-chapter").forEach((s, i) => {
+    doc.querySelectorAll<HTMLElement>(".foscl-chapter").forEach((s) => {
       const r = s.getBoundingClientRect();
-      if (isPaged ? r.left <= 80 : r.top <= vh * 0.35) current = i;
+      if (isPaged ? r.left <= 80 : r.top <= vh * 0.35) current = Number(s.dataset.chapterIndex ?? 0);
     });
     setPercent(pct);
     setChapterIdx(current);
@@ -357,10 +388,160 @@ export const EpubLibrary: React.FC = () => {
   const turnRef = useRef(turn);
   turnRef.current = turn;
 
+  // ----- highlights ---------------------------------------------------------
+  const commitHighlights = (next: Highlight[]) => {
+    highlightsRef.current = next;
+    setHighlights(next);
+    if (readingRef.current) saveHighlights(readingRef.current.id, next);
+  };
+
+  const paintAll = (doc: Document) => {
+    const bad = new Set<string>();
+    for (const h of highlightsRef.current) {
+      try {
+        if (!paintHighlight(doc, h)) bad.add(h.id);
+      } catch {
+        bad.add(h.id);
+      }
+    }
+    setOrphans(bad);
+  };
+
+  const flash = (id: string) => {
+    const doc = docOf();
+    if (!doc) return;
+    const marks = doc.querySelectorAll(`mark.foscl-hl[data-hl="${id}"]`);
+    marks.forEach((m) => m.classList.add("foscl-hl-flash"));
+    window.setTimeout(() => marks.forEach((m) => m.classList.remove("foscl-hl-flash")), 1400);
+  };
+
+  const goToHighlight = (h: Highlight) => {
+    const doc = docOf();
+    if (!doc) return;
+    const mark = doc.querySelector<HTMLElement>(`mark.foscl-hl[data-hl="${h.id}"]`);
+    if (!mark) {
+      jumpTo(h.chapter);
+      return;
+    }
+    if (prefsRef.current.mode === "continuous") mark.scrollIntoView({ block: "center" });
+    else {
+      const pw = doc.documentElement.clientWidth || 1;
+      const x = mark.getBoundingClientRect().left + doc.body.scrollLeft;
+      doc.body.scrollLeft = Math.floor(x / pw) * pw;
+    }
+    flash(h.id);
+    measure();
+  };
+
+  const addHighlight = (color: HlColor, withNote = false) => {
+    if (!pop) return;
+    const h: Highlight = {
+      id: `hl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      ...pop.draft,
+      color,
+      note: "",
+      createdAt: Date.now(),
+    };
+    const doc = docOf();
+    if (doc) {
+      try {
+        paintHighlight(doc, h);
+      } catch {}
+      doc.getSelection()?.removeAllRanges();
+    }
+    commitHighlights([...highlightsRef.current, h]);
+    setPop(null);
+    if (withNote) {
+      setNotesOpen(true);
+      setActiveHl(h.id);
+    }
+  };
+
+  const changeHighlight = (id: string, patch: Partial<Pick<Highlight, "color" | "note">>) => {
+    const next = highlightsRef.current.map((h) => (h.id === id ? { ...h, ...patch } : h));
+    commitHighlights(next);
+    const h = next.find((x) => x.id === id);
+    const doc = docOf();
+    if (h && doc) recolorMarks(doc, id, h.color, !!h.note.trim());
+  };
+
+  const removeHighlight = (id: string) => {
+    const doc = docOf();
+    if (doc) clearMarks(doc, id);
+    commitHighlights(highlightsRef.current.filter((h) => h.id !== id));
+    if (activeHl === id) setActiveHl(null);
+  };
+
+  const exportNotes = async () => {
+    const b = readingRef.current;
+    if (!b) return;
+    const titleOf = (chapter: number) => tocItems.slice().reverse().find((t) => t.chapterIndex <= chapter)?.title || `Section ${chapter + 1}`;
+    const md = highlightsMarkdown(b.title, b.author || "", highlightsRef.current, titleOf);
+    try {
+      const where = await saveTextFile(`${b.title.replace(/[^a-zA-Z0-9_-]+/g, "_")}_highlights.md`, md, { name: "Markdown", extensions: ["md"] }, "text/markdown");
+      if (where) toast.success(`Saved your highlights: ${where}`);
+    } catch (err: any) {
+      toast.error("Could not save: " + (err?.toString?.() ?? err));
+    }
+  };
+
+  const copyNotes = async () => {
+    const b = readingRef.current;
+    if (!b) return;
+    const titleOf = (chapter: number) => tocItems.slice().reverse().find((t) => t.chapterIndex <= chapter)?.title || `Section ${chapter + 1}`;
+    try {
+      await navigator.clipboard.writeText(highlightsMarkdown(b.title, b.author || "", highlightsRef.current, titleOf));
+      toast.success("Highlights copied as Markdown");
+    } catch {
+      toast.error("Could not copy to the clipboard");
+    }
+  };
+
   const onFrameLoad = () => {
     const doc = docOf();
     if (!doc) return;
     doc.addEventListener("scroll", measure, true);
+    doc.addEventListener("scroll", () => setPop(null), true);
+
+    // highlight styles and the saved highlights
+    const style = doc.createElement("style");
+    style.id = "foscl-hl-style";
+    style.textContent = highlightCss(prefsRef.current.theme);
+    doc.head.appendChild(style);
+    paintAll(doc);
+
+    // a finished selection offers the highlight colours next to it
+    const onSelect = () => {
+      window.setTimeout(() => {
+        const d = docOf();
+        if (!d) return;
+        const res = selectionToDraft(d);
+        if (!res) return setPop(null);
+        if ("error" in res) {
+          toast.info(res.error);
+          return setPop(null);
+        }
+        const frame = iframeRef.current?.getBoundingClientRect();
+        if (!frame) return;
+        const left = Math.min(Math.max(8, frame.left + res.rect.left), window.innerWidth - 250);
+        const top = Math.max(8, frame.top + res.rect.top - 48);
+        setPop({ left, top, draft: res.draft });
+      }, 10);
+    };
+    doc.addEventListener("mouseup", onSelect);
+    doc.addEventListener("keyup", (e) => {
+      if (e.key.startsWith("Arrow") && e.shiftKey) onSelect();
+    });
+    doc.addEventListener("mousedown", () => setPop(null));
+    doc.addEventListener("click", (e) => {
+      const m = (e.target as HTMLElement | null)?.closest?.("mark.foscl-hl") as HTMLElement | null;
+      if (m && doc.getSelection()?.isCollapsed) {
+        setNotesOpen(true);
+        setActiveHl(m.dataset.hl || null);
+        flash(m.dataset.hl || "");
+      }
+    });
+
     doc.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !e.shiftKey)) {
         e.preventDefault();
@@ -447,6 +628,9 @@ export const EpubLibrary: React.FC = () => {
           </button>
           <button onClick={() => setTocOpen((v) => !v)} aria-pressed={tocOpen} style={{ ...btn(tocOpen) }}>
             ☰ Contents
+          </button>
+          <button onClick={() => setNotesOpen((v) => !v)} aria-pressed={notesOpen} style={{ ...btn(notesOpen) }} title="Your highlights and notes in this book">
+            🖍 Notes{highlights.length ? ` (${highlights.length})` : ""}
           </button>
           <div style={{ minWidth: 0, flex: "1 1 160px" }}>
             <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -614,7 +798,130 @@ export const EpubLibrary: React.FC = () => {
               </button>
             </div>
           </div>
+
+          {notesOpen && (
+            <aside
+              aria-label="Highlights and notes"
+              style={{ width: "340px", flexShrink: 0, overflowY: "auto", background: "var(--panel)", borderLeft: "1px solid var(--border)", padding: "12px 12px 24px" }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--text-muted)", flex: 1 }}>
+                  Highlights &amp; notes
+                </div>
+                {highlights.length > 0 && (
+                  <>
+                    <button onClick={copyNotes} style={{ ...btn(), padding: "4px 9px", fontSize: "11px" }}>
+                      Copy
+                    </button>
+                    <button onClick={exportNotes} style={{ ...btn(), padding: "4px 9px", fontSize: "11px" }}>
+                      Save .md
+                    </button>
+                  </>
+                )}
+              </div>
+              {highlights.length === 0 ? (
+                <div style={{ fontSize: "12.5px", color: "var(--text-muted)", lineHeight: 1.6, padding: "14px 4px" }}>
+                  Select some text in the book and pick a colour to highlight it. Click a highlight to come back to it here and add a note.
+                </div>
+              ) : (
+                [...highlights]
+                  .sort((a, b) => a.chapter - b.chapter || a.start - b.start)
+                  .map((h, i, arr) => {
+                    const ctitle = tocItems.slice().reverse().find((t) => t.chapterIndex <= h.chapter)?.title || `Section ${h.chapter + 1}`;
+                    const newGroup = i === 0 || arr[i - 1].chapter !== h.chapter;
+                    const solid = HL_COLORS.find((c) => c.id === h.color)!.solid;
+                    const active = activeHl === h.id;
+                    return (
+                      <div key={h.id}>
+                        {newGroup && (
+                          <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-main)", margin: "14px 2px 6px" }}>{ctitle}</div>
+                        )}
+                        <div
+                          ref={(el) => {
+                            if (el && active) el.scrollIntoView({ block: "nearest" });
+                          }}
+                          style={{
+                            borderRadius: "8px",
+                            padding: "9px 10px",
+                            marginBottom: "8px",
+                            background: "var(--panel-dark)",
+                            border: active ? "2px solid var(--accent)" : "1px solid var(--border)",
+                            borderLeft: `5px solid ${solid}`,
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setActiveHl(h.id);
+                              goToHighlight(h);
+                            }}
+                            title="Go to this passage"
+                            style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", color: "var(--text-main)", fontSize: "12.5px", lineHeight: 1.5, fontFamily: "Georgia, serif" }}
+                          >
+                            “{h.quote.length > 220 ? h.quote.slice(0, 220).trimEnd() + "…" : h.quote}”
+                          </button>
+                          {orphans.has(h.id) && (
+                            <div style={{ fontSize: "11px", color: "var(--warn-ink)", fontWeight: 700, marginTop: "4px" }}>This passage was not found in the book any more.</div>
+                          )}
+                          <textarea
+                            defaultValue={h.note}
+                            key={`${h.id}-${h.note}`}
+                            placeholder="Add a note…"
+                            aria-label="Note for this highlight"
+                            rows={h.note ? 2 : 1}
+                            autoFocus={active && !h.note}
+                            onBlur={(e) => {
+                              if (e.target.value !== h.note) changeHighlight(h.id, { note: e.target.value });
+                            }}
+                            style={{ width: "100%", boxSizing: "border-box", marginTop: "6px", padding: "5px 8px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--panel)", color: "var(--text-main)", fontSize: "12px", resize: "vertical" }}
+                          />
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px" }}>
+                            {HL_COLORS.map((c) => (
+                              <button
+                                key={c.id}
+                                onClick={() => changeHighlight(h.id, { color: c.id })}
+                                aria-label={`Change to ${c.label}`}
+                                aria-pressed={h.color === c.id}
+                                title={c.label}
+                                style={{ width: "18px", height: "18px", borderRadius: "50%", background: c.solid, cursor: "pointer", border: h.color === c.id ? "3px solid var(--text-main)" : "1px solid var(--border)", padding: 0 }}
+                              />
+                            ))}
+                            <button
+                              onClick={() => removeHighlight(h.id)}
+                              style={{ marginLeft: "auto", fontSize: "11px", fontWeight: 600, cursor: "pointer", padding: "3px 9px", borderRadius: "5px", color: "var(--danger-ink)", background: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", border: "1px solid color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))" }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
+            </aside>
+          )}
         </div>
+
+        {pop && (
+          <div
+            role="toolbar"
+            aria-label="Highlight the selected text"
+            onMouseDown={(e) => e.preventDefault()}
+            style={{ position: "fixed", left: pop.left, top: pop.top, zIndex: 60, display: "flex", alignItems: "center", gap: "7px", padding: "7px 10px", borderRadius: "8px", background: "var(--panel)", border: "1px solid var(--border-strong, var(--border))", boxShadow: "0 6px 20px rgba(0,0,0,0.25)" }}
+          >
+            {HL_COLORS.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => addHighlight(c.id)}
+                aria-label={`Highlight ${c.label}`}
+                title={`Highlight ${c.label}`}
+                style={{ width: "22px", height: "22px", borderRadius: "50%", background: c.solid, border: "2px solid var(--panel)", outline: "1px solid var(--border-strong, var(--border))", cursor: "pointer", padding: 0 }}
+              />
+            ))}
+            <button onClick={() => addHighlight("yellow", true)} style={{ ...btn(), padding: "4px 10px", fontSize: "12px" }}>
+              ✎ Note
+            </button>
+          </div>
+        )}
       </div>
     );
   }

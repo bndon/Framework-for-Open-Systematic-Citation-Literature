@@ -1,6 +1,6 @@
 use crate::db::DbState;
 use crate::models::PaperResult;
-use crate::models::{CitationGraph, CitationNode};
+use crate::models::{CitationGraph, CitationNode, WorkMeta};
 use serde_json::Value;
 use tauri::State;
 
@@ -66,6 +66,12 @@ fn parse_work(work: &Value) -> PaperResult {
         .as_str()
         .map(|s| s.to_string());
 
+    let cited_by_count = work["cited_by_count"].as_i64();
+    let referenced_works = work["referenced_works"]
+        .as_array()
+        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+        .unwrap_or_default();
+
     PaperResult {
         openalex_id,
         doi,
@@ -75,6 +81,8 @@ fn parse_work(work: &Value) -> PaperResult {
         authors,
         abstract_text,
         oa_url,
+        cited_by_count,
+        referenced_works,
     }
 }
 
@@ -284,4 +292,38 @@ pub fn fetch_citations(
     set_cache(&db, &cache_key, &json_str);
 
     Ok(graph)
+}
+
+/// Citation count and reference list of one work, for papers saved before this data was kept.
+#[tauri::command]
+pub fn fetch_work_meta(db: State<'_, DbState>, openalex_id: String) -> Result<WorkMeta, String> {
+    let cache_key = format!("openalex:meta:{}", openalex_id);
+
+    if let Some(cached) = get_cache(&db, &cache_key) {
+        let meta: WorkMeta = serde_json::from_str(&cached).map_err(|e| e.to_string())?;
+        return Ok(meta);
+    }
+
+    let client = build_client()?;
+    let url = format!(
+        "https://api.openalex.org/works/{}?select=id,cited_by_count,referenced_works",
+        urlencode(&openalex_id)
+    );
+    let resp = client.get(&url).send().map_err(|e| e.to_string())?;
+    if !resp.status().is_success() {
+        return Err(format!("OpenAlex returned {}", resp.status()));
+    }
+    let work: Value = resp.json().map_err(|e| e.to_string())?;
+
+    let meta = WorkMeta {
+        cited_by_count: work["cited_by_count"].as_i64(),
+        referenced_works: work["referenced_works"]
+            .as_array()
+            .map(|arr| arr.iter().filter_map(|v| v.as_str().map(|s| s.to_string())).collect())
+            .unwrap_or_default(),
+    };
+
+    let json_str = serde_json::to_string(&meta).map_err(|e| e.to_string())?;
+    set_cache(&db, &cache_key, &json_str);
+    Ok(meta)
 }

@@ -6,3 +6,4 @@ pub mod claims;
 pub mod openalex;
 pub mod pdf;
 pub mod files;
+pub mod review;

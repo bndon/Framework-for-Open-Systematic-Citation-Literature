@@ -64,6 +64,11 @@ function mergePaper(base: PaperResult, extra: PaperResult): PaperResult {
     oa_url: base.oa_url || extra.oa_url,
     abstract: extraAbstract.length > baseAbstract.length ? extra.abstract : base.abstract,
     authors: base.authors && base.authors.length > 0 ? base.authors : extra.authors,
+    // two records of the same paper: keep the bigger citation count and every known reference
+    cited_by_count: Math.max(base.cited_by_count ?? -1, extra.cited_by_count ?? -1) >= 0
+      ? Math.max(base.cited_by_count ?? -1, extra.cited_by_count ?? -1)
+      : undefined,
+    referenced_works: Array.from(new Set([...(base.referenced_works ?? []), ...(extra.referenced_works ?? [])])),
   };
 }
 
@@ -108,7 +113,7 @@ export function dedupePapers(papers: PaperResult[]): DedupeResult {
 // ---------------------------------------------------------------------------
 // Filters
 // ---------------------------------------------------------------------------
-export type SortMode = "relevance" | "newest" | "oldest" | "title";
+export type SortMode = "relevance" | "newest" | "oldest" | "title" | "cited";
 
 export interface DiscoverFilters {
   yearFrom: string;
@@ -159,6 +164,24 @@ export function applyFilters(papers: PaperResult[], f: DiscoverFilters): PaperRe
   const sorted = [...filtered];
   if (f.sort === "newest") sorted.sort((a, b) => (b.year ?? -Infinity) - (a.year ?? -Infinity));
   if (f.sort === "oldest") sorted.sort((a, b) => (a.year ?? Infinity) - (b.year ?? Infinity));
+  if (f.sort === "cited") sorted.sort((a, b) => (b.cited_by_count ?? -1) - (a.cited_by_count ?? -1));
   if (f.sort === "title") sorted.sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
   return sorted;
+}
+
+/**
+ * Citation links among a set of papers: `from` cites `to`, judged from OpenAlex reference lists.
+ * Only links between papers in the set are returned.
+ */
+export function citationLinks(papers: PaperResult[]): { from: string; to: string }[] {
+  const byNorm = new Map(papers.map((p) => [normalizeOpenAlexId(p.openalex_id || ""), p.openalex_id]));
+  const out: { from: string; to: string }[] = [];
+  for (const p of papers) {
+    const self = normalizeOpenAlexId(p.openalex_id || "");
+    for (const ref of p.referenced_works ?? []) {
+      const target = byNorm.get(normalizeOpenAlexId(ref));
+      if (target && normalizeOpenAlexId(ref) !== self) out.push({ from: p.openalex_id, to: target });
+    }
+  }
+  return out;
 }

@@ -7,9 +7,15 @@ import type {
   Collection,
   Extraction,
   Paper,
+  PaperMeta,
   PaperResult,
+  ScreeningChoice,
+  ScreeningDecision,
+  ScreeningStage,
+  SearchLogEntry,
   Template,
   TemplateField,
+  WorkMeta,
 } from "../types";
 
 // Helper to provide both camelCase and snake_case to satisfy Tauri 2 commands
@@ -37,6 +43,10 @@ export async function lookupDoi(doi: string): Promise<PaperResult> {
 
 export async function fetchCitations(openalexId: string): Promise<CitationGraph> {
   return invoke("fetch_citations", dualKeys({ openalex_id: openalexId }));
+}
+
+export async function fetchWorkMeta(openalexId: string): Promise<WorkMeta> {
+  return invoke("fetch_work_meta", dualKeys({ openalex_id: openalexId }));
 }
 
 // Papers
@@ -249,4 +259,86 @@ export async function loadPdfBytes(paperId: string): Promise<Uint8Array> {
 export async function writeExportFile(path: string, bytes: number[] | Uint8Array): Promise<void> {
   const byteArr = bytes instanceof Uint8Array ? Array.from(bytes) : bytes;
   return invoke("write_export_file", dualKeys({ path, bytes: byteArr }));
+}
+
+// Screening (include / exclude / maybe per paper, per collection, per stage)
+export async function getScreening(collectionId: string): Promise<ScreeningDecision[]> {
+  return invoke("get_screening", dualKeys({ collection_id: collectionId }));
+}
+
+/** An empty `decision` clears the paper's decision for that stage. */
+export async function setScreening(
+  collectionId: string,
+  paperId: string,
+  stage: ScreeningStage,
+  decision: ScreeningChoice | "",
+  reason?: string
+): Promise<void> {
+  return invoke("set_screening", dualKeys({
+    collection_id: collectionId,
+    paper_id: paperId,
+    stage,
+    decision,
+    reason: reason ?? null,
+  }));
+}
+
+// Search log / saved searches
+export async function logSearch(
+  query: string,
+  filtersJson: string | undefined,
+  found: number,
+  uniqueCount: number,
+  collectionId?: string
+): Promise<SearchLogEntry> {
+  return invoke("log_search", dualKeys({
+    query,
+    filters_json: filtersJson ?? null,
+    found,
+    unique_count: uniqueCount,
+    collection_id: collectionId ?? null,
+  }));
+}
+
+export async function getSearchLog(limit = 200): Promise<SearchLogEntry[]> {
+  return invoke("get_search_log", dualKeys({ limit }));
+}
+
+export async function updateSearch(
+  id: string,
+  name: string | undefined,
+  saved: boolean,
+  collectionId?: string
+): Promise<void> {
+  return invoke("update_search", dualKeys({
+    id,
+    name: name ?? null,
+    saved,
+    collection_id: collectionId ?? null,
+  }));
+}
+
+export async function updateSearchCounts(id: string, found: number, uniqueCount: number): Promise<void> {
+  return invoke("update_search_counts", dualKeys({ id, found, unique_count: uniqueCount }));
+}
+
+export async function deleteSearch(id: string): Promise<void> {
+  return invoke("delete_search", dualKeys({ id }));
+}
+
+// Citation metadata kept per saved paper
+export async function getPaperMetas(): Promise<PaperMeta[]> {
+  return invoke("get_paper_metas");
+}
+
+export async function setPaperMeta(
+  paperId: string,
+  citedByCount?: number,
+  referencedWorks?: string[]
+): Promise<void> {
+  return invoke("set_paper_meta", dualKeys({
+    paper_id: paperId,
+    cited_by_count: citedByCount ?? null,
+    referenced_json: referencedWorks ? JSON.stringify(referencedWorks) : null,
+  }));
 }

@@ -87,6 +87,46 @@ export interface PaperResult {
   authors: string[];
   abstract?: string;
   oa_url?: string;
+  /** How many works cite this one (OpenAlex). */
+  cited_by_count?: number;
+  /** OpenAlex ids of the works this one cites. */
+  referenced_works?: string[];
+}
+
+export type ScreeningStage = 'title_abstract' | 'full_text';
+export type ScreeningChoice = 'include' | 'exclude' | 'maybe';
+
+export interface ScreeningDecision {
+  collection_id: string;
+  paper_id: string;
+  stage: ScreeningStage;
+  decision: ScreeningChoice;
+  reason?: string;
+  updated_at: string;
+}
+
+export interface SearchLogEntry {
+  id: string;
+  query: string;
+  filters_json?: string;
+  found: number;
+  unique_count: number;
+  ran_at: string;
+  saved: boolean;
+  name?: string;
+  collection_id?: string;
+}
+
+export interface PaperMeta {
+  paper_id: string;
+  cited_by_count?: number;
+  referenced_json?: string;
+  updated_at: string;
+}
+
+export interface WorkMeta {
+  cited_by_count?: number;
+  referenced_works: string[];
 }
 
 export interface CitationNode {

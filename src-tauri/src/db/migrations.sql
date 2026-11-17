@@ -99,3 +99,35 @@ INSERT OR IGNORE INTO template_fields (id, template_id, name, position) VALUES
     ('f-lim','default','Limitations',7),
     ('f-fut','default','Future work',8),
     ('f-obs','default','Personal observations',9);
+
+-- ---------------------------------------------------------------------------
+-- Review workflow: screening decisions, search log, per-paper citation data
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS screening (
+    collection_id TEXT NOT NULL REFERENCES collections(id) ON DELETE CASCADE,
+    paper_id TEXT NOT NULL REFERENCES papers(id) ON DELETE CASCADE,
+    stage TEXT NOT NULL CHECK (stage IN ('title_abstract','full_text')),
+    decision TEXT NOT NULL CHECK (decision IN ('include','exclude','maybe')),
+    reason TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (collection_id, paper_id, stage)
+);
+
+CREATE TABLE IF NOT EXISTS search_log (
+    id TEXT PRIMARY KEY,
+    query TEXT NOT NULL,
+    filters_json TEXT,
+    found INTEGER NOT NULL DEFAULT 0,
+    unique_count INTEGER NOT NULL DEFAULT 0,
+    ran_at TEXT NOT NULL DEFAULT (datetime('now')),
+    saved INTEGER NOT NULL DEFAULT 0,
+    name TEXT,
+    collection_id TEXT REFERENCES collections(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS paper_meta (
+    paper_id TEXT PRIMARY KEY REFERENCES papers(id) ON DELETE CASCADE,
+    cited_by_count INTEGER,
+    referenced_json TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

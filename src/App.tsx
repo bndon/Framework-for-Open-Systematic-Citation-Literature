@@ -18,6 +18,7 @@ import { KnowledgeGraph } from "./screens/KnowledgeGraph";
 import { Settings } from "./screens/Settings";
 import { Dashboard } from "./screens/Dashboard";
 import { About } from "./screens/About";
+import { Screening } from "./screens/Screening";
 import { QuarterCircleNav } from "./components/QuarterCircleNav";
 import { loadAppTheme, applyAppTheme } from "./lib/settings";
 import type { AppTheme } from "./lib/settings";
@@ -26,6 +27,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/about": "About",
   "/discover": "Discover",
   "/library": "Library",
+  "/screening": "Screening",
   "/templates": "Templates",
   "/compare": "Comparison Table",
   "/comparison": "Comparison Table",
@@ -116,6 +118,7 @@ export const App: React.FC = () => {
             <Route path="/about" element={<About />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/screening" element={<Screening />} />
             <Route path="/paper/:paperId" element={<PaperDetail />} />
             <Route path="/reader/:paperId" element={<Reader />} />
             <Route path="/templates" element={<Templates />} />
