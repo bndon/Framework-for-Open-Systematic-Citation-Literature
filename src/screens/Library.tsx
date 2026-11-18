@@ -17,6 +17,7 @@ import {
 import { Modal } from "../components/Modal";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { toast } from "../lib/toast";
+import { deleteWithUndo } from "../lib/undo";
 import { ImportReferencesModal, ExportReferencesModal } from "../components/ReferenceTransfer";
 import { Screening } from "./Screening";
 import type { Collection, Paper } from "../types";
@@ -179,45 +180,32 @@ export const Library: React.FC = () => {
   };
 
   const handleDeleteCollection = (id: string, name: string) => {
-    setConfirmDialog({
-      isOpen: true,
-      title: "Delete Collection",
-      message: `Are you sure you want to delete collection "${name}"? Papers will remain in the database.`,
-      confirmLabel: "Delete Collection",
-      isDanger: true,
-      onConfirm: async () => {
-        try {
-          await deleteCollection(id);
-          const remaining = collections.filter((c) => c.id !== id);
-          setCollections(remaining);
-          if (activeCollectionId === id) {
-            setActiveCollectionId(remaining[0]?.id ?? null);
-          }
-          toast.success(`Deleted collection "${name}"`);
-        } catch (err: any) {
-          toast.error("Error deleting collection: " + err?.toString());
-        }
+    const before = collections;
+    const wasActive = activeCollectionId === id;
+    deleteWithUndo({
+      label: `Deleted collection "${name}". Its papers stay in the database.`,
+      hide: () => {
+        const remaining = before.filter((c) => c.id !== id);
+        setCollections(remaining);
+        if (wasActive) setActiveCollectionId(remaining[0]?.id ?? null);
       },
+      show: () => {
+        setCollections(before);
+        if (wasActive) setActiveCollectionId(id);
+      },
+      commit: () => deleteCollection(id),
     });
   };
 
   const handleRemovePaper = (paperId: string, paperTitle: string) => {
     if (!activeCollectionId) return;
-    setConfirmDialog({
-      isOpen: true,
-      title: "Remove Paper",
-      message: `Remove "${paperTitle.slice(0, 50)}..." from this collection?`,
-      confirmLabel: "Remove",
-      isDanger: true,
-      onConfirm: async () => {
-        try {
-          await removePaperFromCollection(activeCollectionId, paperId);
-          setPapers(papers.filter((p) => p.id !== paperId));
-          toast.success("Removed paper from collection");
-        } catch (err: any) {
-          toast.error("Error removing paper: " + err?.toString());
-        }
-      },
+    const cid = activeCollectionId;
+    const before = papers;
+    deleteWithUndo({
+      label: `Removed "${paperTitle.slice(0, 40)}${paperTitle.length > 40 ? "…" : ""}" from the collection`,
+      hide: () => setPapers((ps) => ps.filter((p) => p.id !== paperId)),
+      show: () => setPapers((ps) => (ps.some((p) => p.id === paperId) ? ps : before)),
+      commit: () => removePaperFromCollection(cid, paperId),
     });
   };
 

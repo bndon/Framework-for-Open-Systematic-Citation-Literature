@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import * as pdfjsLib from "pdfjs-dist";
 import { getPaper, loadPdfBytes, getAnnotations, createAnnotation, updateAnnotation, deleteAnnotation } from "../lib/api";
 import { Modal } from "../components/Modal";
-import { ConfirmDialog } from "../components/ConfirmDialog";
 import { toast } from "../lib/toast";
+import { deleteWithUndo } from "../lib/undo";
 import { saveTextFile } from "../lib/saveFile";
 import { loadReaderSettings, saveReaderSettings } from "../lib/settings";
 import type { Paper, Annotation } from "../types";
@@ -149,7 +149,6 @@ export const Reader: React.FC = () => {
   const [manualQuote, setManualQuote] = useState("");
   const [manualPage, setManualPage] = useState<number>(1);
   const [manualNote, setManualNote] = useState("");
-  const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; annId: string }>({ isOpen: false, annId: "" });
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -624,15 +623,16 @@ export const Reader: React.FC = () => {
     }
   };
 
-  const handleDeleteAnnotation = async (id: string) => {
-    try {
-      await deleteAnnotation(id);
-      setAnnotations((list) => list.filter((a) => a.id !== id));
-      if (activeAnn === id) setActiveAnn(null);
-      toast.success("Annotation removed");
-    } catch (err: any) {
-      toast.error("Error deleting annotation: " + err?.toString());
-    }
+  const handleDeleteAnnotation = (a: Annotation) => {
+    deleteWithUndo({
+      label: "Highlight deleted",
+      hide: () => {
+        setAnnotations((list) => list.filter((x) => x.id !== a.id));
+        if (activeAnn === a.id) setActiveAnn(null);
+      },
+      show: () => setAnnotations((list) => (list.some((x) => x.id === a.id) ? list : [...list, a])),
+      commit: () => deleteAnnotation(a.id),
+    });
   };
 
   const flashAnn = (id: string) => {
@@ -914,7 +914,7 @@ export const Reader: React.FC = () => {
                             <button key={c.c} onClick={() => changeAnn(a, { color: c.c })} aria-label={`Change to ${c.n}`} aria-pressed={a.color === c.c} title={c.n} style={{ width: 18, height: 18, borderRadius: "50%", background: c.c, cursor: "pointer", padding: 0, border: a.color === c.c ? "3px solid var(--text-main)" : "1px solid var(--border-strong, var(--border))" }} />
                           ))}
                           <button
-                            onClick={() => setConfirmDialog({ isOpen: true, annId: a.id })}
+                            onClick={() => handleDeleteAnnotation(a)}
                             title="Delete annotation"
                             style={{ marginLeft: "auto", fontSize: 11, fontWeight: 600, cursor: "pointer", padding: "3px 9px", borderRadius: 5, color: "var(--danger-ink)", background: "color-mix(in srgb, var(--danger-ink) 13%, var(--panel-dark))", border: "1px solid color-mix(in srgb, var(--danger-ink) 80%, var(--panel-dark))" }}
                           >
@@ -974,17 +974,6 @@ export const Reader: React.FC = () => {
         </form>
       </Modal>
 
-      <ConfirmDialog
-        isOpen={confirmDialog.isOpen}
-        onClose={() => setConfirmDialog({ isOpen: false, annId: "" })}
-        onConfirm={() => {
-          if (confirmDialog.annId) handleDeleteAnnotation(confirmDialog.annId);
-        }}
-        title="Delete Annotation"
-        message="Are you sure you want to delete this annotation highlight? This cannot be undone."
-        confirmLabel="Delete"
-        isDanger={true}
-      />
     </div>
   );
 };

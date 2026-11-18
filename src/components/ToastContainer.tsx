@@ -51,6 +51,26 @@ export const ToastContainer: React.FC = () => {
           >
             <span style={{ fontWeight: 700, fontSize: "15px", lineHeight: 1 }}>{s.icon}</span>
             <span style={{ flex: 1, lineHeight: 1.4 }}>{t.message}</span>
+            {t.action && (
+              <button
+                onClick={() => {
+                  t.action!.run();
+                  toastApi.dismiss(t.id);
+                }}
+                style={{
+                  border: `1px solid ${s.color}`,
+                  background: "var(--panel)",
+                  color: "var(--accent-ink)",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: "5px",
+                }}
+              >
+                {t.action.label}
+              </button>
+            )}
             <button
               onClick={() => toastApi.dismiss(t.id)}
               style={{

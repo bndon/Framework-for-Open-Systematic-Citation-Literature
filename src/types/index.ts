@@ -141,3 +141,20 @@ export interface CitationGraph {
   references: CitationNode[];
   cited_by: CitationNode[];
 }
+
+export interface BackupInfo {
+  path: string;
+  created_at: string;
+  papers: number;
+  collections: number;
+  annotations: number;
+  pdfs: number;
+  epubs: number;
+  has_app_state: boolean;
+}
+
+export interface RestoreResult {
+  app_state?: string | null;
+  epub_ids: string[];
+  safety_path: string;
+}

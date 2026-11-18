@@ -18,6 +18,7 @@ import {
   highlightsMarkdown,
 } from "../lib/highlights";
 import { saveTextFile } from "../lib/saveFile";
+import { undoable } from "../lib/undo";
 import { toast } from "../lib/toast";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import type { Book, ReadingMode } from "../types";
@@ -251,12 +252,25 @@ export const EpubLibrary: React.FC = () => {
     const b = confirmDelete;
     if (!b) return;
     setConfirmDelete(null);
+    // keep everything in memory for a few seconds so the removal can be undone
+    let file: ArrayBuffer | null = null;
+    try {
+      file = await loadEpub(b.id);
+    } catch {}
+    const marks = loadHighlights(b.id);
+    const position = booksRef.current.findIndex((x) => x.id === b.id);
     try {
       await deleteEpub(b.id);
     } catch {}
     deleteHighlightsFor(b.id);
     commit(booksRef.current.filter((x) => x.id !== b.id));
-    setNotice({ kind: "ok", text: `Removed "${b.title}" and its highlights.` });
+    undoable(`Removed "${b.title}" and its highlights`, async () => {
+      if (file) await saveEpub(b.id, file);
+      if (marks.length) saveHighlights(b.id, marks);
+      const list = booksRef.current.filter((x) => x.id !== b.id);
+      list.splice(Math.min(Math.max(position, 0), list.length), 0, b);
+      commit(list);
+    });
   };
 
   // ----- reader -------------------------------------------------------------
@@ -468,8 +482,19 @@ export const EpubLibrary: React.FC = () => {
   const removeHighlight = (id: string) => {
     const doc = docOf();
     if (doc) clearMarks(doc, id);
+    const gone = highlightsRef.current.find((h) => h.id === id);
     commitHighlights(highlightsRef.current.filter((h) => h.id !== id));
     if (activeHl === id) setActiveHl(null);
+    if (gone)
+      undoable("Highlight deleted", () => {
+        commitHighlights([...highlightsRef.current, gone]);
+        const d = docOf();
+        if (d) {
+          try {
+            paintHighlight(d, gone);
+          } catch {}
+        }
+      });
   };
 
   const exportNotes = async () => {

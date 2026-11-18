@@ -1,3 +1,4 @@
+import { BackupSection } from "../components/BackupSection";
 import React, { useState } from "react";
 import type { AppTheme } from "../lib/settings";
 import { saveAppTheme, loadMenuAnim, saveMenuAnim, type MenuAnim } from "../lib/settings";
@@ -401,6 +402,8 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
             Menu items can be clicked from the first frame in every mode, so the animation never makes you wait.
           </div>
         </section>
+
+        <BackupSection />
 
         {/* More settings sections can go here */}
         <section style={{ marginTop: "48px" }}>

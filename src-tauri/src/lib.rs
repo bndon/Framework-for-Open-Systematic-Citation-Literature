@@ -1,3 +1,4 @@
+pub mod backup_core;
 pub mod commands;
 pub mod db;
 pub mod models;
@@ -16,6 +17,10 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::backup::create_backup,
+            commands::backup::inspect_backup,
+            commands::backup::restore_backup,
+            commands::backup::read_file_bytes,
             commands::openalex::search_openalex,
             commands::openalex::lookup_doi,
             commands::openalex::fetch_citations,

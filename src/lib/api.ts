@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
   Annotation,
+  BackupInfo,
   CitationGraph,
   Claim,
   ClaimRevision,
@@ -9,6 +10,7 @@ import type {
   Paper,
   PaperMeta,
   PaperResult,
+  RestoreResult,
   ScreeningChoice,
   ScreeningDecision,
   ScreeningStage,
@@ -341,4 +343,22 @@ export async function setPaperMeta(
     cited_by_count: citedByCount ?? null,
     referenced_json: referencedWorks ? JSON.stringify(referencedWorks) : null,
   }));
+}
+
+// Backup and restore
+export async function createBackup(dir: string, appState: string): Promise<BackupInfo> {
+  return invoke("create_backup", dualKeys({ dir, app_state: appState }));
+}
+
+export async function inspectBackup(dir: string): Promise<BackupInfo> {
+  return invoke("inspect_backup", dualKeys({ dir }));
+}
+
+export async function restoreBackup(dir: string): Promise<RestoreResult> {
+  return invoke("restore_backup", dualKeys({ dir }));
+}
+
+export async function readFileBytes(path: string): Promise<Uint8Array> {
+  const raw: number[] = await invoke("read_file_bytes", dualKeys({ path }));
+  return new Uint8Array(raw);
 }
