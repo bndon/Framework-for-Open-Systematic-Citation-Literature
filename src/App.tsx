@@ -12,6 +12,7 @@ import { Lineage } from "./screens/Lineage";
 import { AccessHub } from "./screens/AccessHub";
 import { ConferenceConverter } from "./screens/ConferenceConverter";
 import { Pricing } from "./screens/Pricing";
+import { Gate } from "./components/Gate";
 import { Books } from "./screens/Books";
 import { CitationGraph } from "./screens/CitationGraph";
 import { KnowledgeGraph } from "./screens/KnowledgeGraph";
@@ -39,7 +40,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/access-hub": "Access Hub",
   "/converter": "Manuscript Analyzer",
   "/conference": "Manuscript Analyzer",
-  "/pricing": "Subscription Tiers",
+  "/pricing": "Plans",
   "/epub": "Books",
   "/settings": "Settings",
 };
@@ -129,9 +130,9 @@ export const App: React.FC = () => {
             <Route path="/knowledge-graph" element={<KnowledgeGraph />} />
             <Route path="/citations" element={<CitationGraph />} />
             <Route path="/citation" element={<CitationGraph />} />
-            <Route path="/access-hub" element={<AccessHub />} />
-            <Route path="/converter" element={<ConferenceConverter />} />
-            <Route path="/conference" element={<ConferenceConverter />} />
+            <Route path="/access-hub" element={<Gate feature="accessHub"><AccessHub /></Gate>} />
+            <Route path="/converter" element={<Gate feature="converter"><ConferenceConverter /></Gate>} />
+            <Route path="/conference" element={<Gate feature="converter"><ConferenceConverter /></Gate>} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/epub" element={<Books />} />
             <Route path="/settings" element={<Settings currentTheme={theme} onThemeChange={handleThemeChange} />} />

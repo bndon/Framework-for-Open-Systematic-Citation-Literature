@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { isUnlocked } from "../lib/plan";
 import {
   getCollections,
   getCollectionPapers,
@@ -16,6 +17,7 @@ import type { Collection, Extraction, Paper, Template, TemplateField, Annotation
 
 export const ComparisonTable: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialCollectionId = searchParams.get("collectionId");
 
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -184,20 +186,20 @@ export const ComparisonTable: React.FC = () => {
       const ann = await getAnnotations(paper.id);
       if (ann.length === 0) {
         toast.info(
-          "No annotations found for this paper. The mock AI synthesizes proposals from real highlighted quotes."
+          "No annotations found for this paper. Suggestions are built from the passages you highlighted."
         );
         return;
       }
 
       const suggestions = suggestFields(ann, fields);
       if (suggestions.length === 0) {
-        toast.info("Mock AI could not find matching annotations for this template's fields.");
+        toast.info("No matching highlights found for this template's fields.");
         return;
       }
 
       setAiSuggestionsModal({ paper, suggestions });
     } catch (err: any) {
-      toast.error("Error running Mock AI: " + err?.toString());
+      toast.error("Could not generate suggestions: " + err?.toString());
     }
   };
 
@@ -342,10 +344,11 @@ export const ComparisonTable: React.FC = () => {
           <div style={{ fontSize: "10.5px", fontWeight: 600, color: "var(--text-muted)", marginTop: "3px" }}>{done}/{fields.length} fields filled</div>
         </div>
         <button
-          onClick={() => handleRunAiMock(paper)}
+          onClick={() => (isUnlocked("suggestions") ? handleRunAiMock(paper) : navigate("/pricing"))}
+          title={isUnlocked("suggestions") ? undefined : "Pro feature: see plans"}
           style={{ marginLeft: "16px", padding: "4px 8px", fontSize: "11px", fontWeight: 600, backgroundColor: "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))", color: "var(--warn-ink)", border: "1px solid color-mix(in srgb, var(--warn-ink) 80%, var(--panel-dark))", borderRadius: "4px", cursor: "pointer" }}
         >
-          ⚡ Mock AI Suggestions
+          {isUnlocked("suggestions") ? "⚡ Suggest from highlights" : "🔒 Smart suggestions · Pro"}
         </button>
         {open && (
           <div style={{ marginTop: "10px", marginLeft: "16px", padding: "8px 10px", backgroundColor: "var(--panel)", borderRadius: "6px", border: "1px solid var(--border)", maxHeight: "180px", overflowY: "auto", fontWeight: 400 }}>
@@ -552,7 +555,7 @@ export const ComparisonTable: React.FC = () => {
             >
               <option value="user">You (Manual input)</option>
               <option value="source">Source (Direct author statement)</option>
-              <option value="ai">AI (mock) (Assisted suggestion)</option>
+              <option value="ai">Suggested (from highlights)</option>
             </select>
           </div>
 
@@ -586,11 +589,11 @@ export const ComparisonTable: React.FC = () => {
       <Modal
         isOpen={Boolean(aiSuggestionsModal)}
         onClose={() => setAiSuggestionsModal(null)}
-        title="AI Suggestions (Mock)"
+        title="Suggestions from your highlights"
         width="650px"
       >
         <div style={{ marginBottom: "14px", fontSize: "13px", color: "var(--text-main)" }}>
-          The mock AI analyzed highlighted annotations for <strong>"{aiSuggestionsModal?.paper.title}"</strong> and proposes the following values:
+          Your highlighted passages for <strong>"{aiSuggestionsModal?.paper.title}"</strong> and proposes the following values:
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxHeight: "400px", overflowY: "auto" }}>
@@ -647,7 +650,7 @@ export const ComparisonTable: React.FC = () => {
                     cursor: "pointer",
                   }}
                 >
-                  Accept as AI (mock)
+                  Accept as suggested
                 </button>
               </div>
             </div>

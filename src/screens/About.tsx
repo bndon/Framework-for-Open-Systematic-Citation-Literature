@@ -146,7 +146,7 @@ export const About: React.FC = () => {
           >
             <div><strong style={{ color: "var(--text-main)" }}>Version</strong> &nbsp;{pkg.version}</div>
             <div style={{ marginTop: "6px", fontSize: "12px" }}>
-              Access Hub, Conference Converter and Subscription Tiers are simulated or concept features and are labelled as such.
+              Access Hub, Manuscript Analyzer and smart suggestions are Pro features and are not available yet.
             </div>
           </div>
         </section>

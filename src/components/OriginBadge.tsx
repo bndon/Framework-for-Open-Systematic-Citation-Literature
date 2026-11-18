@@ -18,7 +18,7 @@ export const OriginBadge: React.FC<OriginBadgeProps> = ({ origin = 'user', size 
     color = "var(--success-ink)";
     border = "color-mix(in srgb, var(--success-ink) 35%, var(--panel-dark))";
   } else if (norm === "ai") {
-    label = "AI (mock)";
+    label = "Suggested";
     bg = "color-mix(in srgb, var(--warn-ink) 13%, var(--panel-dark))";
     color = "var(--warn-ink)";
     border = "color-mix(in srgb, var(--warn-ink) 35%, var(--panel-dark))";

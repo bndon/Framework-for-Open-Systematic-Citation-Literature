@@ -26,8 +26,8 @@ const NAV: Record<string, NavAction> = {
   citations: { id: "citations", label: "Citation Tree", sublabel: "Upstream & downstream", route: "/citations", icon: "🌳", category: "synthesis" },
   templates: { id: "templates", label: "Templates", sublabel: "Extraction schemas", route: "/templates", icon: "📋", category: "tools" },
   export: { id: "export", label: "Export", sublabel: "DOCX & PDF synthesis", route: "/export", icon: "📤", category: "tools" },
-  hub: { id: "hub", label: "Access Hub", sublabel: "DOI & publisher access", route: "/access-hub", icon: "🔑", category: "tools" },
-  converter: { id: "converter", label: "Manuscript Analyzer", sublabel: "IEEE/ACM compliance", route: "/converter", icon: "📄", category: "tools" },
+  hub: { id: "hub", label: "Access Hub", sublabel: "🔒 Pro · publisher access", route: "/access-hub", icon: "🔑", category: "tools" },
+  converter: { id: "converter", label: "Manuscript Analyzer", sublabel: "🔒 Pro · IEEE/ACM style", route: "/converter", icon: "📄", category: "tools" },
   settings: { id: "settings", label: "Settings", sublabel: "Themes & preferences", route: "/settings", icon: "⚙️", category: "tools" },
 };
 

@@ -372,7 +372,7 @@ export const Lineage: React.FC = () => {
               <option value="all">Any origin</option>
               <option value="user">You</option>
               <option value="source">Source</option>
-              <option value="ai">AI (mock)</option>
+              <option value="ai">Suggested</option>
             </select>
             <select value={sort} onChange={(e) => setSort(e.target.value as any)} style={field} title="Sort claims">
               <option value="newest">Newest first</option>
@@ -601,7 +601,7 @@ export const Lineage: React.FC = () => {
             >
               <option value="user">You (Author hypothesis/synthesis)</option>
               <option value="source">Source (Extracted from paper)</option>
-              <option value="ai">AI (mock)</option>
+              <option value="ai">Suggested</option>
             </select>
           </div>
 
