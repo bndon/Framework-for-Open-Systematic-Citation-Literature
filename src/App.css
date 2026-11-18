@@ -78,3 +78,17 @@ input, button, select, textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: #C2B6A6;
 }
+
+/* PDF reader: search hits and "go to this highlight" flash */
+.textLayer span.foscl-hit {
+  background: rgba(255, 152, 0, 0.45);
+  outline: 2px solid #e65100;
+  border-radius: 2px;
+}
+.textLayer span.foscl-flash {
+  outline: 3px solid #e65100;
+  animation: foscl-flash 0.5s ease-in-out 3;
+}
+@keyframes foscl-flash {
+  50% { filter: brightness(0.6); }
+}

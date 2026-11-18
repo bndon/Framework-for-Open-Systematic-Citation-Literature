@@ -18,7 +18,7 @@ const NAV: Record<string, NavAction> = {
   dashboard: { id: "dashboard", label: "Overview", sublabel: "Bento workspace grid", route: "/", icon: "🍱", category: "research" },
   discover: { id: "discover", label: "Discover", sublabel: "250M+ OpenAlex papers", route: "/discover", icon: "🔍", category: "research" },
   library: { id: "library", label: "Library", sublabel: "Collections & archive", route: "/library", icon: "📚", category: "research" },
-  screening: { id: "screening", label: "Screening", sublabel: "Include / exclude · PRISMA", route: "/screening", icon: "🧪", category: "research" },
+  screening: { id: "screening", label: "Screening", sublabel: "Include / exclude · PRISMA", route: "/library?tab=screening", icon: "🧪", category: "research" },
   epub: { id: "epub", label: "Books", sublabel: "EPUB local archive", route: "/epub", icon: "📖", category: "research" },
   compare: { id: "compare", label: "Compare Matrix", sublabel: "Cross-paper table", route: "/compare", icon: "📊", category: "synthesis" },
   lineage: { id: "lineage", label: "Lineage", sublabel: "Claim & evidence chains", route: "/lineage", icon: "🧬", category: "synthesis" },
@@ -38,7 +38,7 @@ const NAV: Record<string, NavAction> = {
  */
 const RINGS: { ids: string[]; reverse: boolean; fill: string; fg: string }[] = [
   { ids: ["dashboard"], reverse: false, fill: "var(--qn-r1)", fg: "var(--qn-r1-fg)" },
-  { ids: ["discover", "library", "screening", "epub"], reverse: true, fill: "var(--qn-r2)", fg: "var(--qn-r2-fg)" },
+  { ids: ["discover", "library", "epub"], reverse: true, fill: "var(--qn-r2)", fg: "var(--qn-r2-fg)" },
   { ids: ["compare", "lineage", "graph", "citations"], reverse: false, fill: "var(--qn-r3)", fg: "var(--qn-r3-fg)" },
   { ids: ["templates", "export", "hub", "converter", "settings"], reverse: true, fill: "var(--qn-r4)", fg: "var(--qn-r4-fg)" },
 ];

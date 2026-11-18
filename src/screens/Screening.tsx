@@ -84,7 +84,7 @@ function cssVar(name: string, fallback: string): string {
 }
 
 // ---------------------------------------------------------------------------
-export const Screening: React.FC = () => {
+export const Screening: React.FC<{ collectionId?: string; embedded?: boolean }> = ({ collectionId, embedded = false }) => {
   const navigate = useNavigate();
   const [collections, setCollections] = useState<Collection[]>([]);
   const [cid, setCid] = useState<string>("");
@@ -111,7 +111,7 @@ export const Screening: React.FC = () => {
         try {
           last = localStorage.getItem(LAST_KEY) || "";
         } catch {}
-        setCid(cs.find((c) => c.id === last)?.id || cs[0]?.id || "");
+        if (!embedded) setCid(cs.find((c) => c.id === last)?.id || cs[0]?.id || "");
       } catch {
         toast.error("Could not load collections");
       } finally {
@@ -128,6 +128,11 @@ export const Screening: React.FC = () => {
       })
       .catch(() => {});
   }, []);
+
+  // inside the Library the collection comes from the Library's own selection
+  useEffect(() => {
+    if (embedded) setCid(collectionId || "");
+  }, [embedded, collectionId]);
 
   useEffect(() => {
     if (!cid) {
@@ -338,7 +343,7 @@ export const Screening: React.FC = () => {
     <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       {/* header */}
       <div style={{ padding: "14px 28px", borderBottom: "1px solid var(--border)", background: "var(--panel)", display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "var(--text-main)" }}>
+        {!embedded && <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, color: "var(--text-main)" }}>
           Collection
           <select
             value={cid}
@@ -352,7 +357,7 @@ export const Screening: React.FC = () => {
               </option>
             ))}
           </select>
-        </label>
+        </label>}
         <div style={{ display: "flex", gap: 6 }} role="group" aria-label="Screening stage">
           {STAGES.map((s) => (
             <button key={s.id} onClick={() => { setStage(s.id); setFilter("all"); setCursor(0); }} aria-pressed={stage === s.id} title={s.hint} style={chip(stage === s.id)}>

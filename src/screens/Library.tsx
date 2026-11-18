@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   getCollections,
   createCollection,
@@ -18,10 +18,19 @@ import { Modal } from "../components/Modal";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { toast } from "../lib/toast";
 import { ImportReferencesModal, ExportReferencesModal } from "../components/ReferenceTransfer";
+import { Screening } from "./Screening";
 import type { Collection, Paper } from "../types";
 
 export const Library: React.FC = () => {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const tab: "papers" | "screening" = params.get("tab") === "screening" ? "screening" : "papers";
+  const setTab = (t: "papers" | "screening") => {
+    const next = new URLSearchParams(params);
+    if (t === "papers") next.delete("tab");
+    else next.set("tab", t);
+    setParams(next, { replace: true });
+  };
   const [collections, setCollections] = useState<Collection[]>([]);
   const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
   const [papers, setPapers] = useState<Paper[]>([]);
@@ -114,7 +123,8 @@ export const Library: React.FC = () => {
       const list = await getCollections();
       setCollections(list);
       if (list.length > 0 && !activeCollectionId) {
-        setActiveCollectionId(list[0].id);
+        const wanted = params.get("collection") || params.get("collectionId");
+        setActiveCollectionId(list.find((c) => c.id === wanted)?.id || list[0].id);
       }
     } catch (e) {
       console.error(e);
@@ -356,8 +366,41 @@ export const Library: React.FC = () => {
       </div>
 
       {/* Right panel: Papers in collection */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", backgroundColor: "var(--panel-dark)" }}>
-        {activeCollection ? (
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: tab === "screening" ? "hidden" : "auto", backgroundColor: "var(--panel-dark)" }}>
+        {activeCollection && (
+          <div role="tablist" aria-label="Collection views" style={{ display: "flex", gap: 4, padding: "10px 36px 0", borderBottom: "1px solid var(--border)", background: "var(--panel)", flexShrink: 0 }}>
+            {([
+              ["papers", `📄 Papers (${papers.length})`],
+              ["screening", "🧪 Screening & PRISMA"],
+            ] as ["papers" | "screening", string][]).map(([id, label]) => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={tab === id}
+                onClick={() => setTab(id)}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  border: "1px solid var(--border-strong, var(--border))",
+                  borderBottom: tab === id ? "1px solid var(--panel-dark)" : "1px solid var(--border-strong, var(--border))",
+                  marginBottom: -1,
+                  borderRadius: "8px 8px 0 0",
+                  background: tab === id ? "var(--panel-dark)" : "transparent",
+                  color: tab === id ? "var(--accent-ink)" : "var(--text-muted)",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+        {activeCollection && tab === "screening" ? (
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <Screening embedded collectionId={activeCollection.id} />
+          </div>
+        ) : activeCollection ? (
           <div style={{ padding: "28px 36px" }}>
             <div
               style={{
@@ -391,12 +434,6 @@ export const Library: React.FC = () => {
                 >
                   ⬇ Export BibTeX / RIS
                 </button>
-                <Link
-                  to={`/screening`}
-                  style={{ padding: "8px 14px", backgroundColor: "var(--panel-dark)", color: "var(--accent-ink)", border: "1px solid var(--border)", borderRadius: "6px", textDecoration: "none", fontSize: "12px", fontWeight: 600 }}
-                >
-                  🧪 Screen papers
-                </Link>
                 <Link
                   to={`/compare?collectionId=${activeCollection.id}`}
                   style={{

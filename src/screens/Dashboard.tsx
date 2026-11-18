@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPapers, getCollections } from "../lib/api";
+import { getPapers, getCollections, getCollectionPapers, getScreening } from "../lib/api";
 import type { Collection } from "../types";
 import "../dashboard.css";
 
@@ -206,6 +206,7 @@ const TEMPLATE_FIELDS = ["Research question", "Methodology", "Dataset", "Finding
 export const Dashboard: React.FC = () => {
   const [paperCount, setPaperCount] = useState<number | null>(null);
   const [collections, setCollections] = useState<Collection[] | null>(null);
+  const [screen, setScreen] = useState<{ name: string; total: number; done: number; included: number } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -215,6 +216,19 @@ export const Dashboard: React.FC = () => {
         if (!alive) return;
         setPaperCount(papers.length);
         setCollections(colls);
+        // screening progress for the collection you last worked on
+        let last = "";
+        try {
+          last = localStorage.getItem("foscl:screening_collection") || "";
+        } catch {}
+        const c = colls.find((x) => x.id === last) || colls[0];
+        if (c) {
+          const [ps, ds] = await Promise.all([getCollectionPapers(c.id), getScreening(c.id)]);
+          const s1 = ds.filter((d) => d.stage === "title_abstract");
+          if (alive && ps.length && s1.length) {
+            setScreen({ name: c.name, total: ps.length, done: s1.length, included: s1.filter((d) => d.decision === "include").length });
+          }
+        }
       } catch {
         // Counts are a nicety; the dashboard works without them.
       }
@@ -260,6 +274,16 @@ export const Dashboard: React.FC = () => {
               <span className="bento-stat">{paperCount ?? "—"}</span>
               <span className="bento-stat-label">papers saved</span>
             </div>
+            {screen && (
+              <div className="bento-screen" title={`Screening: ${screen.name}`}>
+                <div className="bento-screen-text">
+                  🧪 {screen.done}/{screen.total} screened · {screen.included} in
+                </div>
+                <div className="bento-screen-bar">
+                  <div style={{ width: `${Math.round((screen.done / screen.total) * 100)}%` }} />
+                </div>
+              </div>
+            )}
             {collections && collections.length > 0 && (
               <div className="bento-chips lib-chips">
                 {collections.slice(0, 4).map((c) => (
