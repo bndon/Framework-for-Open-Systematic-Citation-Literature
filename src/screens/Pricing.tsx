@@ -44,7 +44,7 @@ export const Pricing: React.FC = () => {
             </div>
 
             <ul style={{ paddingLeft: "18px", fontSize: "13px", color: "var(--text-main)", lineHeight: 1.7, margin: "0 0 24px 0" }}>
-              <li>Local SQLite database storage</li>
+              <li>Your library stored on your computer</li>
               <li>Unlimited OpenAlex searches & DOIs</li>
               <li>PDF reader & manual highlights</li>
               <li>Default 10-field extraction template</li>

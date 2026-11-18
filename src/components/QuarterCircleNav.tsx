@@ -19,7 +19,7 @@ const NAV: Record<string, NavAction> = {
   discover: { id: "discover", label: "Discover", sublabel: "250M+ OpenAlex papers", route: "/discover", icon: "🔍", category: "research" },
   library: { id: "library", label: "Library", sublabel: "Collections & archive", route: "/library", icon: "📚", category: "research" },
   screening: { id: "screening", label: "Screening", sublabel: "Include / exclude · PRISMA", route: "/library?tab=screening", icon: "🧪", category: "research" },
-  epub: { id: "epub", label: "Books", sublabel: "EPUB local archive", route: "/epub", icon: "📖", category: "research" },
+  epub: { id: "epub", label: "Books", sublabel: "EPUB and PDF shelf", route: "/epub", icon: "📖", category: "research" },
   compare: { id: "compare", label: "Compare Matrix", sublabel: "Cross-paper table", route: "/compare", icon: "📊", category: "synthesis" },
   lineage: { id: "lineage", label: "Lineage", sublabel: "Claim & evidence chains", route: "/lineage", icon: "🧬", category: "synthesis" },
   graph: { id: "graph", label: "Knowledge Graph", sublabel: "Interactive entity web", route: "/graph", icon: "🕸️", category: "synthesis" },

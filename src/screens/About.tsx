@@ -70,8 +70,8 @@ export const About: React.FC = () => {
         <p style={{ margin: "24px 0 0", fontSize: "14.5px", lineHeight: 1.7, color: "var(--text-main)" }}>
           FOSCL is a desktop research workspace for working through scholarly literature in a
           systematic way: find papers, organize them, pull out and compare what they say, and keep a
-          traceable record of the claims you build on them. Your library is stored locally in a SQLite
-          database on your machine; OpenAlex is used for paper discovery and citation data.
+          traceable record of the claims you build on them. Your library stays on your
+          computer; paper discovery and citation data come from OpenAlex.
         </p>
 
         <section style={{ marginTop: "40px" }}>
@@ -145,8 +145,6 @@ export const About: React.FC = () => {
             }}
           >
             <div><strong style={{ color: "var(--text-main)" }}>Version</strong> &nbsp;{pkg.version}</div>
-            <div><strong style={{ color: "var(--text-main)" }}>Built with</strong> &nbsp;Tauri, React and TypeScript</div>
-            <div><strong style={{ color: "var(--text-main)" }}>Data</strong> &nbsp;Local SQLite; paper metadata from OpenAlex</div>
             <div style={{ marginTop: "6px", fontSize: "12px" }}>
               Access Hub, Conference Converter and Subscription Tiers are simulated or concept features and are labelled as such.
             </div>

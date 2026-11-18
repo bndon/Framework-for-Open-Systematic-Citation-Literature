@@ -423,7 +423,6 @@ export const Settings: React.FC<SettingsProps> = ({ currentTheme, onThemeChange 
           }}>
             <div style={{ fontWeight: 700, fontSize: "13px", color: "var(--text-main)", marginBottom: "6px" }}>FOSCL v0.2.0</div>
             <div>Framework for Open Systematic Citation & Literature</div>
-            <div>Built with Tauri + React + TypeScript</div>
           </div>
         </section>
       </div>

@@ -12,7 +12,7 @@ import { Lineage } from "./screens/Lineage";
 import { AccessHub } from "./screens/AccessHub";
 import { ConferenceConverter } from "./screens/ConferenceConverter";
 import { Pricing } from "./screens/Pricing";
-import { EpubLibrary } from "./screens/EpubLibrary";
+import { Books } from "./screens/Books";
 import { CitationGraph } from "./screens/CitationGraph";
 import { KnowledgeGraph } from "./screens/KnowledgeGraph";
 import { Settings } from "./screens/Settings";
@@ -133,7 +133,7 @@ export const App: React.FC = () => {
             <Route path="/converter" element={<ConferenceConverter />} />
             <Route path="/conference" element={<ConferenceConverter />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/epub" element={<EpubLibrary />} />
+            <Route path="/epub" element={<Books />} />
             <Route path="/settings" element={<Settings currentTheme={theme} onThemeChange={handleThemeChange} />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

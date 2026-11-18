@@ -703,9 +703,15 @@ export const Reader: React.FC = () => {
     <div style={{ display: "flex", flexDirection: "column", height: "100%", backgroundColor: "var(--panel-dark)", overflow: "hidden" }}>
       {/* Top controls */}
       <div style={{ padding: "8px 14px", backgroundColor: "var(--panel)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", zIndex: 10 }}>
-        <button onClick={() => navigate(`/paper/${paperId}`)} style={btn()}>
-          ← Back to Paper
-        </button>
+        {new URLSearchParams(window.location.search).get("from") === "shelf" ? (
+          <button onClick={() => navigate("/epub?tab=pdf")} style={btn()}>
+            ← PDF shelf
+          </button>
+        ) : (
+          <button onClick={() => navigate(`/paper/${paperId}`)} style={btn()}>
+            ← Back to Paper
+          </button>
+        )}
         <button onClick={() => setLeftOpen((v) => !v)} aria-pressed={leftOpen} style={btn(leftOpen)} title="Contents, page previews and search">
           ☰ Contents
         </button>

@@ -62,7 +62,7 @@ const TILES: TileDef[] = [
     blurb: "Claims, evidence and revisions." },
   { id: "books", to: "/epub", title: "Books", icon: "📖", col: [4, 5], row: [3, 4], anchor: "bottom", variant: "deep",
     notches: ["citations", "settings"],
-    blurb: "Your EPUB shelf and reader." },
+    blurb: "Your EPUB and PDF shelf." },
   { id: "templates", to: "/templates", title: "Template", icon: "📋", col: [6, 6], row: [1, 4], anchor: "top",
     notches: ["settings"],
     blurb: "The fields every comparison table is built from." },

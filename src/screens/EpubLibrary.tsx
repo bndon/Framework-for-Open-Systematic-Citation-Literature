@@ -19,6 +19,7 @@ import {
 } from "../lib/highlights";
 import { saveTextFile } from "../lib/saveFile";
 import { undoable } from "../lib/undo";
+import { BooksTabs } from "../components/BooksTabs";
 import { toast } from "../lib/toast";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import type { Book, ReadingMode } from "../types";
@@ -958,6 +959,7 @@ export const EpubLibrary: React.FC = () => {
     <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
       {fileInput}
       <div style={{ padding: "28px 40px 40px", maxWidth: "1100px", margin: "0 auto" }}>
+        <BooksTabs active="epub" />
         <header style={{ marginBottom: "18px", display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", flexWrap: "wrap" }}>
           <div>
             <h1 style={{ fontSize: "24px", color: "var(--text-main)", margin: "0 0 6px 0" }}>Books</h1>
