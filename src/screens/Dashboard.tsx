@@ -249,7 +249,7 @@ export const Dashboard: React.FC = () => {
     <div className="dash-root">
       <header className="dash-head">
         <div className="brand">
-          <span className="brand-mark" aria-hidden="true">F</span>
+          <img className="brand-mark" src="/logo.png" alt="" aria-hidden="true" />
           <span className="brand-text">
             <span className="brand-name">FOSCL</span>
             <span className="brand-sub">Research workspace</span>

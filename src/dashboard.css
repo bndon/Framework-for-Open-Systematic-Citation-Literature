@@ -70,46 +70,41 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
-  padding: 7px 16px 7px 9px;
-  border-radius: 14px;
-  background: var(--panel-dark);
-  box-shadow: inset 0 0 0 1px var(--border);
+  gap: 14px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .brand-mark {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 19px;
-  font-weight: 700;
+  width: 52px;
+  height: 52px;
+  flex: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 0 var(--border-strong, var(--border)));
 }
 
 .brand-text {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  line-height: 1;
+  padding-left: 14px;
+  border-left: 2px solid var(--border-strong, var(--border));
 }
 
 .brand-name {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 3px;
   color: var(--text-main);
 }
 
 .brand-sub {
-  margin-top: 2px;
-  font-size: 9.5px;
+  margin-top: 6px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 1.4px;
+  letter-spacing: 2.4px;
   text-transform: uppercase;
   color: var(--text-muted);
 }

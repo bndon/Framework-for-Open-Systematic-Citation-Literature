@@ -101,24 +101,7 @@ export const Sidebar: React.FC = () => {
       >
         {!collapsed ? (
           <div style={{ display: "flex", alignItems: "center", gap: "10px", overflow: "hidden" }}>
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                minWidth: "28px",
-                borderRadius: "6px",
-                backgroundColor: "var(--accent)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--panel-dark)",
-                fontWeight: 800,
-                fontSize: "15px",
-                boxShadow: "0 2px 4px rgba(110, 67, 99, 0.25)",
-              }}
-            >
-              F
-            </div>
+            <img src="/logo.png" alt="" width={30} height={30} style={{ minWidth: "30px", imageRendering: "pixelated" }} />
             <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
               <div
                 style={{
