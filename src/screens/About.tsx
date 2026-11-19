@@ -57,6 +57,7 @@ export const About: React.FC = () => {
   return (
     <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
       <div style={{ maxWidth: "860px", margin: "0 auto", padding: "44px 40px 56px" }}>
+        <img src="/logo.png" alt="FOSCL logo" width={88} style={{ display: "block", imageRendering: "pixelated", marginBottom: "14px" }} />
         <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: "var(--accent-ink)", marginBottom: "8px" }}>
           About
         </div>
